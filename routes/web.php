@@ -16,7 +16,7 @@ Route::get('/', fn () => Inertia::render('Welcome'));
 
 // SEMENTARA (TASK-004/005): pengganti Dashboard agar FR-003 dan logout bisa diuji. Diganti di TASK-014.
 Route::get('/dashboard', fn () => Inertia::render('DashboardSementara'))
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', 'active'])
     ->name('dashboard');
 
 if (app()->environment('local')) {
@@ -41,7 +41,7 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/reset-sandi', [NewPasswordController::class, 'store'])->name('password.store');
 });
 
-// Login. /keluar sengaja tanpa middleware `active` (TASK-006) agar akun nonaktif tetap bisa keluar.
+// Login. /keluar sengaja tanpa middleware `active` agar akun nonaktif tetap bisa keluar.
 Route::middleware('auth')->group(function (): void {
     Route::post('/keluar', LogoutController::class)->name('logout');
 

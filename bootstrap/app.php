@@ -12,6 +12,14 @@ return Application::configure(basePath: dirname(__DIR__))
         health: '/up',
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Global (bukan grup web) agar halaman 404 ikut mendapat header keamanan.
+        $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+
+        $middleware->alias([
+            'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+            'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        ]);
+
         $middleware->web(append: [
             \App\Http\Middleware\HandleInertiaRequests::class,
         ]);
