@@ -37,7 +37,34 @@ class HandleInertiaRequests extends Middleware
     {
         return [
             ...parent::share($request),
-            //
+            // Kontak bantuan untuk CrisisBanner. Sumber tunggal: config (OQ-3); tautan hanya https.
+            'crisisContacts' => fn (): array => $this->crisisContacts(),
         ];
+    }
+
+    /**
+     * @return list<array{name: string, phone: ?string, url: ?string, note: ?string, dummy: bool}>
+     */
+    private function crisisContacts(): array
+    {
+        $contacts = [];
+
+        foreach ((array) config('relaxboss.crisis_contacts') as $contact) {
+            if (! is_array($contact) || ! filled($contact['name'] ?? null)) {
+                continue;
+            }
+
+            $url = $contact['url'] ?? null;
+
+            $contacts[] = [
+                'name' => (string) $contact['name'],
+                'phone' => filled($contact['phone'] ?? null) ? (string) $contact['phone'] : null,
+                'url' => is_string($url) && str_starts_with($url, 'https://') ? $url : null,
+                'note' => filled($contact['note'] ?? null) ? (string) $contact['note'] : null,
+                'dummy' => (bool) ($contact['dummy'] ?? false),
+            ];
+        }
+
+        return $contacts;
     }
 }

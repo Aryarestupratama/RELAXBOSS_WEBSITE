@@ -16,5 +16,7 @@ final readonly class ChatbotResult
         public Message $userMessage,
         public Message $assistantMessage,
         public ?array $suggestion,
+        /** True bila giliran ini dijawab Crisis Response statis oleh CrisisDetector (AI tidak dipanggil). */
+        public bool $isCrisis = false,
     ) {}
 }

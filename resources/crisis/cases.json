@@ -1,0 +1,386 @@
+[
+  {
+    "text": "Aku pengen mati aja rasanya",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "gue pgn mati",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Sudah nggak kuat, pengen mengakhiri hidup",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "kepikiran bunuh diri terus akhir-akhir ini",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "aku mau bundir",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Pengen banget matiiii",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "p3ngen m4ti aja gw",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Lebih baik aku tidak ada di dunia ini",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "mending gue ga ada aja",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Aku capek hidup, buat apa hidup kalau begini terus",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "udah ga ada alasan buat hidup lagi",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Hidupku nggak ada artinya sama sekali",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "aku pengen tidur selamanya dan nggak bangun lagi",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "kalau aku mati nanti, kalian pasti lebih tenang",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Keluargaku pasti lebih bahagia tanpa aku",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Ini pesan terakhirku buat kalian semua",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "selamat tinggal semuanya, makasih sudah menemani",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "pengen loncat dari atas gedung kampus",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Aku kepikiran gantung diri",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "aku udah beli racun, mau minum racun malam ini",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "pengen overdosis obat tidur aja",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Aku mau minum obat banyak banget biar mati",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Kenapa aku masih hidup ya",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "aku mau ngilang selamanya dari dunia ini",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Gue pengen mengakhiri semuanya, mengakhiri hidup gue",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "I want to die",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "aku nyesel lahir",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Tolong, aku nggak mau hidup lagi",
+    "expected": true,
+    "context": "chat",
+    "category": "suicide"
+  },
+  {
+    "text": "Aku pengen nyakitin diri sendiri",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "kemarin aku nyayat tangan lagi",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "lagi self harm lagi malam ini",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "Aku sering nyilet lengan kalau lagi stres",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "pengen menyakiti diriku sendiri",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "tadi aku benturin kepala ke tembok sampai berdarah",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "Aku suka memukul diri sendiri kalau gagal",
+    "expected": true,
+    "context": "chat",
+    "category": "selfharm"
+  },
+  {
+    "text": "Akhir-akhir ini aku sering kepikiran bunuh diri karena tekanan skripsi",
+    "expected": true,
+    "context": "pfa",
+    "category": "suicide"
+  },
+  {
+    "text": "Tugas numpuk, orang tua menuntut, rasanya pengen mati aja",
+    "expected": true,
+    "context": "pfa",
+    "category": "suicide"
+  },
+  {
+    "text": "Aku capek hidup dan sering nyakitin diri sendiri kalau stres",
+    "expected": true,
+    "context": "pfa",
+    "category": "suicide"
+  },
+  {
+    "text": "Sudah lama aku merasa hidupku nggak ada gunanya",
+    "expected": true,
+    "context": "pfa",
+    "category": "suicide"
+  },
+  {
+    "text": "Kadang aku pengen ngilang aja selamanya dari semuanya",
+    "expected": true,
+    "context": "pfa",
+    "category": "suicide"
+  },
+  {
+    "text": "Halo, apa kabar?",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku lagi stres banget sama tugas kuliah",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Mati gue, belum ngerjain tugas",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "laptop gue mati total pas lagi ngerjain skripsi",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Lampu kosan mati dari tadi, jadi susah belajar",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku capek setengah mati ngerjain laporan praktikum",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Mati gaya banget di acara kampus tadi",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku mau matiin lampu dulu ya, mau tidur",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Capek banget habis begadang, hidup mahasiswa memang berat",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "pengen tidur seharian hari ini",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku pengen menghilangkan stres, ada saran?",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Cuma pengen bunuh waktu sambil nunggu dosen",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Dosen killer banget, nilai aku jelek terus",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku susah tidur dan sering cemas sebelum ujian",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Bosan banget di kos, nggak ada teman ngobrol",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Pengen banget lulus tepat waktu",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku sedih banget karena putus sama pacar",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Nenek aku meninggal minggu lalu, aku masih sedih",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Kenapa ya aku selalu merasa nggak percaya diri?",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Mati lampu pas lagi presentasi online, panik banget",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Aku merasa lelah dengan tugas yang nggak habis-habis",
+    "expected": false,
+    "context": "chat",
+    "category": "none"
+  },
+  {
+    "text": "Akhir-akhir ini aku cemas karena deadline skripsi dan sering begadang",
+    "expected": false,
+    "context": "pfa",
+    "category": "none"
+  },
+  {
+    "text": "Aku kurang tidur dan sulit konsentrasi di kelas, sering merasa kewalahan",
+    "expected": false,
+    "context": "pfa",
+    "category": "none"
+  },
+  {
+    "text": "Konflik dengan teman sekamar bikin aku nggak nyaman di kos",
+    "expected": false,
+    "context": "pfa",
+    "category": "none"
+  }
+]
