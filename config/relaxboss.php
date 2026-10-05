@@ -38,6 +38,12 @@ return [
     ],
 
     'ai' => [
+        // Pool API key per fitur (ADR-009): daftar dipisah koma di .env. Jangan pernah dicatat di log (RULE-040, RULE-043).
+        'keys' => [
+            'chat' => array_values(array_filter(array_map('trim', explode(',', (string) env('GROQ_KEYS_CHAT', ''))))),
+            'assessment' => array_values(array_filter(array_map('trim', explode(',', (string) env('GROQ_KEYS_ASSESSMENT', ''))))),
+        ],
+
         'features' => [
             'chat' => [
                 'prompt' => 'relaxmate.system.md',

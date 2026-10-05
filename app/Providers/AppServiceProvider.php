@@ -9,7 +9,9 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Contracts\ChatCompletionClient;
 use App\Models\Assessment;
+use App\Services\Ai\GroqClient;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
@@ -18,7 +20,8 @@ class AppServiceProvider extends ServiceProvider
 {
     public function register(): void
     {
-        //
+        // Semua panggilan AI lewat kontrak ini (RULE-030).
+        $this->app->bind(ChatCompletionClient::class, GroqClient::class);
     }
 
     public function boot(): void
