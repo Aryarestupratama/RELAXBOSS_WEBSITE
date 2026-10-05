@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\App\AssessmentController;
 use App\Http\Controllers\App\AttemptController;
+use App\Http\Controllers\App\MoodController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -31,6 +32,11 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     Route::post('/riwayat/{attempt}/konteks', [AttemptController::class, 'storeContext'])
         ->whereNumber('attempt')
         ->name('attempts.context');
+    // Mood Tracker (SCR-016, API-011). Entri selalu lewat relasi pemilik (RULE-033).
+    Route::get('/mood', [MoodController::class, 'index'])->name('mood.index');
+    Route::post('/mood', [MoodController::class, 'store'])
+        ->middleware('throttle:mood')
+        ->name('mood.store');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.

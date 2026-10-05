@@ -20,6 +20,7 @@ return [
         'context_max_chars' => 9000,
         'mood_per_day' => 5,
         'mood_note_max_chars' => 500,
+        'mood_per_minute' => 10,
         'assessment_ai_per_day' => 5,
         'pfa_answer_max_chars' => 1000,
         'history_per_page' => 15,
