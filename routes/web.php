@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\App\AssessmentController;
 use App\Http\Controllers\App\AttemptController;
+use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\MoodController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
@@ -12,10 +13,9 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
-// SEMENTARA (TASK-004/005): pengganti Dashboard agar FR-003 dan logout bisa diuji. Diganti di TASK-014.
-Route::get('/dashboard', fn () => Inertia::render('DashboardSementara'))
+// Dashboard (SCR-011). Path tetap /dashboard (redirect login dan verifikasi memakainya).
+Route::get('/dashboard', DashboardController::class)
     ->middleware(['auth', 'verified', 'active'])
     ->name('dashboard');
 
