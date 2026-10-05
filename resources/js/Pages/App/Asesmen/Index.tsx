@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ClipboardCheck, Clock, ListChecks } from 'lucide-react';
+import { ClipboardCheck, Clock, History, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import EmptyState from '@/Components/shared/EmptyState';
 import { Button } from '@/Components/ui/button';
@@ -24,6 +24,16 @@ export default function Index({ assessments }: IndexProps) {
       <h1>Asesmen</h1>
       <p className="mt-2 max-w-prose text-text-secondary">
         Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.
+      </p>
+
+      <p className="mt-3">
+        <Link
+          href="/app/riwayat"
+          className="inline-flex min-h-11 items-center gap-2 font-medium text-brand-strong underline underline-offset-4"
+        >
+          <History className="size-4" aria-hidden="true" />
+          Lihat riwayat
+        </Link>
       </p>
 
       <div className="mt-6">

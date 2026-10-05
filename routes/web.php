@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use App\Http\Controllers\App\AssessmentController;
+use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
@@ -22,10 +23,14 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     Route::get('/asesmen', [AssessmentController::class, 'index'])->name('assessments.index');
     Route::get('/asesmen/{activeAssessment}', [AssessmentController::class, 'show'])->name('assessments.show');
     Route::post('/asesmen/{activeAssessment}/hasil', [AssessmentController::class, 'store'])->name('assessments.store');
-    // SEMENTARA (TASK-009): diganti SCR-014 di TASK-010.
-    Route::get('/riwayat/{attempt}', [AssessmentController::class, 'showAttempt'])
+    // Hasil dan riwayat (SCR-014, SCR-015). Selalu lewat relasi pemilik (RULE-033).
+    Route::get('/riwayat', [AttemptController::class, 'index'])->name('attempts.index');
+    Route::get('/riwayat/{attempt}', [AttemptController::class, 'show'])
         ->whereNumber('attempt')
         ->name('attempts.show');
+    Route::post('/riwayat/{attempt}/konteks', [AttemptController::class, 'storeContext'])
+        ->whereNumber('attempt')
+        ->name('attempts.context');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.

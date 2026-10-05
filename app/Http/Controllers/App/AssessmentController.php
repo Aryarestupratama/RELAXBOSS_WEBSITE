@@ -9,7 +9,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubmitAssessmentRequest;
 use App\Models\Assessment;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Inertia\Response;
 
@@ -71,19 +70,5 @@ final class AssessmentController extends Controller
         $attempt = $action->handle($request->user(), $activeAssessment, $request->answers());
 
         return redirect()->route('app.attempts.show', $attempt);
-    }
-
-    /**
-     * SEMENTARA (TASK-009): pengganti SCR-014 agar hasil bisa dilihat. Diganti di TASK-010.
-     * Akses lewat relasi pemilik (RULE-033): milik orang lain menghasilkan 404.
-     */
-    public function showAttempt(Request $request, int $attempt): Response
-    {
-        $record = $request->user()->assessmentAttempts()->with('assessment')->findOrFail($attempt);
-
-        return Inertia::render('App/Asesmen/HasilSementara', [
-            'assessmentName' => $record->assessment->display_name ?? $record->assessment->name,
-            'results' => $record->results,
-        ]);
     }
 }
