@@ -12,5 +12,5 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
-  resolve: { alias: { '@': path.resolve(__dirname, 'resources/js') } },
+  resolve: { alias: { '@': path.resolve(import.meta.dirname, 'resources/js') } },
 });

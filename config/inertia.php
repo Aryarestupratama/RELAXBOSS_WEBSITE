@@ -7,21 +7,14 @@ return [
     | Server Side Rendering
     |--------------------------------------------------------------------------
     |
-    | These options configures if and how Inertia uses Server Side Rendering
-    | to pre-render the initial visits made to your application's pages.
-    |
-    | You can specify a custom SSR bundle path, or omit it to let Inertia
-    | try and automatically detect it for you.
-    |
-    | Do note that enabling these options will NOT automatically make SSR work,
-    | as a separate rendering service needs to be available. To learn more,
-    | please visit https://inertiajs.com/server-side-rendering
+    | RelaxBoss tidak memakai SSR Node (Architecture, Prinsip 3 dan ADR-002).
+    | Halaman Publik memakai Blade untuk SEO, jadi SSR dimatikan.
     |
     */
 
     'ssr' => [
 
-        'enabled' => (bool) env('INERTIA_SSR_ENABLED', true),
+        'enabled' => (bool) env('INERTIA_SSR_ENABLED', false),
 
         'runtime' => env('INERTIA_SSR_RUNTIME', 'node'),
 
@@ -33,23 +26,9 @@ return [
 
         'timeout' => env('INERTIA_SSR_TIMEOUT'),
 
-        'ensure_bundle_exists' => (bool) env('INERTIA_SSR_ENSURE_BUNDLE_EXISTS', true),
+        'ensure_bundle_exists' => (bool) env('INERTIA_SSR_ENSURE_BUNDLE_EXISTS', false),
 
         // 'bundle' => base_path('bootstrap/ssr/ssr.mjs'),
-
-        /*
-        |--------------------------------------------------------------------------
-        | SSR Error Handling
-        |--------------------------------------------------------------------------
-        |
-        | When SSR rendering fails, Inertia gracefully falls back to client-side
-        | rendering. Set throw_on_error to true to throw an exception instead.
-        | This is useful for E2E testing where you want SSR errors to fail loudly.
-        |
-        | You can also listen for the Inertia\Ssr\SsrRenderFailed event to handle
-        | failures in your own way (e.g., logging, error tracking service).
-        |
-        */
 
         'throw_on_error' => (bool) env('INERTIA_SSR_THROW_ON_ERROR', false),
 
@@ -60,12 +39,8 @@ return [
     | Pages
     |--------------------------------------------------------------------------
     |
-    | Set `ensure_pages_exist` to true if you want to enforce that Inertia page
-    | components exist on disk when rendering a page. This is useful for
-    | catching missing or misnamed components.
-    |
-    | The `paths` and `extensions` options define where to look for page
-    | components and which file extensions to consider.
+    | Path huruf besar `Pages` disengaja (Architecture bagian 11): default
+    | Inertia 3 memakai huruf kecil, dan bedanya terasa di Linux/hosting.
     |
     */
 
@@ -73,16 +48,12 @@ return [
 
         'ensure_pages_exist' => false,
 
-       'paths' => [resource_path('js/Pages')],
+        'paths' => [resource_path('js/Pages')],
 
         'extensions' => [
 
-            'js',
-            'jsx',
-            'svelte',
             'ts',
             'tsx',
-            'vue',
 
         ],
 
@@ -93,18 +64,13 @@ return [
     | Testing
     |--------------------------------------------------------------------------
     |
-    | When using `assertInertia`, the assertion attempts to locate the
-    | component as a file relative to the `pages.paths` AND with any of
-    | the `pages.extensions` specified above.
-    |
-    | You can disable this behavior by setting `ensure_pages_exist`
-    | to false.
+    | Proyek ini tanpa test otomatis (Rules.md), jadi pemeriksaan ini dimatikan.
     |
     */
 
     'testing' => [
 
-        'ensure_pages_exist' => true,
+        'ensure_pages_exist' => false,
 
     ],
 
@@ -112,11 +78,6 @@ return [
     |--------------------------------------------------------------------------
     | Expose Shared Prop Keys
     |--------------------------------------------------------------------------
-    |
-    | When enabled, each page response includes a `sharedProps` metadata key
-    | listing the top-level prop keys that were registered via `Inertia::share`.
-    | The frontend can use this to carry shared props over during instant visits.
-    |
     */
 
     'expose_shared_prop_keys' => true,
@@ -125,11 +86,6 @@ return [
     |--------------------------------------------------------------------------
     | Previous URL
     |--------------------------------------------------------------------------
-    |
-    | Laravel's session middleware doesn't store the previous URL and route for
-    | Inertia visits, as they are sent as AJAX requests. Enable this option to
-    | store them for client-side visits as well, excluding partial reloads.
-    |
     */
 
     'store_previous_url' => false,
@@ -139,10 +95,10 @@ return [
     | History
     |--------------------------------------------------------------------------
     |
-    | Enable `encrypt` to encrypt page data before it is stored in the
-    | browser's history state, preventing sensitive information from
-    | being accessible after logout. Can also be enabled per-request
-    | or via the `inertia.encrypt` middleware.
+    | Pertimbangkan mengaktifkan `encrypt` (INERTIA_ENCRYPT_HISTORY=true) saat
+    | halaman berisi data sensitif sudah ada (chat, mood, hasil Asesmen), agar
+    | data tidak terbaca dari riwayat browser setelah logout. Dicatat untuk
+    | ditinjau di TASK-029.
     |
     */
 
@@ -157,9 +113,7 @@ return [
     | DevTools
     |--------------------------------------------------------------------------
     |
-    | Records one entry per request to disk so the DevTools Chrome extension may
-    | read it back over HTTP. Recording is limited to your local environment.
-    | See https://inertiajs.com/docs/devtools for the gate and storage options.
+    | Hanya untuk lokal. Dibiarkan mati (null) kecuali dibutuhkan.
     |
     */
 
@@ -217,11 +171,6 @@ return [
     |--------------------------------------------------------------------------
     | Big Integers
     |--------------------------------------------------------------------------
-    |
-    | When enabled, integers outside JavaScript's safe range arrive in the
-    | frontend as native BigInt values instead of losing precision. Single
-    | responses may opt in or out using the `preserveBigIntegers` method.
-    |
     */
 
     'preserve_big_integers' => (bool) env('INERTIA_PRESERVE_BIG_INTEGERS', false),
