@@ -19,6 +19,7 @@ return [
         'context_max_messages' => 10,
         'context_max_chars' => 9000,
         'mood_per_day' => 5,
+        'mood_note_max_chars' => 500,
         'assessment_ai_per_day' => 5,
         'pfa_answer_max_chars' => 1000,
         'history_per_page' => 15,

@@ -60,6 +60,12 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->hasMany(AssessmentAttempt::class);
     }
 
+    /** @return HasMany<MoodEntry, $this> */
+    public function moodEntries(): HasMany
+    {
+        return $this->hasMany(MoodEntry::class);
+    }
+
     public function isAdmin(): bool
     {
         return $this->role === UserRole::Admin;
