@@ -3,6 +3,11 @@
 declare(strict_types=1);
 
 return [
+    'admin_seed' => [
+        'email' => env('ADMIN_SEED_EMAIL'),
+        'password' => env('ADMIN_SEED_PASSWORD'),
+    ],
+
     'timezone' => 'Asia/Jakarta',
     'ai_consent_version' => 1,
     'ai_training_consent_version' => 1,

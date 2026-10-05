@@ -1,25 +1,42 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Enums\UserRole;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
     use HasFactory, Notifiable;
 
     /**
-     * Get the attributes that should be cast.
+     * Hanya kolom profil yang boleh diisi massal.
+     * role, is_active, dan kolom consent diatur eksplisit di kode (bukan dari input).
      *
+     * @var list<string>
+     */
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'institution_name',
+        'major',
+    ];
+
+    /** @var list<string> */
+    protected $hidden = [
+        'password',
+        'remember_token',
+    ];
+
+    /**
      * @return array<string, string>
      */
     protected function casts(): array
@@ -27,6 +44,17 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'role' => UserRole::class,
+            'is_active' => 'boolean',
+            'ai_consent_at' => 'datetime',
+            'ai_consent_version' => 'integer',
+            'ai_training_consent_at' => 'datetime',
+            'ai_training_consent_version' => 'integer',
         ];
+    }
+
+    public function isAdmin(): bool
+    {
+        return $this->role === UserRole::Admin;
     }
 }
