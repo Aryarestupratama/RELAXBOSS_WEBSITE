@@ -54,6 +54,27 @@ class Assessment extends Model
         $query->where('is_active', true);
     }
 
+    /**
+     * Asesmen yang boleh tampil di halaman Publik (FR-020, SCR-002): aktif, dan di produksi
+     * bukan Instrumen contoh berslug `demo-` (RULE-008, RULE-048).
+     *
+     * @param  Builder<Assessment>  $query
+     */
+    public function scopePubliclyListed(Builder $query): void
+    {
+        $query->where('is_active', true);
+
+        if (app()->isProduction()) {
+            $query->where('slug', 'not like', 'demo-%');
+        }
+    }
+
+    /** Instrumen contoh (dummy) berslug `demo-`. */
+    public function isDemo(): bool
+    {
+        return str_starts_with($this->slug, 'demo-');
+    }
+
     /** Status "tervalidasi" diturunkan dari `validated_at`. */
     public function isValidated(): bool
     {

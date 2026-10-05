@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Assessment;
 use Illuminate\Http\Response;
 
 /**
@@ -11,14 +12,26 @@ use Illuminate\Http\Response;
  */
 class SeoController extends Controller
 {
-    /** Hanya halaman Publik. Info Asesmen ditambahkan di TASK-011. */
-    private const SITEMAP_PATHS = ['/', '/tentang', '/konsultasi', '/privasi', '/ketentuan'];
+    /** Halaman Publik tetap. Info Asesmen (daftar dan tiap detail) ditambahkan dinamis di `sitemap()`. */
+    private const SITEMAP_PATHS = ['/', '/asesmen', '/tentang', '/konsultasi', '/privasi', '/ketentuan'];
 
     public function sitemap(): Response
     {
+        $paths = self::SITEMAP_PATHS;
+
+        $slugs = Assessment::query()
+            ->publiclyListed()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->pluck('slug');
+
+        foreach ($slugs as $slug) {
+            $paths[] = '/asesmen/'.$slug;
+        }
+
         $lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
 
-        foreach (self::SITEMAP_PATHS as $path) {
+        foreach ($paths as $path) {
             $lines[] = '  <url><loc>'.e(url($path)).'</loc></url>';
         }
 
