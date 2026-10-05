@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Providers;
 
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
@@ -20,20 +21,39 @@ class AppServiceProvider extends ServiceProvider
 
     public function boot(): void
     {
-        // Masa berlaku tautan verifikasi dari config produk (RULE-026).
+        // Masa berlaku tautan dari config produk (RULE-026).
         config()->set('auth.verification.expire', (int) config('relaxboss.auth.verification_expire_minutes'));
+        config()->set('auth.passwords.users.expire', (int) config('relaxboss.auth.reset_expire_minutes'));
 
+        // Teks email mengikuti bank teks Design (RULE-054).
         VerifyEmail::toMailUsing(function (object $notifiable, string $url): MailMessage {
             $minutes = (int) config('relaxboss.auth.verification_expire_minutes');
 
             return (new MailMessage)
                 ->subject('Verifikasi email RelaxBoss')
-                ->greeting('Halo, '.$notifiable->name.'!')
-                ->line('Terima kasih sudah mendaftar di RelaxBoss. Klik tombol di bawah untuk memverifikasi emailmu.')
+                ->greeting('Halo!')
+                ->line('Terima kasih sudah mendaftar di RelaxBoss. Tekan tombol di bawah untuk memverifikasi emailmu.')
                 ->action('Verifikasi email', $url)
                 ->line("Tautan ini berlaku {$minutes} menit.")
                 ->line('Kalau kamu tidak merasa mendaftar, abaikan saja email ini.')
-                ->salutation('Salam, tim RelaxBoss');
+                ->salutation('Salam tenang, RelaxBoss');
+        });
+
+        ResetPassword::toMailUsing(function (object $notifiable, string $token): MailMessage {
+            $minutes = (int) config('relaxboss.auth.reset_expire_minutes');
+            $url = route('password.reset', [
+                'token' => $token,
+                'email' => $notifiable->getEmailForPasswordReset(),
+            ]);
+
+            return (new MailMessage)
+                ->subject('Atur ulang kata sandi RelaxBoss')
+                ->greeting('Halo!')
+                ->line('Kami menerima permintaan untuk mengatur ulang kata sandi akunmu.')
+                ->action('Atur ulang kata sandi', $url)
+                ->line("Tautan ini berlaku {$minutes} menit.")
+                ->line('Kalau kamu tidak memintanya, abaikan saja email ini. Kata sandimu tidak berubah.')
+                ->salutation('Salam tenang, RelaxBoss');
         });
 
         // API-001: batas pendaftaran per IP, dikembalikan sebagai galat form `register`.
