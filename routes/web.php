@@ -11,18 +11,10 @@ use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// SEMENTARA (TASK-002): halaman uji tampilan. Hapus di TASK-007.
-Route::get('/', fn () => Inertia::render('Welcome'));
-
 // SEMENTARA (TASK-004/005): pengganti Dashboard agar FR-003 dan logout bisa diuji. Diganti di TASK-014.
 Route::get('/dashboard', fn () => Inertia::render('DashboardSementara'))
     ->middleware(['auth', 'verified', 'active'])
     ->name('dashboard');
-
-if (app()->environment('local')) {
-    Route::get('/uji/error/{code}', fn (int $code) => abort($code))
-        ->whereIn('code', [403, 419, 429, 500, 503]);
-}
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.
 Route::middleware('guest')->group(function (): void {

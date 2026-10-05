@@ -15,6 +15,7 @@
     <meta name="description" content="@yield('description', $defaultDescription)">
     <link rel="canonical" href="{{ url()->current() }}">
     <meta property="og:type" content="website">
+    <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="RelaxBoss">
     <meta property="og:title" content="@yield('title', 'RelaxBoss')">
     <meta property="og:description" content="@yield('description', $defaultDescription)">
@@ -46,9 +47,15 @@
                 @endforeach
             </nav>
 
-            <a href="{{ url('/masuk') }}" class="inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium text-primary transition-colors hover:bg-primary hover:text-on-primary">
-                Masuk
-            </a>
+            @auth
+                <a href="{{ url('/dashboard') }}" class="inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium text-primary transition-colors hover:bg-primary hover:text-on-primary">
+                    Dashboard
+                </a>
+            @else
+                <a href="{{ url('/masuk') }}" class="inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium text-primary transition-colors hover:bg-primary hover:text-on-primary">
+                    Masuk
+                </a>
+            @endauth
         </div>
 
         <nav aria-label="Navigasi utama di HP" class="border-t border-border md:hidden">
