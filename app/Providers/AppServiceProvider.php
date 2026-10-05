@@ -9,7 +9,9 @@ use Illuminate\Auth\Notifications\VerifyEmail;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
+use App\Models\Assessment;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -54,6 +56,11 @@ class AppServiceProvider extends ServiceProvider
                 ->line("Tautan ini berlaku {$minutes} menit.")
                 ->line('Kalau kamu tidak memintanya, abaikan saja email ini. Kata sandimu tidak berubah.')
                 ->salutation('Salam tenang, RelaxBoss');
+        });
+
+        // `{activeAssessment}` di area aplikasi hanya Asesmen aktif, dicari lewat slug (API-008: 404 bila nonaktif).
+        Route::bind('activeAssessment', function (string $value): Assessment {
+            return Assessment::query()->active()->where('slug', $value)->firstOrFail();
         });
 
         // API-001: batas pendaftaran per IP, dikembalikan sebagai galat form `register`.
