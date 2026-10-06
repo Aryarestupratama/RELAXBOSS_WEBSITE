@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\MonitoringController as AdminMonitoringController;
 use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
@@ -90,6 +91,18 @@ Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->nam
     Route::patch('/pengguna/{user}/status', [AdminUserController::class, 'updateStatus'])
         ->whereNumber('user')
         ->name('users.status');
+    // Monitoring tanpa identitas (SCR-022, FR-031). Hanya GET. Halaman detail mencatat `admin_access_logs`.
+    Route::prefix('monitoring')->name('monitoring.')->group(function (): void {
+        Route::get('/', [AdminMonitoringController::class, 'index'])->name('index');
+        Route::get('/chat', [AdminMonitoringController::class, 'chatIndex'])->name('chat.index');
+        Route::get('/chat/{conversation}', [AdminMonitoringController::class, 'chatShow'])
+            ->whereUuid('conversation')
+            ->name('chat.show');
+        Route::get('/asesmen', [AdminMonitoringController::class, 'attemptIndex'])->name('assessments.index');
+        Route::get('/asesmen/{attempt}', [AdminMonitoringController::class, 'attemptShow'])
+            ->whereNumber('attempt')
+            ->name('assessments.show');
+    });
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.

@@ -46,6 +46,30 @@ enum Intent: string
         };
     }
 
+    /** Nama singkat berbahasa Indonesia untuk tinjauan admin (SCR-022). */
+    public function label(): string
+    {
+        return match ($this) {
+            self::CrisisSuicide => 'Krisis: pikiran bunuh diri',
+            self::CrisisSelfharm => 'Krisis: menyakiti diri',
+            self::AnxietyPanic => 'Cemas atau panik',
+            self::DepressionSadness => 'Sedih berkepanjangan',
+            self::GriefLoss => 'Duka dan kehilangan',
+            self::TraumaAbuse => 'Trauma atau kekerasan',
+            self::RelationshipConflict => 'Konflik hubungan',
+            self::AcademicPressure => 'Tekanan akademik',
+            self::LowSelfesteem => 'Harga diri rendah',
+            self::VentingStress => 'Mengeluarkan stres',
+            self::InsomniaSleep => 'Sulit tidur',
+            self::BurnoutExhaustion => 'Kelelahan (burnout)',
+            self::LonelinessIsolation => 'Kesepian',
+            self::AngerFrustration => 'Marah atau frustrasi',
+            self::SelfDevelopment => 'Pengembangan diri',
+            self::GreetingCasual => 'Sapaan santai',
+            self::OutOfScope => 'Di luar cakupan',
+        };
+    }
+
     public function isCrisis(): bool
     {
         return $this->priority() === 1;

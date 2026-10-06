@@ -33,6 +33,15 @@ return [
         // Jumlah akun per halaman di daftar Pengguna admin (FR-024). Angka asumsi (RULE-026).
         'users_per_page' => 25,
 
+        // Tinjauan admin tanpa identitas (FR-031, SCR-022). Angka asumsi (RULE-026).
+        'monitoring' => [
+            'per_page' => 20,
+            // Jumlah Percakapan pada "Sampel acak".
+            'sample_size' => 10,
+            // Balasan AI dengan keyakinan di bawah angka ini ditandai "Keyakinan rendah" (0 sampai 1).
+            'low_confidence' => 0.5,
+        ],
+
         // Batas formulir Instrumen (FR-023). Angka asumsi; ubah di sini, bukan di kode (RULE-026).
         'assessment' => [
             'max_questions' => 100,

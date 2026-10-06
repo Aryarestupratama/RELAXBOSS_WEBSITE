@@ -6,16 +6,13 @@ import LogoutButton from '@/Components/shared/LogoutButton';
 type NavItem = {
   label: string;
   href: string;
-  /** Halaman belum dibuat: tampil sebagai teks nonaktif, bukan tautan (tautan akan 404). */
-  soon?: boolean;
 };
 
-// Asesmen dibuka di TASK-024 dan Pengguna di TASK-025; Monitoring dibuka di TASK-026.
 const NAV_ITEMS: NavItem[] = [
   { label: 'Ringkasan', href: '/admin' },
   { label: 'Asesmen', href: '/admin/asesmen' },
   { label: 'Pengguna', href: '/admin/pengguna' },
-  { label: 'Monitoring', href: '/admin/monitoring', soon: true },
+  { label: 'Monitoring', href: '/admin/monitoring' },
 ];
 
 type AdminShellProps = {
@@ -63,18 +60,7 @@ export default function AdminShell({ title, children }: AdminShellProps) {
           </div>
 
           <nav aria-label="Navigasi admin" className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4 pb-2">
-            {NAV_ITEMS.map(({ label, href, soon }) => {
-              if (soon) {
-                return (
-                  <span
-                    key={href}
-                    aria-disabled="true"
-                    className="inline-flex min-h-11 items-center rounded-lg px-3 text-text-secondary opacity-70"
-                  >
-                    {label} <span className="ml-1 text-xs">(segera)</span>
-                  </span>
-                );
-              }
+            {NAV_ITEMS.map(({ label, href }) => {
               const active = isActive(url, href);
               return (
                 <Link

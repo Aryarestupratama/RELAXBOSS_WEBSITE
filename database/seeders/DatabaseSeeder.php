@@ -15,5 +15,6 @@ class DatabaseSeeder extends Seeder
         $this->call(DemoAssessmentSeeder::class); // melewati dirinya sendiri di luar local
         $this->call(DemoMoodSeeder::class); // melewati dirinya sendiri di luar local
         $this->call(DemoConversationSeeder::class); // melewati dirinya sendiri di luar local
+        $this->call(DemoMonitoringSeeder::class); // melewati dirinya sendiri di luar local
     }
 }
