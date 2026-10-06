@@ -98,6 +98,9 @@ return [
     // Kosong sampai OQ-2 terjawab (RULE-049).
     'umb' => '',
 
-    // Eksportir didaftarkan pada TASK-027.
-    'exporters' => [],
+    // Eksportir data AI (FR-030, RULE-072). Fitur AI baru = satu kelas AiDataExporter + satu baris di sini.
+    'exporters' => [
+        \App\Services\Export\ChatExporter::class,
+        \App\Services\Export\AssessmentExporter::class,
+    ],
 ];
