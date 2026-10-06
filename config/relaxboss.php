@@ -29,6 +29,14 @@ return [
     'admin' => [
         // Kelompok di bawah angka ini disamarkan di semua statistik admin (RULE-042).
         'min_group_size' => 5,
+
+        // Batas formulir Instrumen (FR-023). Angka asumsi; ubah di sini, bukan di kode (RULE-026).
+        'assessment' => [
+            'max_questions' => 100,
+            'max_options' => 10,
+            'max_rules' => 60,
+            'max_option_value' => 100,
+        ],
     ],
 
     'auth' => [

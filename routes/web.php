@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
@@ -73,6 +74,16 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
 // Area admin (SCR-019 dst.). Middleware `admin` menolak non-admin dengan 403 di sisi server.
 Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
     Route::get('/', AdminDashboardController::class)->name('dashboard');
+    // Kelola Instrumen (SCR-020, API-017, API-018). Tanpa hapus: Instrumen dinonaktifkan, bukan dihapus.
+    Route::get('/asesmen', [AdminAssessmentController::class, 'index'])->name('assessments.index');
+    Route::get('/asesmen/baru', [AdminAssessmentController::class, 'create'])->name('assessments.create');
+    Route::post('/asesmen', [AdminAssessmentController::class, 'store'])->name('assessments.store');
+    Route::get('/asesmen/{assessment}/ubah', [AdminAssessmentController::class, 'edit'])
+        ->whereNumber('assessment')
+        ->name('assessments.edit');
+    Route::put('/asesmen/{assessment}', [AdminAssessmentController::class, 'update'])
+        ->whereNumber('assessment')
+        ->name('assessments.update');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.

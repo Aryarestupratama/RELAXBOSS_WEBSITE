@@ -10,10 +10,10 @@ type NavItem = {
   soon?: boolean;
 };
 
-// Asesmen, Pengguna, dan Monitoring dibuka satu per satu di TASK-024 sampai TASK-026.
+// Asesmen dibuka di TASK-024; Pengguna dan Monitoring dibuka satu per satu di TASK-025 dan TASK-026.
 const NAV_ITEMS: NavItem[] = [
   { label: 'Ringkasan', href: '/admin' },
-  { label: 'Asesmen', href: '/admin/asesmen', soon: true },
+  { label: 'Asesmen', href: '/admin/asesmen' },
   { label: 'Pengguna', href: '/admin/pengguna', soon: true },
   { label: 'Monitoring', href: '/admin/monitoring', soon: true },
 ];
