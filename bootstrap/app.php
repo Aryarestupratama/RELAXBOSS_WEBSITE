@@ -18,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'ai.consent' => \App\Http\Middleware\EnsureAiConsent::class,
         ]);
 
         $middleware->web(append: [

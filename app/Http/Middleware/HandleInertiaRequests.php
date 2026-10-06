@@ -39,6 +39,27 @@ class HandleInertiaRequests extends Middleware
             ...parent::share($request),
             // Kontak bantuan untuk CrisisBanner. Sumber tunggal: config (OQ-3); tautan hanya https.
             'crisisContacts' => fn (): array => $this->crisisContacts(),
+            // Status consent milik pengguna sendiri, untuk ConsentDialog dan halaman Akun (FR-013).
+            'consent' => fn (): ?array => $this->consent($request),
+        ];
+    }
+
+    /**
+     * @return array{ai_granted: bool, training_choice: ?string, training_answered: bool, complete: bool}|null
+     */
+    private function consent(Request $request): ?array
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return null;
+        }
+
+        return [
+            'ai_granted' => $user->hasAiConsent(),
+            'training_choice' => $user->ai_training_consent_choice?->value,
+            'training_answered' => $user->hasTrainingChoice(),
+            'complete' => $user->hasCompletedAiConsent(),
         ];
     }
 

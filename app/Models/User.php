@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Enums\TrainingConsentChoice;
 use App\Enums\UserRole;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_active' => 'boolean',
             'ai_consent_at' => 'datetime',
             'ai_consent_version' => 'integer',
+            'ai_training_consent_choice' => TrainingConsentChoice::class,
             'ai_training_consent_at' => 'datetime',
             'ai_training_consent_version' => 'integer',
         ];
@@ -70,6 +72,26 @@ class User extends Authenticatable implements MustVerifyEmail
     public function moodEntries(): HasMany
     {
         return $this->hasMany(MoodEntry::class);
+    }
+
+    /** Consent AI versi terbaru sudah disetujui (FR-013). Versi lama dianggap belum. */
+    public function hasAiConsent(): bool
+    {
+        return $this->ai_consent_at !== null
+            && (int) $this->ai_consent_version >= (int) config('relaxboss.ai_consent_version');
+    }
+
+    /** Pilihan persetujuan pelatihan sudah dibuat untuk teks versi terbaru (ya atau tidak sama-sama dihitung). */
+    public function hasTrainingChoice(): bool
+    {
+        return $this->ai_training_consent_choice !== null
+            && (int) $this->ai_training_consent_version >= (int) config('relaxboss.ai_training_consent_version');
+    }
+
+    /** Syarat membuka fitur AI: consent AI dan pilihan pelatihan (`EnsureAiConsent`). */
+    public function hasCompletedAiConsent(): bool
+    {
+        return $this->hasAiConsent() && $this->hasTrainingChoice();
     }
 
     public function isAdmin(): bool
