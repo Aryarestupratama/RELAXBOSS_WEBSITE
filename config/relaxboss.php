@@ -34,6 +34,7 @@ return [
         'resend_window_seconds' => 3600,
         'login_per_minute' => 5,
         'login_window_seconds' => 60,
+        'delete_account_per_minute' => 5,
         'reset_expire_minutes' => 60,
     ],
 

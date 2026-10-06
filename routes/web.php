@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
 use App\Http\Controllers\App\AttemptRecommendationController;
@@ -63,6 +64,9 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
         ->middleware(['ai.consent', 'throttle:chat'])
         ->name('relaxmate.messages.store');
     Route::post('/akun/persetujuan-pelatihan', TrainingConsentController::class)->name('account.training-consent');
+    // Akun (SCR-018). Hapus akun (API-016) meminta kata sandi; Action membatasi percobaan dan menolak admin terakhir.
+    Route::get('/akun', [AccountController::class, 'show'])->name('account.show');
+    Route::delete('/akun', [AccountController::class, 'destroy'])->name('account.destroy');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.
