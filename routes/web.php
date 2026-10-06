@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController as AdminUserController;
 use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
@@ -84,6 +85,11 @@ Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->nam
     Route::put('/asesmen/{assessment}', [AdminAssessmentController::class, 'update'])
         ->whereNumber('assessment')
         ->name('assessments.update');
+    // Daftar Pengguna terbatas dan nonaktifkan akun (SCR-021, API-019). Tanpa hapus dan tanpa detail pengguna.
+    Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
+    Route::patch('/pengguna/{user}/status', [AdminUserController::class, 'updateStatus'])
+        ->whereNumber('user')
+        ->name('users.status');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.

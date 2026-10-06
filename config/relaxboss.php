@@ -30,6 +30,9 @@ return [
         // Kelompok di bawah angka ini disamarkan di semua statistik admin (RULE-042).
         'min_group_size' => 5,
 
+        // Jumlah akun per halaman di daftar Pengguna admin (FR-024). Angka asumsi (RULE-026).
+        'users_per_page' => 25,
+
         // Batas formulir Instrumen (FR-023). Angka asumsi; ubah di sini, bukan di kode (RULE-026).
         'assessment' => [
             'max_questions' => 100,
