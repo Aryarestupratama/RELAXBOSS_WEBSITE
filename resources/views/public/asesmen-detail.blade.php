@@ -1,6 +1,6 @@
 @extends('layouts.public')
 
-@section('title', $assessment['name'].' | Asesmen RelaxBoss')
+@section('title', \Illuminate\Support\Str::limit($assessment['name'], 41, '…').' | Asesmen RelaxBoss')
 @section('description', \Illuminate\Support\Str::limit(strip_tags($assessment['description']), 155))
 
 @section('content')

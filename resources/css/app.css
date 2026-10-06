@@ -152,4 +152,9 @@
             scroll-behavior: auto !important;
         }
     }
+
+    /* Bilah navigasi bawah AppShell (HP) tidak boleh menutupi elemen yang sedang fokus (WCAG 2.4.11). */
+    @media (max-width: 767px) {
+        html { scroll-padding-bottom: 5rem; }
+    }
 }
