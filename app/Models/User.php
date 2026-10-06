@@ -10,6 +10,7 @@ use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -66,6 +67,16 @@ class User extends Authenticatable implements MustVerifyEmail
     public function conversations(): HasMany
     {
         return $this->hasMany(Conversation::class);
+    }
+
+    /**
+     * Semua pesan RelaxMate milik pengguna (lewat Percakapan). Dipakai untuk batas harian (FR-016).
+     *
+     * @return HasManyThrough<Message, Conversation, $this>
+     */
+    public function chatMessages(): HasManyThrough
+    {
+        return $this->hasManyThrough(Message::class, Conversation::class);
     }
 
     /** @return HasMany<MoodEntry, $this> */

@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
+use App\Http\Controllers\App\ChatMessageController;
 use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\MoodController;
+use App\Http\Controllers\App\RelaxMateController;
 use App\Http\Controllers\App\TrainingConsentController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
@@ -15,7 +17,6 @@ use App\Http\Controllers\Auth\NewPasswordController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisterController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 
 // Dashboard (SCR-011). Path tetap /dashboard (redirect login dan verifikasi memakainya).
 Route::get('/dashboard', DashboardController::class)
@@ -42,17 +43,21 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
         ->name('mood.store');
     // Consent (FR-013). API-012 mencatat consent AI; API-013 mencatat pilihan pelatihan (juga dipakai halaman Akun, TASK-022).
     Route::post('/relaxmate/consent', AiConsentController::class)->name('relaxmate.consent');
+    // RelaxMate (SCR-017). Halaman GET terbuka tanpa consent agar ConsentDialog tampil; aksi AI butuh `ai.consent`.
+    // Percakapan selalu dicari lewat relasi pemilik (RULE-033); {conversation} adalah UUID.
+    Route::get('/relaxmate', [RelaxMateController::class, 'index'])->name('relaxmate.index');
+    Route::post('/relaxmate/percakapan', [RelaxMateController::class, 'store'])
+        ->middleware('ai.consent')
+        ->name('relaxmate.store');
+    Route::get('/relaxmate/{conversation}', [RelaxMateController::class, 'show'])
+        ->whereUuid('conversation')
+        ->name('relaxmate.show');
+    Route::post('/relaxmate/{conversation}/pesan', [ChatMessageController::class, 'store'])
+        ->whereUuid('conversation')
+        ->middleware(['ai.consent', 'throttle:chat'])
+        ->name('relaxmate.messages.store');
     Route::post('/akun/persetujuan-pelatihan', TrainingConsentController::class)->name('account.training-consent');
 });
-
-// SEMENTARA (TASK-019), hanya di lokal: halaman uji ConsentDialog dan route uji EnsureAiConsent.
-// HAPUS saat TASK-020 (SCR-017 memakai ConsentDialog sungguhan) beserta Pages/App/UjiConsent.tsx.
-if (app()->environment('local')) {
-    Route::middleware(['auth', 'verified', 'active'])->group(function (): void {
-        Route::get('/app/uji/consent', fn () => Inertia::render('App/UjiConsent'));
-        Route::middleware('ai.consent')->get('/app/uji/ai-gated', fn () => response()->json(['ok' => true]));
-    });
-}
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.
 Route::middleware('guest')->group(function (): void {

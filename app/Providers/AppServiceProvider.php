@@ -79,6 +79,20 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
+        // API-015 (RULE-044): batas pesan per menit per pengguna. Respons JSON karena chat memakai fetch.
+        RateLimiter::for('chat', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.limits.chat_per_minute'))
+                ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
+                ->response(function (Request $request, array $headers) {
+                    $seconds = (int) ($headers['Retry-After'] ?? 60);
+
+                    return response()->json(['error' => [
+                        'code' => 'rate_limited',
+                        'message' => "Terlalu banyak pesan. Coba lagi dalam {$seconds} detik.",
+                    ]], 429, $headers);
+                });
+        });
+
         // API-011 (RULE-044): batas entri mood per menit per pengguna, dikembalikan sebagai galat form `mood`.
         RateLimiter::for('mood', function (Request $request): Limit {
             return Limit::perMinute((int) config('relaxboss.limits.mood_per_minute'))

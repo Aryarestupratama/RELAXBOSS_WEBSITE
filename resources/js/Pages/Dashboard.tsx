@@ -92,13 +92,12 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
           className="bg-mood-green text-text"
           href="/app/mood"
         />
-        {/* RelaxMate belum ada (TASK-020): tampil sebagai kartu biasa, bukan tautan. */}
         <FeatureCard
           icon={MessageCircle}
           title="RelaxMate"
           description="Teman bicara berbasis AI. Bukan psikolog atau layanan medis."
           className="bg-brand text-on-primary"
-          note="Segera hadir"
+          href="/app/relaxmate"
         />
       </div>
 
