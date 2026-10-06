@@ -1,14 +1,28 @@
-import { useEffect, type FormEvent } from 'react';
-import { Link, router, useForm } from '@inertiajs/react';
-import { History } from 'lucide-react';
+import { useEffect, useState, type FormEvent } from 'react';
+import { Link, router, useForm, usePage } from '@inertiajs/react';
+import { History, Loader2 } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import AiRecommendationCard from '@/Components/shared/AiRecommendationCard';
+import ConsentDialog from '@/Components/shared/ConsentDialog';
+import CrisisBanner from '@/Components/shared/CrisisBanner';
 import DisclaimerNote from '@/Components/shared/DisclaimerNote';
 import FormField from '@/Components/shared/FormField';
 import ResultMeter from '@/Components/shared/ResultMeter';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { Textarea } from '@/Components/ui/textarea';
-import { ASSESSMENT_DISCLAIMER, SEVERITY_EXPLANATION, severityOf } from '@/lib/assessment';
+import {
+  AI_REC_ENABLE,
+  AI_REC_LOADING,
+  AI_REC_NEEDS_CONSENT,
+  AI_REC_RETRY,
+  AI_REC_WAITING_CONTEXT,
+  ASSESSMENT_DISCLAIMER,
+  SEVERITY_EXPLANATION,
+  severityOf,
+} from '@/lib/assessment';
+import { needsConsent, type SharedConsentProps } from '@/lib/consent';
+import { useAiRecommendation } from '@/lib/useAiRecommendation';
 
 type SubScale = {
   name: string;
@@ -29,14 +43,25 @@ type ShowProps = {
     sub_scales: SubScale[];
     /** null = belum memutuskan; objek (boleh kosong) = sudah menjawab atau melewati. */
     context: Record<string, string> | null;
+    /** Jawaban PFA terindikasi krisis (dihitung ulang server setiap halaman dibuka). */
+    crisis: boolean;
+    ai_recommendation: string | null;
+    ai_summary: string | null;
   };
   max_answer_chars: number;
 };
 
 const linkClass = 'font-medium text-brand-strong underline underline-offset-4';
 
-/** SCR-014 */
-export default function Show({ attempt, max_answer_chars }: ShowProps) {
+/** SCR-014. `key` memastikan state Rekomendasi AI tidak terbawa antar hasil. */
+export default function Show(props: ShowProps) {
+  return <ShowContent key={props.attempt.id} {...props} />;
+}
+
+function ShowContent({ attempt, max_answer_chars }: ShowProps) {
+  const consent = usePage<SharedConsentProps>().props.consent ?? null;
+  const [consentOpen, setConsentOpen] = useState(false);
+
   const pfaItems = attempt.sub_scales.filter((item) => item.trigger_pfa && item.pfa_question);
   const answerUrl = `/app/riwayat/${attempt.id}/konteks`;
 
@@ -69,11 +94,29 @@ export default function Show({ attempt, max_answer_chars }: ShowProps) {
   const showForm = pfaItems.length > 0 && attempt.context === null;
   const recommendations = attempt.sub_scales.filter((item) => item.recommendation);
 
+  // Rekomendasi AI (FR-010): hanya bila tidak terindikasi krisis, consent lengkap, dan langkah PFA sudah diputuskan.
+  const consentDone = consent?.complete ?? false;
+  const pfaPending = pfaItems.length > 0 && attempt.context === null;
+  const saved = attempt.ai_recommendation
+    ? { recommendation: attempt.ai_recommendation, summary: attempt.ai_summary }
+    : null;
+  const { state: ai, retry } = useAiRecommendation(
+    attempt.id,
+    attempt.crisis ? null : saved,
+    !attempt.crisis && consentDone && !pfaPending,
+  );
+
   return (
     <AppShell title="Hasil asesmen">
       <div className="mx-auto max-w-3xl">
         <h1>Hasil: {attempt.assessment_name}</h1>
         <p className="mt-1 text-sm text-text-secondary">Diselesaikan {attempt.completed_at}</p>
+
+        {attempt.crisis ? (
+          <div className="mt-6">
+            <CrisisBanner />
+          </div>
+        ) : null}
 
         <ul className="mt-6 grid gap-4">
           {attempt.sub_scales.map((item) => (
@@ -168,21 +211,61 @@ export default function Show({ attempt, max_answer_chars }: ShowProps) {
           <DisclaimerNote>{ASSESSMENT_DISCLAIMER}</DisclaimerNote>
         </div>
 
-        {recommendations.length > 0 ? (
+        {ai.status === 'ready' && !attempt.crisis ? (
+          <div className="mt-8">
+            <AiRecommendationCard recommendation={ai.recommendation} summary={ai.summary} />
+          </div>
+        ) : (
           <section aria-labelledby="rec-title" className="mt-8">
             <h2 id="rec-title" className="text-lg font-semibold">
               Rekomendasi
             </h2>
-            <ul className="mt-3 space-y-3">
-              {recommendations.map((item) => (
-                <li key={item.name} className="rounded-lg border border-border bg-card p-4">
-                  <p className="text-sm text-text-secondary">{item.name}</p>
-                  <p className="mt-1">{item.recommendation}</p>
-                </li>
-              ))}
-            </ul>
+
+            {!attempt.crisis && !consentDone && consent !== null ? (
+              <p className="mt-2 text-text-secondary">
+                {AI_REC_NEEDS_CONSENT}{' '}
+                <button type="button" onClick={() => setConsentOpen(true)} className={`${linkClass} min-h-11`}>
+                  {AI_REC_ENABLE}
+                </button>
+              </p>
+            ) : null}
+
+            {!attempt.crisis && consentDone && pfaPending ? (
+              <p className="mt-2 text-text-secondary">{AI_REC_WAITING_CONTEXT}</p>
+            ) : null}
+
+            {!attempt.crisis && ai.status === 'loading' ? (
+              <p role="status" className="mt-2 flex items-center gap-2 text-text-secondary">
+                <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
+                {AI_REC_LOADING}
+              </p>
+            ) : null}
+
+            {!attempt.crisis && ai.status === 'error' ? (
+              <Alert className="mt-3">
+                <AlertDescription>
+                  <p>{ai.message}</p>
+                  {ai.retryable ? (
+                    <Button type="button" variant="outline" className="mt-2" onClick={() => void retry()}>
+                      {AI_REC_RETRY}
+                    </Button>
+                  ) : null}
+                </AlertDescription>
+              </Alert>
+            ) : null}
+
+            {recommendations.length > 0 ? (
+              <ul className="mt-3 space-y-3">
+                {recommendations.map((item) => (
+                  <li key={item.name} className="rounded-lg border border-border bg-card p-4">
+                    <p className="text-sm text-text-secondary">{item.name}</p>
+                    <p className="mt-1">{item.recommendation}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
           </section>
-        ) : null}
+        )}
 
         <p className="mt-6">
           {/* <a> biasa: Konsultasi adalah halaman Blade */}
@@ -203,6 +286,12 @@ export default function Show({ attempt, max_answer_chars }: ShowProps) {
           </Button>
         </div>
       </div>
+
+      <ConsentDialog
+        open={consentOpen && needsConsent(consent)}
+        onDecline={() => setConsentOpen(false)}
+        onComplete={() => setConsentOpen(false)}
+      />
     </AppShell>
   );
 }

@@ -6,6 +6,7 @@ namespace App\Services\Assessment;
 
 use App\Models\AssessmentAttempt;
 use App\Models\AssessmentScoringRule;
+use App\Services\Chat\CrisisDetector;
 use App\Support\Wib;
 use Illuminate\Support\Collection;
 
@@ -23,6 +24,8 @@ final class AttemptPresenter
         1 => 'Januari', 2 => 'Februari', 3 => 'Maret', 4 => 'April', 5 => 'Mei', 6 => 'Juni',
         7 => 'Juli', 8 => 'Agustus', 9 => 'September', 10 => 'Oktober', 11 => 'November', 12 => 'Desember',
     ];
+
+    public function __construct(private readonly CrisisDetector $crisis) {}
 
     /**
      * @return array<string, mixed>
@@ -66,7 +69,26 @@ final class AttemptPresenter
             'sub_scales' => $subScales,
             // null = belum memutuskan; array (boleh kosong) = sudah menjawab atau melewati.
             'context' => $context,
+            // Dihitung ulang dari jawaban PFA setiap dibuka (Architecture 6.6), tanpa kolom tambahan.
+            'crisis' => $this->hasCrisis($context),
+            // Rekomendasi AI yang sudah dibuat (API-010); null bila belum ada.
+            'ai_recommendation' => $attempt->ai_recommendation,
+            'ai_summary' => $attempt->ai_summary,
         ];
+    }
+
+    /**
+     * @param  array<string, string>|null  $context
+     */
+    private function hasCrisis(?array $context): bool
+    {
+        foreach ($context ?? [] as $answer) {
+            if (is_string($answer) && $this->crisis->detect($answer) !== null) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
+use App\Http\Controllers\App\AttemptRecommendationController;
 use App\Http\Controllers\App\ChatMessageController;
 use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\App\DashboardController;
@@ -36,6 +37,11 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     Route::post('/riwayat/{attempt}/konteks', [AttemptController::class, 'storeContext'])
         ->whereNumber('attempt')
         ->name('attempts.context');
+    // Rekomendasi AI (API-010): butuh consent AI; JSON; hasil milik sendiri.
+    Route::post('/riwayat/{attempt}/rekomendasi', [AttemptRecommendationController::class, 'store'])
+        ->whereNumber('attempt')
+        ->middleware('ai.consent')
+        ->name('attempts.recommendation');
     // Mood Tracker (SCR-016, API-011). Entri selalu lewat relasi pemilik (RULE-033).
     Route::get('/mood', [MoodController::class, 'index'])->name('mood.index');
     Route::post('/mood', [MoodController::class, 'store'])

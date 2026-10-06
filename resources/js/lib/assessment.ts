@@ -17,3 +17,17 @@ export const ASSESSMENT_DISCLAIMER =
 export function severityOf(value: string): SeverityLevel {
   return value === 'mild' || value === 'moderate' || value === 'severe' ? value : 'normal';
 }
+
+/** Bank teks Design: Rekomendasi AI (SCR-014, FR-010). */
+export const AI_REC_TITLE = 'Rekomendasi untukmu';
+export const AI_REC_LABEL = 'Disusun oleh AI';
+export const AI_REC_SUMMARY_TITLE = 'Ringkasan';
+export const AI_REC_LOADING = 'Menyusun rekomendasi untukmu...';
+export const AI_REC_NEEDS_CONSENT =
+  'Rekomendasi AI butuh persetujuanmu terlebih dulu. Sementara itu, ini rekomendasi umum untuk hasilmu.';
+export const AI_REC_ENABLE = 'Aktifkan rekomendasi AI';
+export const AI_REC_WAITING_CONTEXT =
+  'Rekomendasi AI akan disusun setelah kamu menjawab atau melewati pertanyaan konteks. Sementara itu, ini rekomendasi umum untuk hasilmu.';
+export const AI_REC_RETRY = 'Coba lagi';
+export const AI_REC_FALLBACK_ERROR =
+  'Rekomendasi AI sedang tidak tersedia. Sementara itu, ini rekomendasi umum untuk hasilmu.';
