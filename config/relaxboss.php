@@ -26,6 +26,11 @@ return [
         'history_per_page' => 15,
     ],
 
+    'admin' => [
+        // Kelompok di bawah angka ini disamarkan di semua statistik admin (RULE-042).
+        'min_group_size' => 5,
+    ],
+
     'auth' => [
         'password_min_length' => 8,
         'verification_expire_minutes' => 60,

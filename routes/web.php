@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
@@ -67,6 +68,11 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     // Akun (SCR-018). Hapus akun (API-016) meminta kata sandi; Action membatasi percobaan dan menolak admin terakhir.
     Route::get('/akun', [AccountController::class, 'show'])->name('account.show');
     Route::delete('/akun', [AccountController::class, 'destroy'])->name('account.destroy');
+});
+
+// Area admin (SCR-019 dst.). Middleware `admin` menolak non-admin dengan 403 di sisi server.
+Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->name('admin.')->group(function (): void {
+    Route::get('/', AdminDashboardController::class)->name('dashboard');
 });
 
 // Tamu. Nama route berikut dipakai framework (jangan diubah): login, password.*, logout.
