@@ -20,6 +20,7 @@
     <meta property="og:title" content="@yield('title', 'RelaxBoss')">
     <meta property="og:description" content="@yield('description', $defaultDescription)">
     <meta property="og:url" content="{{ url()->current() }}">
+    <link rel="icon" type="image/png" href="{{ asset('images/logo-relaxboss.png') }}">
     @stack('head')
     @vite(['resources/css/app.css'])
 </head>
@@ -31,11 +32,7 @@
     <header class="border-b border-border bg-card">
         <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
             <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center gap-2 text-xl font-semibold text-text" aria-label="RelaxBoss, ke Beranda">
-                {{-- Ikon Lucide "leaf" --}}
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="size-6 text-brand-strong" aria-hidden="true">
-                    <path d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z"/>
-                    <path d="M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12"/>
-                </svg>
+                <img src="{{ asset('images/logo-relaxboss.png') }}" width="32" height="32" alt="" class="size-8 rounded-lg">
                 RelaxBoss
             </a>
 
