@@ -1,0 +1,20 @@
+/* Pendamping gerak halaman Publik (resources/js/public.ts, paket `motion`).
+   Hanya dua hal: elemen pembuka hero disembunyikan sampai JS menjalankannya, dengan jaring
+   pengaman agar tetap tampil bila JS terlambat atau gagal; dan ruang gulir untuk Navbar
+   yang menempel (WCAG 2.4.11). Elemen lain disembunyikan oleh JS sendiri, jadi tanpa JS
+   semuanya tampil normal. */
+
+@media (scripting: enabled) and (prefers-reduced-motion: no-preference) {
+    [data-load] {
+        opacity: 0;
+        animation: mo-failsafe 0.01s linear 3s forwards;
+    }
+}
+
+@keyframes mo-failsafe {
+    to { opacity: 1; }
+}
+
+@media (min-width: 768px) {
+    html { scroll-padding-top: 5rem; }
+}

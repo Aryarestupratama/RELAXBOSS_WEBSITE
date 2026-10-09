@@ -5,6 +5,7 @@
 @import "@fontsource/poppins/latin-500.css";
 @import "@fontsource/poppins/latin-600.css";
 @import "@fontsource/poppins/latin-700.css";
+@import "./motion.css";
 
 /* Mode terang saja untuk rilis pertama (Design bagian 2). Varian dark: dari
    shadcn dibiarkan terdefinisi, tetapi kelas .dark tidak pernah dipasang. */
