@@ -1,15 +1,7 @@
-import { BatteryLow, CloudRain, Frown, Laugh, Meh, Smile, Zap, type LucideIcon } from 'lucide-react';
+import { BatteryLow, Zap, type LucideIcon } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/Components/ui/radio-group';
 import { Button } from '@/Components/ui/button';
-import { AROUSAL_LABELS, MOOD_LABELS, type ArousalValue, type MoodValue } from '@/lib/mood';
-
-const MOOD_ICONS: Record<MoodValue, LucideIcon> = {
-  1: CloudRain,
-  2: Frown,
-  3: Meh,
-  4: Smile,
-  5: Laugh,
-};
+import { AROUSAL_LABELS, MOOD_LABELS, moodImage, type ArousalValue, type MoodValue } from '@/lib/mood';
 
 const MOOD_VALUES: MoodValue[] = [1, 2, 3, 4, 5];
 
@@ -32,8 +24,8 @@ type MoodPickerProps = {
 };
 
 /**
- * CMP-005. Lima pilihan mood (ikon + teks) dan pilihan tenaga opsional.
- * Keyboard lewat tombol panah (radio group). Satu warna aksen (`--brand-strong`), tanpa warna mood.
+ * CMP-005. Lima pilihan mood (blob berwajah + teks, tidak bergantung pada warna) dan pilihan tenaga opsional.
+ * Keyboard lewat tombol panah (radio group). Pilihan terpilih ditandai garis `--brand` dan latar `--neutral-soft`.
  */
 export default function MoodPicker({
   mood,
@@ -59,19 +51,26 @@ export default function MoodPicker({
           disabled={disabled}
         >
           {MOOD_VALUES.map((value) => {
-            const Icon = MOOD_ICONS[value];
             const id = `mood-${value}`;
             const selected = mood === value;
             return (
               <label
                 key={value}
                 htmlFor={id}
-                className={`flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-lg border-[1.5px] px-1 py-2 text-center text-xs transition-colors sm:text-sm ${
-                  selected ? 'border-primary bg-neutral-soft' : 'border-border bg-card hover:bg-neutral-soft'
+                className={`group flex min-h-28 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl px-1 py-2 text-center text-xs transition-colors sm:text-sm ${
+                  selected
+                    ? 'border-2 border-brand bg-neutral-soft font-medium'
+                    : `border-[1.5px] bg-card hover:bg-neutral-soft ${invalid ? 'border-destructive' : 'border-border'}`
                 }`}
               >
                 <RadioGroupItem id={id} value={String(value)} />
-                <Icon className="size-6 text-brand-strong" aria-hidden="true" />
+                <img
+                  src={moodImage(value)}
+                  width={48}
+                  height={48}
+                  alt=""
+                  className="size-10 object-contain transition-transform duration-200 motion-safe:group-hover:scale-110 sm:size-12"
+                />
                 <span>{MOOD_LABELS[value]}</span>
               </label>
             );

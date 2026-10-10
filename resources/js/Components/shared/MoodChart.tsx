@@ -1,8 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatAverage, MOOD_LABELS, type MoodDay, type MoodEntryItem, type MoodValue } from '@/lib/mood';
+import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay, type MoodEntryItem } from '@/lib/mood';
 
 const HEIGHT = 220;
-const MARGIN = { top: 12, right: 14, bottom: 28, left: 28 };
+const MARGIN = { top: 12, right: 14, bottom: 28, left: 40 };
+
+/** Warna titik per tingkat mood (token), selaras dengan blob di sumbu y. */
+const DOT_FILL: Record<number, string> = {
+  1: 'fill-mood-blue',
+  2: 'fill-brand',
+  3: 'fill-mood-yellow',
+  4: 'fill-mood-green',
+  5: 'fill-mood-red',
+};
 const Y_VALUES = [1, 2, 3, 4, 5];
 
 /** Lebar wadah, agar teks SVG tidak ikut mengecil atau membesar saat layar berubah. */
@@ -43,12 +52,24 @@ function Grid({ width }: { width: number }) {
             className="stroke-border"
             strokeWidth={1}
           />
-          <text x={MARGIN.left - 8} y={yScale(value) + 4} textAnchor="end" fontSize={11} className="fill-text-secondary">
-            {value}
-          </text>
+          <image href={moodImage(value)} x={6} y={yScale(value) - 11} width={22} height={22} />
         </g>
       ))}
     </>
+  );
+}
+
+/** Keterangan singkat saat titik disorot dengan penunjuk. Hanya tambahan visual; datanya juga ada di tabel untuk pembaca layar. */
+function Tooltip({ x, y, width, text }: { x: number; y: number; width: number; text: string }) {
+  const boxWidth = text.length * 6.6 + 18;
+  const left = Math.min(Math.max(x - boxWidth / 2, MARGIN.left), width - MARGIN.right - boxWidth);
+  return (
+    <g pointerEvents="none">
+      <rect x={left} y={y - 38} width={boxWidth} height={24} rx={6} className="fill-primary" />
+      <text x={left + boxWidth / 2} y={y - 22} textAnchor="middle" fontSize={11} className="fill-on-primary">
+        {text}
+      </text>
+    </g>
   );
 }
 
@@ -62,6 +83,7 @@ type RangeChartProps = {
 /** Mode 7 atau 30 hari: satu titik per hari (rata-rata). Hari tanpa entri menjadi celah. */
 export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: RangeChartProps) {
   const [ref, width] = useWidth();
+  const [hover, setHover] = useState<number | null>(null);
   const visible = days.slice(-range);
   const innerWidth = width - MARGIN.left - MARGIN.right;
   const xScale = (index: number) => MARGIN.left + (innerWidth * index) / Math.max(1, visible.length - 1);
@@ -110,20 +132,33 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
                   </text>
                 ) : null}
                 {day.average !== null ? (
-                  <g className="cursor-pointer" onClick={() => onSelectDay(day.date)}>
+                  <g
+                    className="cursor-pointer"
+                    onClick={() => onSelectDay(day.date)}
+                    onMouseEnter={() => setHover(index)}
+                    onMouseLeave={() => setHover(null)}
+                  >
                     <circle cx={xScale(index)} cy={yScale(day.average)} r={14} fill="transparent" />
                     <circle
                       cx={xScale(index)}
                       cy={yScale(day.average)}
-                      r={selectedDate === day.date ? 6 : 4.5}
-                      className={`fill-brand-strong ${selectedDate === day.date ? 'stroke-text' : 'stroke-card'}`}
-                      strokeWidth={2}
+                      r={selectedDate === day.date || hover === index ? 7 : 5.5}
+                      className={`${DOT_FILL[moodLevel(day.average)]} ${selectedDate === day.date ? 'stroke-text' : 'stroke-card'}`}
+                      strokeWidth={2.5}
                     />
                   </g>
                 ) : null}
               </g>
             );
           })}
+          {hover !== null && visible[hover]?.average != null ? (
+            <Tooltip
+              x={xScale(hover)}
+              y={yScale(visible[hover].average as number)}
+              width={width}
+              text={`${visible[hover].label} · ${MOOD_LABELS[moodLevel(visible[hover].average as number)]}`}
+            />
+          ) : null}
         </svg>
       </div>
       <figcaption className="mt-1 text-sm text-text-secondary">
@@ -194,9 +229,9 @@ export function MoodDayChart({ label, entries }: DayChartProps) {
               key={entry.id}
               cx={xScale(entry.minutes)}
               cy={yScale(entry.mood)}
-              r={5}
-              className="fill-brand-strong stroke-card"
-              strokeWidth={2}
+              r={6}
+              className={`${DOT_FILL[entry.mood] ?? 'fill-brand-strong'} stroke-card`}
+              strokeWidth={2.5}
             />
           ))}
         </svg>

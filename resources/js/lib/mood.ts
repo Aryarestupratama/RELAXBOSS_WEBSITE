@@ -44,3 +44,20 @@ export type MoodDay = {
 export function formatAverage(value: number): string {
   return String(Math.round(value * 10) / 10).replace('.', ',');
 }
+
+/** Tingkat mood bulat (1 sampai 5) dari rata-rata sebuah hari, untuk memilih gambar dan warna. */
+export function moodLevel(average: number): MoodValue {
+  return Math.min(5, Math.max(1, Math.round(average))) as MoodValue;
+}
+
+/** Gambar blob untuk satu tingkat mood. */
+export function moodImage(level: number): string {
+  return `/images/mood/mood-${level >= 1 && level <= 5 ? level : 3}.webp`;
+}
+
+/** Nama hari singkat (Sen, Sel, Rab, ...) dari tanggal WIB "Y-m-d". */
+export function weekdayShort(date: string): string {
+  return new Intl.DateTimeFormat('id-ID', { weekday: 'short', timeZone: 'Asia/Jakarta' })
+    .format(new Date(`${date}T12:00:00+07:00`))
+    .replace('.', '');
+}
