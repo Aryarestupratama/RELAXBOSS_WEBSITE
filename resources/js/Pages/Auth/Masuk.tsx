@@ -1,5 +1,6 @@
 import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
+import { CircleAlert, CircleCheck } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
@@ -30,13 +31,14 @@ export default function Masuk({ status }: MasukProps) {
   };
 
   return (
-    <GuestLayout title="Masuk">
+    <GuestLayout title="Masuk" illustration="masuk">
       <h1>Masuk</h1>
       <p className="mt-2 text-text-secondary">Senang kamu kembali. Masuk untuk melanjutkan.</p>
 
       <form onSubmit={submit} noValidate className="mt-6 space-y-5">
         {status === 'password-reset' ? (
           <Alert>
+            <CircleCheck className="text-success!" aria-hidden="true" />
             <AlertDescription>
               Kata sandimu sudah diganti. Silakan masuk dengan kata sandi yang baru.
             </AlertDescription>
@@ -45,6 +47,7 @@ export default function Masuk({ status }: MasukProps) {
 
         {errors.login ? (
           <Alert variant="destructive">
+            <CircleAlert aria-hidden="true" />
             <AlertDescription>{errors.login}</AlertDescription>
           </Alert>
         ) : null}

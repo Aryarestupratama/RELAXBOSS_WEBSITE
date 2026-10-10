@@ -1,5 +1,6 @@
 import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
+import { CircleAlert } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
@@ -35,7 +36,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
   };
 
   return (
-    <GuestLayout title="Daftar">
+    <GuestLayout title="Daftar" illustration="daftar">
       <h1>Buat akunmu</h1>
       <p className="mt-2 text-text-secondary">
         Mulai dari satu langkah kecil. Setelah mendaftar, kami kirim tautan verifikasi ke emailmu.
@@ -44,6 +45,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
       <form onSubmit={submit} noValidate className="mt-6 space-y-5">
         {errors.register ? (
           <Alert variant="destructive">
+            <CircleAlert aria-hidden="true" />
             <AlertDescription>{errors.register}</AlertDescription>
           </Alert>
         ) : null}
