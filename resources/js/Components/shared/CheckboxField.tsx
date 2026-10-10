@@ -1,14 +1,18 @@
+import type { ReactNode } from 'react';
+
 type CheckboxFieldProps = {
   id: string;
-  label: string;
+  /** Boleh memuat tautan. */
+  label: ReactNode;
   checked: boolean;
   onChange: (checked: boolean) => void;
   hint?: string;
   error?: string;
+  required?: boolean;
 };
 
 /** Kotak centang dengan label yang bisa ditekan; target sentuh minimal 44px. */
-export default function CheckboxField({ id, label, checked, onChange, hint, error }: CheckboxFieldProps) {
+export default function CheckboxField({ id, label, checked, onChange, hint, error, required = false }: CheckboxFieldProps) {
   const hintId = hint ? `${id}-hint` : undefined;
   const errorId = error ? `${id}-error` : undefined;
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
@@ -21,6 +25,8 @@ export default function CheckboxField({ id, label, checked, onChange, hint, erro
           type="checkbox"
           checked={checked}
           onChange={(event) => onChange(event.target.checked)}
+          required={required}
+          aria-required={required || undefined}
           aria-invalid={Boolean(error)}
           aria-describedby={describedBy}
           className="size-5 shrink-0 accent-primary"

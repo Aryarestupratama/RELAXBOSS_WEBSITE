@@ -36,6 +36,7 @@ class RegisterRequest extends FormRequest
             'password' => ['required', 'string', 'min:'.config('relaxboss.auth.password_min_length'), 'max:255'],
             'major' => ['nullable', 'string', 'max:100'],
             'institution_name' => ['nullable', 'string', 'max:150'],
+            'terms' => ['accepted'],
         ];
     }
 
@@ -58,6 +59,7 @@ class RegisterRequest extends FormRequest
             'password.max' => 'Kata sandi maksimal 255 karakter.',
             'major.max' => 'Jurusan maksimal 100 karakter.',
             'institution_name.max' => 'Kampus maksimal 150 karakter.',
+            'terms.accepted' => 'Centang dulu bahwa kamu sudah membaca ketentuan.',
         ];
     }
 }

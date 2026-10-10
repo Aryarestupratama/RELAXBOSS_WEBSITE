@@ -24,7 +24,7 @@ class RegisterController extends Controller
     public function store(RegisterRequest $request, RegisterUser $registerUser): RedirectResponse
     {
         /** @var array{name: string, email: string, password: string, institution_name?: string|null, major?: string|null} $data */
-        $data = $request->validated();
+        $data = $request->safe()->except('terms');
 
         $result = $registerUser->handle($data);
 
