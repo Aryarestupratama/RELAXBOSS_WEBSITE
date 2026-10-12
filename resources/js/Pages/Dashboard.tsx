@@ -236,7 +236,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
             </div>
           </section>
 
-          <section aria-label="Bantuan" data-load className="rounded-xl bg-crisis-bg p-5 text-crisis-text">
+          <section aria-label="Bantuan" data-load className="rounded-xl bg-mood-red/25 p-5 text-text">
             <h2 className="text-base">Butuh bantuan sekarang?</h2>
             <p className="mt-1 text-sm">Kamu tidak harus menghadapi ini sendirian.</p>
             <a

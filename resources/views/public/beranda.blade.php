@@ -40,7 +40,7 @@
 
     {{-- Tiga fitur --}}
     <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-labelledby="judul-fitur">
-        <h2 id="judul-fitur" data-reveal class="text-2xl md:text-3xl">Tiga cara merawat dirimu</h2>
+        <h2 id="judul-fitur" data-reveal class="text-center text-2xl md:text-3xl">Tiga cara merawat dirimu</h2>
         <div data-stagger class="mt-8 grid gap-4 lg:grid-cols-3">
             <article data-item data-lift class="flex flex-col gap-5 rounded-xl bg-mood-yellow p-5 text-text shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
                 <div class="mx-auto grid size-44 place-items-center overflow-hidden rounded-full bg-card">
@@ -66,7 +66,7 @@
                 </div>
                 <div>
                     <h3 class="text-center text-2xl font-semibold">RelaxMate</h3>
-                    <p class="mt-2 text-center">Teman bicara berbasis AI. Bukan psikolog atau layanan medis.</p>
+                    <p class="mt-2 text-center">Teman bicara berbasis AI yang siap mendengarkan kapan saja.</p>
                 </div>
             </article>
         </div>
@@ -76,7 +76,7 @@
     <section class="bg-neutral-soft" aria-labelledby="judul-langkah">
         <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:py-16 lg:grid-cols-2">
             <div>
-                <h2 id="judul-langkah" data-reveal="left" class="text-[1.75rem] md:text-4xl">Pelan-pelan juga tidak <span class="whitespace-nowrap">apa-apa.</span></h2>
+                <h2 id="judul-langkah" data-reveal="left" class="text-[1.75rem] md:text-4xl">Pelan-pelan juga tidak <span class="whitespace-nowrap">apa-apa</span></h2>
                 <ol data-stagger="left" class="mt-8 space-y-3">
                     <li data-item class="flex items-start gap-4 rounded-xl bg-card p-4 shadow-card transition duration-300 hover:translate-x-1 hover:shadow-popover">
                         <span class="grid size-10 shrink-0 place-items-center rounded-full bg-mood-yellow font-semibold text-text" aria-hidden="true">1</span>
@@ -120,7 +120,7 @@
     {{-- Ruang aman --}}
     <section class="bg-neutral-soft" aria-labelledby="judul-aman">
         <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
-            <h2 id="judul-aman" data-reveal class="text-2xl md:text-3xl">Ruang aman untuk mahasiswa</h2>
+            <h2 id="judul-aman" data-reveal class="text-center text-2xl md:text-3xl">Ruang aman untuk mahasiswa</h2>
             <div data-stagger class="mt-8 grid gap-4 md:grid-cols-3">
                 <article data-item data-lift class="rounded-xl bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
                     <span class="block size-10 rounded-full bg-mood-yellow" aria-hidden="true"></span>
@@ -138,7 +138,7 @@
                     <p class="mt-2 text-text-secondary">Selalu ada arahan dan kontak bantuan bila kamu butuh pendampingan lebih lanjut.</p>
                 </article>
             </div>
-            <x-disclaimer data-reveal class="mt-8">
+            <x-disclaimer data-reveal class="mt-8 text-center">
                 RelaxBoss bukan psikolog atau layanan medis. Untuk penilaian yang tepat, bicarakan dengan tenaga profesional.
                 <a href="{{ url('/konsultasi') }}" class="font-medium text-brand-strong underline underline-offset-2">Lihat jalur konsultasi</a>.
             </x-disclaimer>
@@ -155,21 +155,15 @@
 
     {{-- Bantuan --}}
     <section class="mx-auto max-w-6xl px-4 pt-12" aria-label="Bantuan">
-        <div data-reveal class="flex flex-wrap items-center justify-between gap-3 rounded-xl bg-crisis-bg p-5 text-crisis-text">
-            <div>
-                <h2 class="text-lg">Butuh bantuan sekarang?</h2>
-                <p>Kamu tidak harus menghadapi ini sendirian.</p>
-            </div>
-            <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center font-medium underline underline-offset-2">Lihat halaman Konsultasi Profesional</a>
-        </div>
+        <x-help-box data-reveal />
     </section>
 
     {{-- Penutup --}}
     <section class="mx-auto max-w-6xl px-4 pt-14 pb-12" aria-labelledby="judul-penutup">
         <div data-reveal class="text-center">
             <h2 id="judul-penutup" class="text-[1.75rem] md:text-5xl">Mulai dari satu langkah kecil.</h2>
-            <p class="mx-auto mt-4 max-w-prose text-text-secondary">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
-            <div class="mt-8"><x-button-link href="{{ url('/daftar') }}">Daftar gratis</x-button-link></div>
+            <p class="mx-auto mt-4 max-w-prose text-xl text-text-secondary md:text-2xl">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
+            <div class="mt-8"><x-button-link href="{{ url('/daftar') }}" class="min-h-14 px-10 text-lg">Daftar gratis</x-button-link></div>
         </div>
         <img src="{{ $img }}/taman-mood.webp" width="1800" height="600" loading="lazy"
              alt="RelaxMate menyiram taman berisi tanaman yang mewakili berbagai perasaan."
