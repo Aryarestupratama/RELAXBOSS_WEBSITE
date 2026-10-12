@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
   ClipboardCheck,
@@ -13,6 +13,7 @@ import {
 import HelpPill from '@/Components/shared/HelpPill';
 import Logo from '@/Components/shared/Logo';
 import LogoutButton from '@/Components/shared/LogoutButton';
+import { initMotion } from '@/lib/motion';
 
 type NavItem = {
   label: string;
@@ -32,6 +33,10 @@ type AppShellProps = {
   title: string;
   /** Tautan bantuan di pojok kanan atas (layar >= 768px). Halaman yang menampilkannya sendiri (Dashboard) mematikannya. */
   showHelp?: boolean;
+  /** Konten lebih lebar (Dashboard). Halaman lain tetap sempit agar enak dibaca. */
+  wide?: boolean;
+  /** Halaman mengatur gerak masuknya sendiri lewat penanda data-load; bila tidak, seluruh konten masuk sekaligus. */
+  staggered?: boolean;
   children: ReactNode;
 };
 
@@ -47,8 +52,12 @@ const railItem =
  * Kerangka area pengguna. Layar >= 768px: rail ikon bernavigasi di kiri (navy, melayang).
  * HP: bar atas (logo, bantuan, keluar) dan bar tab di bawah.
  */
-export default function AppShell({ title, showHelp = true, children }: AppShellProps) {
+export default function AppShell({ title, showHelp = true, wide = false, staggered = false, children }: AppShellProps) {
   const { url } = usePage();
+
+  useEffect(() => {
+    initMotion();
+  }, [url]);
 
   return (
     <>
@@ -119,14 +128,16 @@ export default function AppShell({ title, showHelp = true, children }: AppShellP
 
         <main
           id="konten"
-          className="mx-auto w-full max-w-5xl px-4 py-6 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-500 md:px-8 md:py-8"
+          className={`mx-auto w-full px-4 py-6 md:px-8 md:py-8 ${wide ? 'max-w-[90rem]' : 'max-w-5xl'}`}
         >
-          {showHelp ? (
-            <div className="mb-4 hidden justify-end md:flex">
-              <HelpPill />
-            </div>
-          ) : null}
-          {children}
+          <div data-load={staggered ? undefined : ''}>
+            {showHelp ? (
+              <div className="mb-4 hidden justify-end md:flex">
+                <HelpPill />
+              </div>
+            ) : null}
+            {children}
+          </div>
         </main>
 
         {/* Bar tab (HP) */}
