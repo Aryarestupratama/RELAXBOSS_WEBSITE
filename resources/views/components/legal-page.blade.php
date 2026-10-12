@@ -7,7 +7,7 @@
             <p data-load class="mt-5 max-w-prose text-lg text-text-secondary">{{ $intro }}</p>
         </div>
         <div data-load="pop" class="hidden w-64 shrink-0 md:block">
-            <div class="overflow-hidden rounded-xl border border-border bg-neutral-soft shadow-card">
+            <div>
                 <img src="{{ asset('images/legal/'.$image) }}" width="600" height="600" alt="{{ $imageAlt }}" class="h-auto w-full">
             </div>
         </div>

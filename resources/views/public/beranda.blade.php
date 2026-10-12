@@ -94,7 +94,7 @@
             </div>
             <img src="{{ $img }}/kamar-kos.webp" width="1200" height="800" loading="lazy"
                  alt="RelaxMate menemani seorang mahasiswa mengerjakan tugas di kamar pada malam hari."
-                 data-reveal="right" class="h-auto w-full rounded-xl">
+                 data-reveal="right" class="h-auto w-full">
         </div>
     </section>
 
@@ -113,7 +113,7 @@
             </div>
             <img src="{{ $img }}/relaxmate-ngobrol.webp" width="1200" height="900" loading="lazy"
                  alt="RelaxMate duduk bersila dan mendengarkan cerita sebuah karakter mood berwarna kuning."
-                 data-reveal="pop" class="h-auto w-full rounded-xl">
+                 data-reveal="pop" class="h-auto w-full">
         </div>
     </section>
 

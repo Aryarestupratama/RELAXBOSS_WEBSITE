@@ -33,7 +33,7 @@
             </div>
 
             <div data-load="pop" class="mx-auto w-full max-w-md">
-                <div class="overflow-hidden rounded-xl border border-border bg-neutral-soft shadow-card">
+                <div>
                     <img src="{{ $img }}/konsultasi-hero.webp" width="900" height="900" fetchpriority="high"
                          alt="RelaxMate, robot pendamping, duduk tenang di samping karakter perasaan biru yang lelah, dengan satu tangan bersandar lembut di dekatnya."
                          class="h-auto w-full">

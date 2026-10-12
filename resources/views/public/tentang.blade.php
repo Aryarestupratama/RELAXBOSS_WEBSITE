@@ -30,17 +30,19 @@
             </div>
 
             <div data-load="pop" class="relative mx-auto w-full max-w-md">
-                <div class="grid aspect-square place-items-center overflow-hidden rounded-xl border border-border bg-card p-6 shadow-card">
-                    <img src="{{ $heroFile }}" width="900" height="900" fetchpriority="high"
-                         alt="RelaxMate, robot pendamping, melambai ramah di antara karakter Stres, Cemas, Sedih, dan Lega."
-                         class="h-auto w-full max-w-72 object-contain">
-                </div>
-                {{-- Label emosi: hiasan, dipasang lewat kode agar teks tajam --}}
-                <div class="hidden sm:block" aria-hidden="true">
-                    <span data-float class="absolute top-5 left-5 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-red"></span>Stres</span>
-                    <span data-float class="absolute top-8 right-5 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-yellow"></span>Cemas</span>
-                    <span data-float class="absolute bottom-8 left-5 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-blue"></span>Sedih</span>
-                    <span data-float class="absolute right-5 bottom-5 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-green"></span>Lega</span>
+                <div>
+                    <div class="relative w-full">
+                        <img src="{{ $heroFile }}" width="900" height="900" fetchpriority="high"
+                             alt="RelaxMate, robot pendamping, melambai ramah di antara karakter Stres, Cemas, Sedih, dan Lega."
+                             class="h-auto w-full object-contain">
+                        {{-- Label emosi: hiasan, dipasang lewat kode tepat di bawah tiap karakter --}}
+                        <div class="hidden sm:block" aria-hidden="true">
+                            <span data-float class="absolute top-[33%] left-[21%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-red"></span>Stres</span>
+                            <span data-float class="absolute top-[33%] left-[84%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-yellow"></span>Cemas</span>
+                            <span data-float class="absolute top-[81%] left-[18%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-blue"></span>Sedih</span>
+                            <span data-float class="absolute top-[86%] left-[81%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-green"></span>Lega</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

@@ -32,15 +32,17 @@
             </div>
 
             <div data-load="pop" class="relative mx-auto w-full max-w-md">
-                <div class="overflow-hidden rounded-xl border border-border bg-neutral-soft shadow-card">
+                <div>
                     <img src="{{ $img }}/asesmen-hero.webp" width="1200" height="900" fetchpriority="high"
                          alt="RelaxMate, robot pendamping, memegang papan catatan dan pensil di antara karakter perasaan berwarna biru, kuning, merah, dan hijau."
                          class="h-auto w-full">
                 </div>
                 {{-- Label emosi: hiasan, dipasang lewat kode agar teks tajam --}}
                 <div class="hidden sm:block" aria-hidden="true">
-                    <span data-float class="absolute top-4 left-4 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-red"></span>Stres</span>
-                    <span data-float class="absolute right-4 bottom-4 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-green"></span>Lega</span>
+                    <span data-float class="absolute top-[41%] left-[19%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-blue"></span>Sedih</span>
+                    <span data-float class="absolute top-[42%] left-[81%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-yellow"></span>Cemas</span>
+                    <span data-float class="absolute top-[84%] left-[18%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-red"></span>Stres</span>
+                    <span data-float class="absolute top-[86%] left-[82%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-green"></span>Lega</span>
                 </div>
             </div>
         </div>
