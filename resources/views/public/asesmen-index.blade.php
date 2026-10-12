@@ -10,7 +10,7 @@
         $accents = [
             ['circle' => 'bg-mood-yellow text-text'],
             ['circle' => 'bg-mood-green text-text'],
-            ['circle' => 'bg-brand text-on-primary'],
+            ['circle' => 'bg-brand-soft text-text'],
         ];
     @endphp
 

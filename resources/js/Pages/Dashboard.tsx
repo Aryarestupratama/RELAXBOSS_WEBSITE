@@ -36,8 +36,8 @@ type ActionTileProps = {
 const TONES = {
   yellow: { card: 'bg-mood-yellow text-text', icon: 'bg-card text-primary', button: 'bg-primary text-on-primary' },
   green: { card: 'bg-mood-green text-text', icon: 'bg-card text-primary', button: 'bg-primary text-on-primary' },
-  brand: { card: 'bg-brand text-on-primary', icon: 'bg-on-primary/20 text-on-primary', button: 'bg-card text-primary' },
-  blue: { card: 'bg-mood-blue text-text', icon: 'bg-card text-primary', button: 'bg-primary text-on-primary' },
+  purple: { card: 'bg-brand-soft text-text', icon: 'bg-card text-primary', button: 'bg-primary text-on-primary' },
+  peach: { card: 'bg-mood-peach text-text', icon: 'bg-card text-primary', button: 'bg-primary text-on-primary' },
 } as const;
 
 /** Kartu aksi menuju fitur. Seluruh kartu adalah tautan. */
@@ -45,7 +45,10 @@ function ActionTile({ icon: Icon, title, description, href, tone }: ActionTilePr
   return (
     <Link
       href={href}
-      className={`group flex min-h-40 flex-col rounded-xl p-6 shadow-card transition-transform duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 motion-safe:hover:-translate-y-0.5 ${tone.card}`}
+      data-load
+      data-lift
+      data-press
+      className={`group flex min-h-40 flex-col rounded-xl p-6 shadow-card focus-visible:outline-2 focus-visible:outline-offset-2 xl:min-h-44 ${tone.card}`}
     >
       <span className={`grid size-11 place-items-center rounded-full ${tone.icon}`} aria-hidden="true">
         <Icon className="size-5.5" />
@@ -74,17 +77,19 @@ function moodImage(mood: number): string {
 /** SCR-011 */
 export default function Dashboard({ first_name, last_mood, last_attempt }: DashboardProps) {
   return (
-    <AppShell title="Dashboard" showHelp={false}>
+    <AppShell title="Dashboard" showHelp={false} wide staggered>
       <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
+        <div data-load>
           <h1>Halo, {first_name}.</h1>
           <p className="mt-2 text-text-secondary">Apa yang ingin kamu lakukan hari ini?</p>
         </div>
-        <HelpPill className="hidden md:inline-flex" />
+        <div data-load="pop" className="hidden md:block">
+          <HelpPill />
+        </div>
       </div>
 
       <div className="mt-8 grid items-start gap-6 lg:grid-cols-12">
-        <div className="space-y-8 lg:col-span-7">
+        <div className="space-y-8 lg:col-span-7 xl:col-span-8">
           <div className="grid gap-4 sm:grid-cols-2">
             <ActionTile
               icon={ClipboardCheck}
@@ -105,18 +110,18 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
               title="RelaxMate"
               description="Teman bicara berbasis AI. Bukan psikolog atau layanan medis."
               href="/app/relaxmate"
-              tone={TONES.brand}
+              tone={TONES.purple}
             />
             <ActionTile
               icon={History}
               title="Riwayat"
               description="Lihat kembali hasil asesmen yang pernah kamu kerjakan."
               href="/app/riwayat"
-              tone={TONES.blue}
+              tone={TONES.peach}
             />
           </div>
 
-          <section aria-labelledby="judul-asesmen">
+          <section aria-labelledby="judul-asesmen" data-load>
             <div className="flex items-center justify-between gap-3">
               <h2 id="judul-asesmen" className="text-xl">
                 Hasil asesmen terakhir
@@ -134,6 +139,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
             {last_attempt ? (
               <Link
                 href={`/app/riwayat/${last_attempt.id}`}
+                data-lift
                 className={`${cardClass} mt-3 flex items-center gap-4 p-4 transition-shadow hover:shadow-popover`}
               >
                 <span className="grid size-28 shrink-0 place-items-center rounded-xl bg-neutral-soft" aria-hidden="true">
@@ -183,8 +189,8 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
           </section>
         </div>
 
-        <div className="space-y-4 lg:col-span-5">
-          <section aria-labelledby="judul-mood">
+        <div className="space-y-4 lg:col-span-5 xl:col-span-4">
+          <section aria-labelledby="judul-mood" data-load>
             <h2 id="judul-mood" className="text-xl">
               Mood terakhir
             </h2>
@@ -196,6 +202,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
                     width={160}
                     height={160}
                     alt=""
+                    data-float
                     className="size-40 object-contain"
                   />
                   <p className="mt-2 text-lg font-medium">
@@ -229,7 +236,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
             </div>
           </section>
 
-          <section aria-label="Bantuan" className="rounded-xl bg-crisis-bg p-5 text-crisis-text">
+          <section aria-label="Bantuan" data-load className="rounded-xl bg-crisis-bg p-5 text-crisis-text">
             <h2 className="text-base">Butuh bantuan sekarang?</h2>
             <p className="mt-1 text-sm">Kamu tidak harus menghadapi ini sendirian.</p>
             <a

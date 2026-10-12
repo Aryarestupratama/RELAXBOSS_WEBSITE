@@ -4,13 +4,13 @@ import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay, type Mo
 const HEIGHT = 220;
 const MARGIN = { top: 12, right: 14, bottom: 28, left: 40 };
 
-/** Warna titik per tingkat mood (token), selaras dengan blob di sumbu y. */
+/** Warna titik per tingkat mood (token skala `--mood-1` sampai `--mood-5`), selaras dengan blob; garis tepi gelap agar titik jelas di atas kartu putih. */
 const DOT_FILL: Record<number, string> = {
-  1: 'fill-mood-blue',
-  2: 'fill-brand',
-  3: 'fill-mood-yellow',
-  4: 'fill-mood-green',
-  5: 'fill-mood-red',
+  1: 'fill-mood-1',
+  2: 'fill-mood-2',
+  3: 'fill-mood-3',
+  4: 'fill-mood-4',
+  5: 'fill-mood-5',
 };
 const Y_VALUES = [1, 2, 3, 4, 5];
 
@@ -143,8 +143,8 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
                       cx={xScale(index)}
                       cy={yScale(day.average)}
                       r={selectedDate === day.date || hover === index ? 7 : 5.5}
-                      className={`${DOT_FILL[moodLevel(day.average)]} ${selectedDate === day.date ? 'stroke-text' : 'stroke-card'}`}
-                      strokeWidth={2.5}
+                      className={`${DOT_FILL[moodLevel(day.average)]} stroke-primary`}
+                      strokeWidth={selectedDate === day.date ? 3 : 1.75}
                     />
                   </g>
                 ) : null}
@@ -230,8 +230,8 @@ export function MoodDayChart({ label, entries }: DayChartProps) {
               cx={xScale(entry.minutes)}
               cy={yScale(entry.mood)}
               r={6}
-              className={`${DOT_FILL[entry.mood] ?? 'fill-brand-strong'} stroke-card`}
-              strokeWidth={2.5}
+              className={`${DOT_FILL[entry.mood] ?? 'fill-brand-strong'} stroke-primary`}
+              strokeWidth={1.75}
             />
           ))}
         </svg>

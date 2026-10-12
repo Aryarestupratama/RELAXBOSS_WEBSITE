@@ -57,7 +57,7 @@
                 </p>
             </div>
 
-            <figure data-reveal="right" class="flex min-h-48 flex-col justify-between rounded-xl bg-brand p-8 text-on-primary shadow-card lg:p-10">
+            <figure data-reveal="right" class="flex min-h-48 flex-col justify-between rounded-xl bg-brand-soft p-8 text-text shadow-card lg:p-10">
                 <svg class="size-6 fill-mood-yellow" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 6.5L20 10l-6.2 1.5L12 18l-1.8-6.5L4 10l6.2-1.5z"/></svg>
                 <blockquote class="mt-6 text-2xl leading-snug font-semibold">
                     &ldquo;Kamu yang memegang kendali, bukan stres.&rdquo;
@@ -89,7 +89,7 @@
                         <p class="mt-2 text-center">Catat perasaanmu dari hari ke hari dan lihat polanya.</p>
                     </div>
                 </article>
-                <article data-item data-lift class="flex flex-col gap-5 rounded-xl bg-brand p-5 text-on-primary shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
+                <article data-item data-lift class="flex flex-col gap-5 rounded-xl bg-brand-soft p-5 text-text shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
                     <div class="mx-auto grid size-44 place-items-center overflow-hidden rounded-full bg-card">
                         <img src="{{ $img }}/robot-wave.webp" width="800" height="800" loading="lazy" alt="" data-tilt="-4" class="size-36 object-contain">
                     </div>
@@ -110,7 +110,7 @@
                 <p class="text-4xl font-semibold" aria-hidden="true">Relax</p>
                 <p class="mt-3 text-lg"><span class="font-semibold">&ldquo;Relax&rdquo;</span> adalah ajakan untuk tenang.</p>
             </article>
-            <article data-item data-lift class="flex min-h-52 flex-col items-center justify-center rounded-xl bg-brand p-8 text-center text-on-primary shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-10">
+            <article data-item data-lift class="flex min-h-52 flex-col items-center justify-center rounded-xl bg-brand-soft p-8 text-center text-text shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-10">
                 <p class="text-4xl font-semibold" aria-hidden="true">Boss</p>
                 <p class="mt-3 text-lg"><span class="font-semibold">&ldquo;Boss&rdquo;</span> mengingatkan bahwa kamulah yang memegang kendali atas stresmu.</p>
             </article>
@@ -134,7 +134,7 @@
                     <p class="mt-2 text-text-secondary">Isi catatan dan percakapanmu dienkripsi, dan tinjauan kualitas dilakukan tanpa identitasmu.</p>
                 </article>
                 <article data-item data-lift class="rounded-xl bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
-                    <span class="grid size-10 place-items-center rounded-full bg-brand text-on-primary" aria-hidden="true"><x-icon name="message-circle" class="size-5" /></span>
+                    <span class="grid size-10 place-items-center rounded-full bg-brand-soft text-text" aria-hidden="true"><x-icon name="message-circle" class="size-5" /></span>
                     <h3 class="mt-4">Jalur ke profesional</h3>
                     <p class="mt-2 text-text-secondary">Selalu ada arahan dan kontak bantuan bila kamu butuh pendampingan lebih lanjut.</p>
                 </article>

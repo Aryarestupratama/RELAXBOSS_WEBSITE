@@ -3,7 +3,7 @@
     // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
     $circle = match ($tone) {
         'green' => 'bg-mood-green text-text',
-        'brand' => 'bg-brand text-on-primary',
+        'brand' => 'bg-brand-soft text-text',
         default => 'bg-mood-yellow text-text',
     };
 @endphp

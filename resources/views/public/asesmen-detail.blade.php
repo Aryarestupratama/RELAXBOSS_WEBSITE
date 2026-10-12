@@ -7,7 +7,7 @@
     @php
         $img = asset('images/asesmen');
         // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand text-on-primary'];
+        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand-soft text-text'];
     @endphp
 
     {{-- Kepala --}}

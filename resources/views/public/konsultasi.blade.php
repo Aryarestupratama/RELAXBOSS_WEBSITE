@@ -7,7 +7,7 @@
     @php
         $img = asset('images/konsultasi');
         // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand text-on-primary'];
+        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand-soft text-text'];
         // Butir ini bukan urutan langkah, jadi tanpa nomor.
         $signs = [
             ['icon' => 'moon', 'text' => 'Rasa tertekan berlangsung berminggu-minggu dan mengganggu kuliah, tidur, atau makanmu.'],

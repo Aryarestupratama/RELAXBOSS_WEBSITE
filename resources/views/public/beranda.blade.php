@@ -60,7 +60,7 @@
                     <p class="mt-2 text-center">Catat perasaanmu dan lihat polanya dalam seminggu.</p>
                 </div>
             </article>
-            <article data-item data-lift class="flex flex-col gap-5 rounded-xl bg-brand p-5 text-on-primary shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
+            <article data-item data-lift class="flex flex-col gap-5 rounded-xl bg-brand-soft p-5 text-text shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
                 <div class="mx-auto grid size-44 place-items-center overflow-hidden rounded-full bg-card">
                     <img src="{{ $img }}/robot-wave.webp" width="800" height="800" loading="lazy" alt="" data-tilt="-4" class="size-36 object-contain">
                 </div>
@@ -87,7 +87,7 @@
                         <div><h3>Kenali kondisimu</h3><p class="text-text-secondary">Kerjakan asesmen dan catat mood harianmu.</p></div>
                     </li>
                     <li data-item class="flex items-start gap-4 rounded-xl bg-card p-4 shadow-card transition duration-300 hover:translate-x-1 hover:shadow-popover">
-                        <span class="grid size-10 shrink-0 place-items-center rounded-full bg-brand font-semibold text-on-primary" aria-hidden="true">3</span>
+                        <span class="grid size-10 shrink-0 place-items-center rounded-full bg-brand-soft font-semibold text-text" aria-hidden="true">3</span>
                         <div><h3>Bercerita kapan saja</h3><p class="text-text-secondary">RelaxMate siap mendengarkan, kapan pun kamu butuh.</p></div>
                     </li>
                 </ol>
@@ -133,7 +133,7 @@
                     <p class="mt-2 text-text-secondary">Isi catatan dan percakapanmu dienkripsi, dan tinjauan kualitas dilakukan tanpa identitasmu.</p>
                 </article>
                 <article data-item data-lift class="rounded-xl bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
-                    <span class="block size-10 rounded-full bg-brand" aria-hidden="true"></span>
+                    <span class="block size-10 rounded-full bg-brand-soft" aria-hidden="true"></span>
                     <h3 class="mt-4">Jalur ke profesional</h3>
                     <p class="mt-2 text-text-secondary">Selalu ada arahan dan kontak bantuan bila kamu butuh pendampingan lebih lanjut.</p>
                 </article>

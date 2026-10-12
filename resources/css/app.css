@@ -47,7 +47,15 @@
     --color-on-primary: var(--on-primary);
     --color-brand: var(--brand);
     --color-brand-strong: var(--brand-strong);
+    --color-brand-soft: var(--brand-soft);
     --color-mood-blue: var(--mood-blue);
+    --color-mood-purple: var(--mood-purple);
+    --color-mood-peach: var(--mood-peach);
+    --color-mood-1: var(--mood-1);
+    --color-mood-2: var(--mood-2);
+    --color-mood-3: var(--mood-3);
+    --color-mood-4: var(--mood-4);
+    --color-mood-5: var(--mood-5);
     --color-mood-green: var(--mood-green);
     --color-mood-red: var(--mood-red);
     --color-mood-yellow: var(--mood-yellow);
@@ -85,10 +93,22 @@
     --on-primary: #FFFFFF;
     --brand: #7948FC;
     --brand-strong: #6A38EE;
-    --mood-blue: #A2B1EA;
+    /* Ungu muda untuk kartu dan lingkaran hias: teks di atasnya --text (bukan putih) */
+    --brand-soft: #C3B1FF;
+    /* Warna pastel (kartu dan hiasan); teks di atasnya selalu --text */
+    --mood-blue: #9CCBF2;
     --mood-green: #ABEAA2;
     --mood-red: #FC6663;
     --mood-yellow: #FCE46F;
+    --mood-purple: #A98BFF;
+    --mood-peach: #FFB997;
+    /* Skala mood 1 (Sangat sedih) sampai 5 (Luar biasa). Ganti pemetaan warna skala HANYA di sini.
+       Gambar blob di public/images/mood ikut diwarnai ulang secara terpisah. */
+    --mood-1: var(--mood-purple);
+    --mood-2: var(--mood-blue);
+    --mood-3: var(--mood-peach);
+    --mood-4: var(--mood-green);
+    --mood-5: var(--mood-yellow);
     --success: #047857;
     --warning: #B45309;
     --danger: #DC2626;
