@@ -13,16 +13,21 @@ type LikertScaleProps = {
   options: LikertOption[];
   value: number | null;
   onChange: (value: number) => void;
+  disabled?: boolean;
 };
 
-/** CMP-003. Satu butir per kartu; pilihan dari `assessments.options`; keyboard lewat tombol panah. */
-export default function LikertScale({ name, legend, options, value, onChange }: LikertScaleProps) {
+/**
+ * CMP-003. Satu butir per layar; pilihan dari `assessments.options`; keyboard lewat tombol panah.
+ * Pilihan terpilih ditandai garis `--primary`, latar `--mood-yellow`, dan teks tebal (tidak hanya warna).
+ */
+export default function LikertScale({ name, legend, options, value, onChange, disabled = false }: LikertScaleProps) {
   return (
     <RadioGroup
       name={name}
       aria-label={legend}
       value={value === null ? '' : String(value)}
       onValueChange={(next) => onChange(Number(next))}
+      disabled={disabled}
     >
       {options.map((option) => {
         const id = `${name}-${option.value}`;
@@ -31,9 +36,11 @@ export default function LikertScale({ name, legend, options, value, onChange }: 
           <label
             key={option.value}
             htmlFor={id}
-            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border-[1.5px] px-4 py-3 transition-colors ${
-              selected ? 'border-primary bg-neutral-soft' : 'border-border bg-card hover:bg-neutral-soft'
-            }`}
+            className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-2xl border-[1.5px] px-5 py-3 text-base transition-colors ${
+              selected
+                ? 'border-primary bg-mood-yellow font-semibold'
+                : 'border-border bg-card hover:bg-neutral-soft'
+            } ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
           >
             <RadioGroupItem id={id} value={String(option.value)} />
             <span>{option.label}</span>

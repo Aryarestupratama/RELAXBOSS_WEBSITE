@@ -104,32 +104,32 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
   };
 
   return (
-    <AppShell title={assessment.name}>
-      <div className="mx-auto max-w-2xl">
-        <p className="text-sm text-text-secondary">{assessment.name}</p>
-
-        <div
-          role="progressbar"
-          aria-label="Kemajuan pengerjaan"
-          aria-valuemin={1}
-          aria-valuemax={total}
-          aria-valuenow={index + 1}
-          className="mt-3 h-2 overflow-hidden rounded-full bg-neutral-soft"
-        >
+    <AppShell title={assessment.name} staggered>
+      <div className="mx-auto max-w-4xl">
+        <div data-load className="text-center">
+          <p className="text-sm font-medium text-text-secondary">{assessment.name}</p>
           <div
-            className="h-full rounded-full bg-brand-strong transition-[width] duration-200"
-            style={{ width: `${((index + 1) / total) * 100}%` }}
-          />
-        </div>
-        <p className="mt-2 text-sm text-text-secondary" aria-live="polite">
-          Butir {index + 1} dari {total}
-        </p>
-
-        {index === 0 && assessment.instructions ? (
-          <p className="mt-4 rounded-lg border-l-4 border-brand-strong bg-neutral-soft px-4 py-3 text-text-secondary">
-            {assessment.instructions}
+            role="progressbar"
+            aria-label="Kemajuan pengerjaan"
+            aria-valuemin={1}
+            aria-valuemax={total}
+            aria-valuenow={index + 1}
+            className="mt-3 grid gap-1"
+            style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }}
+          >
+            {questions.map((item, position) => (
+              <span
+                key={item.id}
+                className={`h-1.5 rounded-full transition-colors duration-300 ${
+                  position <= index ? 'bg-primary' : 'bg-border'
+                }`}
+              />
+            ))}
+          </div>
+          <p className="mt-2 text-sm text-text-secondary" aria-live="polite">
+            Butir {index + 1} dari {total}
           </p>
-        ) : null}
+        </div>
 
         {errors.answers ? (
           <Alert variant="destructive" className="mt-4">
@@ -137,44 +137,73 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
           </Alert>
         ) : null}
 
-        <section className="mt-6 rounded-xl border border-border bg-card p-5 shadow-card md:p-6">
-          <h1 ref={headingRef} tabIndex={-1} className="text-xl font-semibold outline-none">
-            {question.text}
-          </h1>
+        <section data-load className="mt-8 overflow-hidden rounded-3xl border border-border bg-card shadow-card">
+          <div className="grid lg:grid-cols-12">
+            <div className="flex flex-col gap-5 bg-brand-soft/40 p-6 md:p-8 lg:col-span-5">
+              <img
+                src="/images/asesmen/asesmen-kerjakan.webp"
+                width={160}
+                height={160}
+                alt=""
+                data-float
+                className="size-24 object-contain lg:size-40"
+              />
 
-          <div className="mt-5">
-            <LikertScale
-              key={question.id}
-              name={`butir-${question.id}`}
-              legend={question.text}
-              options={options}
-              value={current}
-              onChange={choose}
-            />
+              {index === 0 && assessment.instructions ? (
+                <p className="rounded-lg border border-border border-l-4 border-l-brand-strong bg-card px-4 py-3 text-sm text-text-secondary">
+                  {assessment.instructions}
+                </p>
+              ) : null}
+
+              <h1
+                key={question.id}
+                ref={headingRef}
+                tabIndex={-1}
+                className="text-2xl leading-snug font-semibold outline-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300 md:text-[1.75rem]"
+              >
+                {question.text}
+              </h1>
+            </div>
+
+            <div className="flex flex-col justify-between gap-8 p-6 md:p-8 lg:col-span-7">
+              <div
+                key={question.id}
+                className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-300"
+              >
+                <LikertScale
+                  name={`butir-${question.id}`}
+                  legend={question.text}
+                  options={options}
+                  value={current}
+                  onChange={choose}
+                  disabled={form.processing}
+                />
+              </div>
+
+              <div className="flex items-center justify-between gap-3">
+                {index > 0 ? (
+                  <Button variant="outline" onClick={() => setIndex(index - 1)} disabled={form.processing}>
+                    <ArrowLeft aria-hidden="true" />
+                    Sebelumnya
+                  </Button>
+                ) : (
+                  <span />
+                )}
+
+                {isLast ? (
+                  <Button onClick={submit} disabled={current === null || form.processing}>
+                    {form.processing ? 'Memproses...' : 'Lihat hasil'}
+                  </Button>
+                ) : (
+                  <Button onClick={() => setIndex(index + 1)} disabled={current === null}>
+                    Berikutnya
+                    <ArrowRight aria-hidden="true" />
+                  </Button>
+                )}
+              </div>
+            </div>
           </div>
         </section>
-
-        <div className="mt-6 flex items-center justify-between gap-3">
-          {index > 0 ? (
-            <Button variant="outline" onClick={() => setIndex(index - 1)} disabled={form.processing}>
-              <ArrowLeft aria-hidden="true" />
-              Sebelumnya
-            </Button>
-          ) : (
-            <span />
-          )}
-
-          {isLast ? (
-            <Button onClick={submit} disabled={current === null || form.processing}>
-              {form.processing ? 'Memproses...' : 'Lihat hasil'}
-            </Button>
-          ) : (
-            <Button onClick={() => setIndex(index + 1)} disabled={current === null}>
-              Berikutnya
-              <ArrowRight aria-hidden="true" />
-            </Button>
-          )}
-        </div>
       </div>
 
       <ConfirmLeaveDialog
