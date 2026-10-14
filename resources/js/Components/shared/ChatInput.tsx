@@ -14,7 +14,8 @@ type ChatInputProps = {
 const MAX_ROWS_PX = 128; // sekitar 4 baris
 
 /**
- * CMP-007 (bagian input). Tumbuh hingga 4 baris; Enter kirim, Shift+Enter baris baru.
+ * CMP-007 (bagian input). Wadah membulat dengan cincin fokus di wadah (kolom teks tanpa outline sendiri); tumbuh hingga 4 baris;
+ * Enter kirim, Shift+Enter baris baru.
  * Enter saat komposisi IME tidak mengirim.
  */
 export default function ChatInput({ value, onChange, onSend, maxChars, disabled = false, textareaRef }: ChatInputProps) {
@@ -53,7 +54,11 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
       <label htmlFor="chat-input" className="sr-only">
         Pesanmu
       </label>
-      <div className="flex items-end gap-2">
+      <div
+        className={`flex items-end gap-2 rounded-3xl border-[1.5px] bg-neutral-soft py-1.5 pl-5 pr-1.5 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-ring ${
+          tooLong ? 'border-destructive' : 'border-input'
+        } ${disabled ? 'opacity-60' : ''}`}
+      >
         <textarea
           id="chat-input"
           ref={setRefs}
@@ -65,9 +70,14 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
           placeholder="Tulis ceritamu di sini..."
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-11 flex-1 resize-none rounded-lg border-[1.5px] border-input bg-card px-3.5 py-2.5 text-base text-foreground placeholder:text-text-muted disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive"
+          className="min-h-11 flex-1 resize-none bg-transparent py-2.5 text-base text-foreground outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
         />
-        <Button onClick={onSend} disabled={disabled || tooLong || value.trim() === ''} aria-label="Kirim pesan">
+        <Button
+          onClick={onSend}
+          disabled={disabled || tooLong || value.trim() === ''}
+          aria-label="Kirim pesan"
+          className="rounded-full"
+        >
           <Send aria-hidden="true" />
           <span className="hidden sm:inline">Kirim</span>
         </Button>

@@ -1,18 +1,16 @@
 import { useState } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
-import { ArrowRight, MessageCircle, Plus } from 'lucide-react';
+import { router, usePage } from '@inertiajs/react';
 import AppShell from '@/Layouts/AppShell';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
-import EmptyState from '@/Components/shared/EmptyState';
-import { Button } from '@/Components/ui/button';
+import ConversationPanel, {
+  StartConversationButton,
+  type ConversationItem,
+} from '@/Components/shared/ConversationPanel';
+import Mascot from '@/Components/shared/Mascot';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
-import { RELAXMATE_EMPTY, RELAXMATE_INTRO } from '@/lib/relaxmate';
-
-type ConversationItem = {
-  id: string;
-  label: string;
-  total_turns: number;
-};
+import type { MascotName } from '@/lib/mascot';
+import { RELAXMATE_INTRO } from '@/lib/relaxmate';
+import { useStartConversation } from '@/lib/useStartConversation';
 
 type IndexProps = {
   conversations: ConversationItem[];
@@ -20,78 +18,55 @@ type IndexProps = {
   next_page_url: string | null;
 };
 
-/** SCR-017 (daftar Percakapan). Tanpa judul: hanya tanggal dan jam. */
+/**
+ * SCR-017 (daftar Percakapan). Dua panel: daftar di kiri (tanggal dan jam, tanpa judul), sambutan dengan maskot di kanan.
+ * Maskot: diam (idle), menyimak saat tombol mulai disorot atau difokus, berpikir saat Percakapan sedang dibuat.
+ */
 export default function Index({ conversations, prev_page_url, next_page_url }: IndexProps) {
   const consent = usePage<SharedConsentProps>().props.consent ?? null;
   const [consentOpen, setConsentOpen] = useState(needsConsent(consent));
-  const [starting, setStarting] = useState(false);
+  const [attention, setAttention] = useState(false);
+  const { starting, start } = useStartConversation(consent, () => setConsentOpen(true));
 
-  // Belum consent: tombol membuka dialog (aksi AI akan ditolak server tanpa consent).
-  const start = () => {
-    if (needsConsent(consent)) {
-      setConsentOpen(true);
-      return;
-    }
-    router.post('/app/relaxmate/percakapan', {}, {
-      onStart: () => setStarting(true),
-      onFinish: () => setStarting(false),
-    });
+  const mascot: MascotName = starting ? 'thinking' : attention ? 'listening' : 'idle';
+  const startProps = {
+    onMouseEnter: () => setAttention(true),
+    onMouseLeave: () => setAttention(false),
+    onFocus: () => setAttention(true),
+    onBlur: () => setAttention(false),
   };
 
-  const startButton = (
-    <Button onClick={start} disabled={starting}>
-      <Plus aria-hidden="true" />
-      Mulai percakapan baru
-    </Button>
-  );
-
   return (
-    <AppShell title="RelaxMate">
-      <h1>RelaxMate</h1>
-      <p className="mt-2 text-text-secondary">{RELAXMATE_INTRO}</p>
+    <AppShell title="RelaxMate" wide staggered>
+      <div className="flex flex-col gap-6 lg:flex-row">
+        <div data-load className="order-2 lg:order-1 lg:w-85 lg:shrink-0">
+          <ConversationPanel
+            conversations={conversations}
+            prevUrl={prev_page_url}
+            nextUrl={next_page_url}
+            starting={starting}
+            onStart={start}
+            startProps={startProps}
+            className="lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)]"
+          />
+        </div>
 
-      <div className="mt-6">
-        {conversations.length === 0 ? (
-          <EmptyState icon={MessageCircle} message={RELAXMATE_EMPTY} action={startButton} />
-        ) : (
-          <>
-            <div className="mb-4">{startButton}</div>
-            <h2 className="text-lg font-semibold">Percakapanmu</h2>
-            <ul className="mt-3 grid gap-3">
-              {conversations.map((conversation) => (
-                <li key={conversation.id}>
-                  <Link
-                    href={`/app/relaxmate/${conversation.id}`}
-                    className="flex min-h-11 items-center justify-between gap-3 rounded-xl border border-border bg-card p-4 shadow-card transition-colors hover:bg-neutral-soft"
-                  >
-                    <span className="min-w-0">
-                      <span className="block font-medium">{conversation.label}</span>
-                      <span className="block text-sm text-text-secondary">{conversation.total_turns} balasan</span>
-                    </span>
-                    <ArrowRight className="size-5 shrink-0" aria-hidden="true" />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-
-            {prev_page_url || next_page_url ? (
-              <div className="mt-4 flex justify-between gap-3">
-                {prev_page_url ? (
-                  <Button asChild variant="outline">
-                    <Link href={prev_page_url}>Sebelumnya</Link>
-                  </Button>
-                ) : (
-                  <span />
-                )}
-                {next_page_url ? (
-                  <Button asChild variant="outline">
-                    <Link href={next_page_url}>Berikutnya</Link>
-                  </Button>
-                ) : null}
-              </div>
-            ) : null}
-          </>
-        )}
+        <section
+          data-load
+          className="order-1 flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-10 text-center shadow-card lg:order-2 lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)] lg:px-8"
+        >
+          <div aria-hidden="true" className="relative mb-2 h-52.5 w-55 md:h-73 md:w-75">
+            <div className="absolute inset-x-2 bottom-0 h-37.5 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-brand-soft/50 md:h-52.5" />
+            <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
+            <Mascot
+              state={mascot}
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 [--s:0.42] md:bottom-3.5 md:[--s:0.6]"
+            />
+          </div>
+          <h1 className="mt-2">RelaxMate</h1>
+          <p className="mt-3 max-w-130 text-lg text-text-secondary">{RELAXMATE_INTRO}</p>
+          <StartConversationButton starting={starting} onClick={start} className="mt-6" {...startProps} />
+        </section>
       </div>
 
       <ConsentDialog

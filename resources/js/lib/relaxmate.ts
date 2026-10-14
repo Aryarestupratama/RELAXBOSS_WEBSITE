@@ -28,6 +28,7 @@ export type SendResponse = {
 export const RELAXMATE_INTRO =
   'Teman bicara berbasis AI. Bukan psikolog atau layanan medis. Ceritakan apa yang kamu rasakan, kapan saja.';
 export const RELAXMATE_NOTE = 'RelaxMate bukan psikolog atau layanan medis.';
+export const RELAXMATE_NEW = 'Mulai bercerita kapan pun kamu siap.';
 export const RELAXMATE_EMPTY = 'Belum ada percakapan. Mulai bercerita kapan pun kamu siap.';
 export const RELAXMATE_TYPING = 'RelaxMate sedang menulis...';
 export const RELAXMATE_UNANSWERED = 'Pesan terakhirmu belum dibalas. Pesanmu tetap tersimpan.';
@@ -43,3 +44,6 @@ export const SUGGESTION_TEXT: Record<SuggestionKind, string> = {
   recommend_support:
     'Kamu bisa mencatat perasaanmu di Mood Tracker atau mengerjakan Asesmen untuk mengenali kondisimu.',
 };
+
+/** Jeda minimal (ms) sebelum balasan tampil, agar animasi berpikir terlihat walau AI membalas cepat. */
+export const RELAXMATE_THINK_MS = 2800;

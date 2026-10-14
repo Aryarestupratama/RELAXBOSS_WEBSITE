@@ -19,21 +19,7 @@ final class RelaxMateController extends Controller
     /** Daftar Percakapan yang sudah berisi pesan, terbaru dulu. Tanpa judul (hanya tanggal dan jam). */
     public function index(Request $request, ChatPresenter $presenter): Response
     {
-        $page = $request->user()->conversations()
-            ->whereNotNull('last_message_at')
-            ->orderByDesc('last_message_at')
-            ->orderByDesc('created_at')
-            ->simplePaginate((int) config('relaxboss.limits.history_per_page'));
-
-        return Inertia::render('App/RelaxMate/Index', [
-            'conversations' => $page->getCollection()->map(fn ($conversation): array => [
-                'id' => $conversation->id,
-                'label' => $presenter->dateLabel($conversation),
-                'total_turns' => $conversation->total_turns,
-            ])->values(),
-            'prev_page_url' => $page->previousPageUrl(),
-            'next_page_url' => $page->nextPageUrl(),
-        ]);
+        return Inertia::render('App/RelaxMate/Index', $this->conversationList($request, $presenter));
     }
 
     /** API-014: mulai Percakapan (butuh consent, dipasang di route). */
@@ -50,6 +36,7 @@ final class RelaxMateController extends Controller
         $model = $request->user()->conversations()->findOrFail($conversation);
 
         return Inertia::render('App/RelaxMate/Show', [
+            ...$this->conversationList($request, $presenter),
             'conversation' => [
                 'id' => $model->id,
                 'label' => $presenter->dateLabel($model),
@@ -63,5 +50,29 @@ final class RelaxMateController extends Controller
                 'remaining_today' => $quota->remainingToday($request->user()),
             ],
         ]);
+    }
+
+    /**
+     * Panel Percakapanmu (dipakai halaman daftar dan halaman Percakapan). Hanya milik pengguna (RULE-033).
+     *
+     * @return array{conversations: array<int, array{id: string, label: string, total_turns: int}>, prev_page_url: string|null, next_page_url: string|null}
+     */
+    private function conversationList(Request $request, ChatPresenter $presenter): array
+    {
+        $page = $request->user()->conversations()
+            ->whereNotNull('last_message_at')
+            ->orderByDesc('last_message_at')
+            ->orderByDesc('created_at')
+            ->simplePaginate((int) config('relaxboss.limits.history_per_page'));
+
+        return [
+            'conversations' => $page->getCollection()->map(fn ($conversation): array => [
+                'id' => $conversation->id,
+                'label' => $presenter->dateLabel($conversation),
+                'total_turns' => $conversation->total_turns,
+            ])->values()->all(),
+            'prev_page_url' => $page->previousPageUrl(),
+            'next_page_url' => $page->nextPageUrl(),
+        ];
     }
 }
