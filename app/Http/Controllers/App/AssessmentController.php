@@ -14,11 +14,11 @@ use Inertia\Response;
 
 final class AssessmentController extends Controller
 {
-    /** SCR-012: katalog Asesmen aktif (FR-006). */
+    /** SCR-012: katalog Asesmen aktif (FR-006). Di produksi tanpa Instrumen contoh `demo-` (RULE-008). */
     public function index(): Response
     {
         $assessments = Assessment::query()
-            ->active()
+            ->publiclyListed()
             ->withCount('questions')
             ->orderBy('sort_order')
             ->orderBy('id')

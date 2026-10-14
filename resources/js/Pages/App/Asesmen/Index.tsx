@@ -21,7 +21,7 @@ const THUMB_TONES = ['bg-mood-yellow', 'bg-mood-green', 'bg-brand-soft', 'bg-moo
 /** SCR-012 */
 export default function Index({ assessments }: IndexProps) {
   return (
-    <AppShell title="Asesmen" staggered>
+    <AppShell title="Asesmen" wide staggered>
       <div data-load>
         <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
           <h1>Asesmen</h1>

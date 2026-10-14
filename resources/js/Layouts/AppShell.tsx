@@ -37,6 +37,13 @@ type AppShellProps = {
   wide?: boolean;
   /** Halaman mengatur gerak masuknya sendiri lewat penanda data-load; bila tidak, seluruh konten masuk sekaligus. */
   staggered?: boolean;
+  /**
+   * Halaman setinggi layar tanpa gulir halaman (RelaxMate Percakapan): konten mengisi sisa tinggi dan yang
+   * boleh digulir hanya panel di dalamnya. Bila layar lebih pendek dari 36rem, halaman tetap bisa digulir.
+   * Akar `relative` wajib: tanpa itu elemen `sr-only` (absolut) di tiap ChatBubble lolos dari `overflow-hidden`
+   * dan memanjangkan dokumen sehingga halaman bisa digulir pada percakapan panjang.
+   */
+  fill?: boolean;
   children: ReactNode;
 };
 
@@ -52,7 +59,14 @@ const railItem =
  * Kerangka area pengguna. Layar >= 768px: rail ikon bernavigasi di kiri (navy, melayang).
  * HP: bar atas (logo, bantuan, keluar) dan bar tab di bawah.
  */
-export default function AppShell({ title, showHelp = true, wide = false, staggered = false, children }: AppShellProps) {
+export default function AppShell({
+  title,
+  showHelp = true,
+  wide = false,
+  staggered = false,
+  fill = false,
+  children,
+}: AppShellProps) {
   const { url } = usePage();
 
   useEffect(() => {
@@ -62,7 +76,11 @@ export default function AppShell({ title, showHelp = true, wide = false, stagger
   return (
     <>
       <Head title={`${title} | RelaxBoss`} />
-      <div className="min-h-screen bg-neutral-soft pb-20 md:pb-0 md:pl-30">
+      <div
+        className={`bg-neutral-soft pb-20 md:pb-0 md:pl-30 ${
+          fill ? 'relative flex h-dvh min-h-144 flex-col overflow-hidden' : 'min-h-screen'
+        }`}
+      >
         <a
           href="#konten"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:shadow-popover"
@@ -110,7 +128,7 @@ export default function AppShell({ title, showHelp = true, wide = false, stagger
         </aside>
 
         {/* Bar atas (HP) */}
-        <header className="border-b border-border bg-card md:hidden">
+        <header className="shrink-0 border-b border-border bg-card md:hidden">
           <div className="flex items-center justify-between gap-3 px-4 py-2">
             <Logo />
             <div className="flex items-center gap-1">
@@ -128,11 +146,13 @@ export default function AppShell({ title, showHelp = true, wide = false, stagger
 
         <main
           id="konten"
-          className={`mx-auto w-full px-4 py-6 md:px-8 md:py-8 ${wide ? 'max-w-[90rem]' : 'max-w-5xl'}`}
+          className={`mx-auto w-full px-4 py-6 md:px-8 md:py-8 ${wide ? 'max-w-[90rem]' : 'max-w-5xl'} ${
+            fill ? 'flex min-h-0 flex-1 flex-col' : ''
+          }`}
         >
-          <div data-load={staggered ? undefined : ''}>
+          <div data-load={staggered ? undefined : ''} className={fill ? 'flex min-h-0 flex-1 flex-col' : undefined}>
             {showHelp ? (
-              <div className="mb-4 hidden justify-end md:flex">
+              <div className="mb-4 hidden shrink-0 justify-end md:flex">
                 <HelpPill />
               </div>
             ) : null}

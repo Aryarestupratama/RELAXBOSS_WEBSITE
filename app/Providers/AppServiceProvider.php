@@ -62,8 +62,9 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // `{activeAssessment}` di area aplikasi hanya Asesmen aktif, dicari lewat slug (API-008: 404 bila nonaktif).
+        // Di produksi Instrumen contoh `demo-` ikut 404 (RULE-008, RULE-048).
         Route::bind('activeAssessment', function (string $value): Assessment {
-            return Assessment::query()->active()->where('slug', $value)->firstOrFail();
+            return Assessment::query()->publiclyListed()->where('slug', $value)->firstOrFail();
         });
 
         // API-001: batas pendaftaran per IP, dikembalikan sebagai galat form `register`.

@@ -205,17 +205,18 @@ export default function Show({
   };
 
   return (
-    <AppShell title="RelaxMate" wide staggered>
+    <AppShell title="RelaxMate" wide staggered fill>
       <Link
         href="/app/relaxmate"
-        className="mb-2 inline-flex min-h-11 items-center gap-2 font-medium text-brand-strong lg:hidden"
+        className="mb-2 inline-flex min-h-11 shrink-0 items-center gap-2 self-start font-medium text-brand-strong lg:hidden"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Semua percakapan
       </Link>
 
-      <div className="flex flex-col gap-6 lg:flex-row">
-        <div data-load className="hidden lg:block lg:w-85 lg:shrink-0">
+      {/* Tinggi dari AppShell `fill`: baris ini mengisi sisa layar, tidak ada tinggi tetap. Yang digulir hanya daftar dan riwayat pesan. */}
+      <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row">
+        <div data-load className="hidden min-h-0 lg:flex lg:w-85 lg:shrink-0">
           <ConversationPanel
             conversations={conversations}
             activeId={conversation.id}
@@ -224,7 +225,7 @@ export default function Show({
             starting={starting}
             onStart={start}
             listOnlyReload
-            className="h-[clamp(32rem,calc(100dvh_-_10rem),44rem)]"
+            className="min-h-0 w-full"
           />
         </div>
 
@@ -232,7 +233,7 @@ export default function Show({
         <section
           data-load
           aria-label="Percakapan dengan RelaxMate"
-          className="flex h-[calc(100dvh_-_15rem)] min-h-112 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card lg:h-[clamp(32rem,calc(100dvh_-_10rem),44rem)]"
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card"
         >
           {/* Satu kepala untuk maskot dan obrolan */}
           <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-6 md:py-4">
@@ -324,7 +325,7 @@ export default function Show({
               </ol>
             </div>
 
-            <div className="grid gap-3 border-t border-border p-4 md:px-6 md:py-5">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-3 border-t border-border p-4 md:px-6 md:py-5">
               {(error || unanswered) && !sending ? (
                 <Alert variant="destructive">
                   <AlertDescription>

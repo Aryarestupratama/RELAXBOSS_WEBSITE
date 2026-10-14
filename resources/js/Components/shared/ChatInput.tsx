@@ -70,7 +70,7 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
           placeholder="Tulis ceritamu di sini..."
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-11 flex-1 resize-none bg-transparent py-2.5 text-base text-foreground outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
+          className="min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-base text-foreground outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
         />
         <Button
           onClick={onSend}

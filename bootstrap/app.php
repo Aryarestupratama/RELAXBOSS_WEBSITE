@@ -14,6 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         // Global (bukan grup web) agar halaman 404 ikut mendapat header keamanan.
         $middleware->append(\App\Http\Middleware\SecurityHeaders::class);
+        // Pengaman produksi (RULE-048): 503 bila konfigurasi produksi tidak aman. Setelah SecurityHeaders agar 503 tetap bersih.
+        $middleware->append(\App\Http\Middleware\EnsureProductionSafe::class);
 
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,

@@ -104,8 +104,8 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
   };
 
   return (
-    <AppShell title={assessment.name} staggered>
-      <div className="mx-auto max-w-4xl">
+    <AppShell title={assessment.name} wide staggered>
+      <div>
         <div data-load className="text-center">
           <p className="text-sm font-medium text-text-secondary">{assessment.name}</p>
           <div
