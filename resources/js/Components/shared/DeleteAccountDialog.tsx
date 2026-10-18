@@ -1,5 +1,6 @@
 import { useEffect, useRef, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
+import { X } from 'lucide-react';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
@@ -63,9 +64,20 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
       }}
       className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-border bg-card p-6 text-card-foreground shadow-popover backdrop:bg-primary/40"
     >
-      <h2 id="delete-account-title" className="text-lg font-semibold">
-        Hapus akun?
-      </h2>
+      <div className="flex items-start justify-between gap-3">
+        <h2 id="delete-account-title" className="text-lg font-semibold">
+          Hapus akun?
+        </h2>
+        <button
+          type="button"
+          onClick={onClose}
+          disabled={form.processing}
+          aria-label="Tutup"
+          className="-mt-1 -mr-2 inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-neutral-soft hover:text-text disabled:opacity-50"
+        >
+          <X className="size-5" aria-hidden="true" />
+        </button>
+      </div>
       <p id="delete-account-desc" className="mt-2 text-text-secondary">
         Semua datamu akan dihapus permanen dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.
       </p>
