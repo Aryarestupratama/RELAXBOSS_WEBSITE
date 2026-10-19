@@ -1,4 +1,4 @@
-import type { ComponentProps } from 'react';
+import type { ComponentProps, MouseEvent } from 'react';
 import { Link } from '@inertiajs/react';
 import { ChevronRight, LoaderCircle, Plus } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
@@ -40,6 +40,8 @@ type ConversationPanelProps = {
   startProps?: Pick<ComponentProps<'button'>, 'onMouseEnter' | 'onMouseLeave' | 'onFocus' | 'onBlur'>;
   /** Paginasi di halaman Percakapan hanya memuat ulang daftar, bukan pesan. */
   listOnlyReload?: boolean;
+  /** Klik biasa pada baris: induk boleh menunda perpindahan (mis. animasi maskot). Klik dengan tombol pengubah tidak dicegat. */
+  onOpen?: (href: string) => void;
   className?: string;
 };
 
@@ -58,8 +60,16 @@ export default function ConversationPanel({
   onStart,
   startProps,
   listOnlyReload = false,
+  onOpen,
   className = '',
 }: ConversationPanelProps) {
+  const open = (event: MouseEvent, href: string): void => {
+    if (!onOpen || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
+      return;
+    }
+    event.preventDefault();
+    onOpen(href);
+  };
   const pagerProps = listOnlyReload ? { only: LIST_PROPS, preserveState: true, preserveScroll: true } : {};
 
   return (
@@ -85,6 +95,7 @@ export default function ConversationPanel({
                 <li key={conversation.id}>
                   <Link
                     href={`/app/relaxmate/${conversation.id}`}
+                    onClick={(event) => open(event, `/app/relaxmate/${conversation.id}`)}
                     aria-current={active ? 'page' : undefined}
                     className={`flex min-h-18 items-center justify-between gap-3 rounded-xl px-4 py-3 text-text transition-colors ${
                       active ? 'bg-brand-soft' : 'hover:bg-neutral-soft'

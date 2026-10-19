@@ -14,6 +14,7 @@ import { Button } from '@/Components/ui/button';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
 import { postJson } from '@/lib/http';
 import type { MascotName } from '@/lib/mascot';
+import { consumeMascotEntrance } from '@/lib/mascotEntrance';
 import {
   RELAXMATE_CONSENT_NEEDED,
   RELAXMATE_DAILY_LIMIT,
@@ -65,6 +66,9 @@ export default function Show({
   const [consentOpen, setConsentOpen] = useState(needsConsent(consent));
   // Balasan yang sedang "diucapkan" (diketik bertahap); maskot berbicara selama ini.
   const [speakingId, setSpeakingId] = useState<number | string | null>(null);
+
+  // Dibuka lewat klik di daftar: maskot di panel besar masuk dulu (jalan, ambil kursi, duduk). Hanya di >= 1280px.
+  const [entrance] = useState(() => consumeMascotEntrance() && window.matchMedia('(min-width: 1280px)').matches);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -250,11 +254,14 @@ export default function Show({
           </header>
 
           <div className="flex min-h-0 flex-1 flex-col xl:flex-row">
-            <div className="hidden w-88 shrink-0 items-center justify-center border-r border-border px-6 xl:flex">
+            <div
+              data-mascot-stage
+              className="hidden w-88 shrink-0 items-center justify-center overflow-hidden border-r border-border px-6 xl:flex"
+            >
               <div aria-hidden="true" className="relative h-73 w-75 max-w-full">
                 <div className="absolute inset-x-2 bottom-0 h-52.5 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-brand-soft/50" />
                 <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
-                <Mascot state={mascot} className="absolute bottom-3.5 left-1/2 -translate-x-1/2 [--s:0.6]" />
+                <Mascot state={mascot} seated entrance={entrance} className="absolute bottom-0 left-1/2 -translate-x-1/2 [--s:0.72]" />
               </div>
             </div>
 

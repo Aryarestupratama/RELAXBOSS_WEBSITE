@@ -4,7 +4,28 @@
  * Dipakai oleh `Components/shared/Mascot.tsx`. Bila `prefers-reduced-motion: reduce`, hanya pose diam yang tampil.
  */
 
-export type MascotName = 'idle' | 'listening' | 'thinking' | 'speaking';
+export type MascotName =
+  | 'idle'
+  | 'listening'
+  | 'thinking'
+  | 'speaking'
+  | 'walk'
+  | 'sitIdle'
+  | 'sitListening'
+  | 'sitThinking'
+  | 'sitSpeaking';
+
+/** Klip sekali putar untuk urutan masuk ke Percakapan: jalan, ambil kursi, bawa kursi, duduk. */
+export type MascotClipName = 'walkIn' | 'take' | 'carry' | 'sitDown';
+
+/** Keadaan dasar (berdiri) dan versi duduknya (dipakai panel maskot di halaman Percakapan). */
+export const MASCOT_BASE: MascotName[] = ['idle', 'listening', 'thinking', 'speaking'];
+export const MASCOT_SEATED: Record<'idle' | 'listening' | 'thinking' | 'speaking', MascotName> = {
+  idle: 'sitIdle',
+  listening: 'sitListening',
+  thinking: 'sitThinking',
+  speaking: 'sitSpeaking',
+};
 
 type Sequence = { seq: number[]; ms: number[] };
 type Range = [number, number];
@@ -63,7 +84,53 @@ export const MASCOT_STATES: Record<MascotName, MascotState> = {
     seq: [3, 4, 5, 6, 7, 8],
     ms: [450, 350, 350, 350, 500, 450],
   },
+  // Berjalan keluar dari daftar saat pengguna memilih Percakapan.
+  walk: {
+    img: '/images/relaxmate/walk.webp',
+    seq: [1, 2, 3, 4, 5, 6, 7, 8],
+    ms: [115, 115, 115, 115, 115, 115, 115, 115],
+  },
+  // Versi duduk di kursi (halaman Percakapan).
+  sitIdle: {
+    img: '/images/relaxmate/sit_idle.webp',
+    rest: 1,
+    restMs: [2400, 4400],
+    events: [
+      { name: 'lookRight', weight: 40, seq: [2, 3, 3, 2], ms: [200, 650, 350, 200] },
+      { name: 'lookLeft', weight: 30, seq: [5, 6, 6, 5], ms: [200, 650, 350, 200] },
+      { name: 'smile', weight: 30, seq: [7, 7], ms: [450, 300] },
+    ],
+  },
+  sitListening: {
+    img: '/images/relaxmate/sit_listening.webp',
+    intro: { seq: [1, 2, 3], ms: [250, 200, 300] },
+    seq: [4, 5, 7, 5],
+    ms: [600, 500, 600, 500],
+    extras: { seq: [6], ms: [900], every: [2, 3] },
+  },
+  sitSpeaking: {
+    img: '/images/relaxmate/sit_speaking.webp',
+    rest: 1,
+    random: { open: [2, 3, 6, 7], closed: [1, 4, 5, 8], msRange: [130, 220], closedChance: 0.35 },
+  },
+  sitThinking: {
+    img: '/images/relaxmate/sit_thinking.webp',
+    intro: { seq: [1, 2], ms: [250, 250] },
+    seq: [3, 4, 5, 7, 5, 4],
+    ms: [500, 420, 420, 520, 420, 420],
+    extras: { seq: [6], ms: [900], every: [2, 3] },
+  },
 };
+
+export const MASCOT_CLIPS: Record<MascotClipName, { img: string; seq: number[]; ms: number[] }> = {
+  walkIn: { img: '/images/relaxmate/walk_chat.webp', seq: [1, 2, 3, 4, 5, 6, 7, 8], ms: [115, 115, 115, 115, 115, 115, 115, 115] },
+  take: { img: '/images/relaxmate/take.webp', seq: [1, 2, 3, 4, 5, 6, 7, 8], ms: [350, 300, 380, 420, 380, 340, 360, 420] },
+  carry: { img: '/images/relaxmate/carry.webp', seq: [1, 2, 3, 4, 5, 6, 7, 8], ms: [115, 115, 115, 115, 115, 115, 115, 115] },
+  sitDown: { img: '/images/relaxmate/sitdown.webp', seq: [1, 2, 3, 4, 5, 6, 7, 8], ms: [350, 350, 320, 320, 420, 320, 320, 420] },
+};
+
+/** Lama (ms) robot berjalan keluar di daftar sebelum halaman pindah. */
+export const MASCOT_LEAVE_MS = 1000;
 
 type Frame = { f: number; ms: number };
 
@@ -77,8 +144,21 @@ type Run = {
   last: number;
 };
 
+export type ClipOptions = {
+  /** Ulangi klip sebanyak ini (default 1). */
+  loop?: number;
+  /** Geser sprite (px, ke kanan positif) secara linear selama klip berjalan. */
+  moveTo?: number;
+};
+
 export type MascotPlayer = {
   setState: (name: MascotName) => void;
+  /** Putar klip sekali (atau berulang). true = selesai, false = dibatalkan. Keadaan ditahan selama klip berjalan. */
+  playClip: (name: MascotClipName, options?: ClipOptions) => Promise<boolean>;
+  /** Lanjutkan ke keadaan terakhir yang diminta (dipakai setelah rangkaian klip selesai). */
+  resume: () => void;
+  /** Geser sprite dalam `ms` (linear); `ms` 0 = langsung. */
+  move: (x: number, ms: number) => void;
   destroy: () => void;
 };
 
@@ -97,20 +177,6 @@ function weighted(list: MascotEvent[]): MascotEvent {
   return list[0];
 }
 
-let preloaded = false;
-
-function preload(): void {
-  if (preloaded) {
-    return;
-  }
-  preloaded = true;
-  Object.values(MASCOT_STATES).forEach((state) => {
-    const image = new Image();
-    image.src = state.img;
-    image.decode().catch(() => undefined);
-  });
-}
-
 /** Menjalankan animasi pada satu elemen. `--f` (nomor bingkai, mulai 0) dibaca CSS elemen untuk posisi latar. */
 export function createMascotPlayer(el: HTMLElement): MascotPlayer {
   const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -119,8 +185,23 @@ export function createMascotPlayer(el: HTMLElement): MascotPlayer {
   let timer: ReturnType<typeof setTimeout> | undefined;
   let run: Run = { idx: 0, introIdx: 0, queue: [], cycles: 0, atRest: false, lastOpen: false, last: 0 };
   let generation = 0;
+  let clipping = false;
 
-  preload();
+  // Muat dan dekode gambar semua lapisan yang terpasang pada elemen ini.
+  el.querySelectorAll<HTMLElement>('[data-sheet]').forEach((layer) => {
+    const url = /url\("?([^")]+)"?\)/.exec(layer.style.backgroundImage)?.[1];
+    if (url) {
+      const image = new Image();
+      image.src = url;
+      image.decode().catch(() => undefined);
+    }
+  });
+
+  const showSheet = (name: string): void => {
+    el.querySelectorAll<HTMLElement>('[data-sheet]').forEach((layer) => {
+      layer.style.visibility = layer.dataset.sheet === name ? 'visible' : 'hidden';
+    });
+  };
 
   const show = (frame: number): void => {
     el.style.setProperty('--f', String(frame - 1));
@@ -207,9 +288,7 @@ export function createMascotPlayer(el: HTMLElement): MascotPlayer {
       last: 0,
     };
     // Semua sheet sudah terpasang sebagai lapisan; hanya mengganti mana yang tampil (tanpa memuat ulang gambar, jadi tanpa kedip).
-    el.querySelectorAll<HTMLElement>('[data-sheet]').forEach((layer) => {
-      layer.style.visibility = layer.dataset.sheet === name ? 'visible' : 'hidden';
-    });
+    showSheet(name);
     if (reduce) {
       show(config.rest ?? 1);
       return;
@@ -222,6 +301,10 @@ export function createMascotPlayer(el: HTMLElement): MascotPlayer {
       return;
     }
     target = name;
+    if (clipping) {
+      // Klip masuk sedang berjalan: keadaan baru dimulai setelah klip selesai.
+      return;
+    }
     generation += 1;
     const mine = generation;
     clearTimeout(timer);
@@ -249,10 +332,69 @@ export function createMascotPlayer(el: HTMLElement): MascotPlayer {
     enter(name);
   };
 
+  const move = (x: number, ms: number): void => {
+    el.style.setProperty('--xt', `${ms}ms`);
+    el.style.setProperty('--x', `${x}px`);
+  };
+
+  const playClip = (name: MascotClipName, options: ClipOptions = {}): Promise<boolean> => {
+    if (reduce) {
+      return Promise.resolve(false);
+    }
+    generation += 1;
+    const mine = generation;
+    clearTimeout(timer);
+    clipping = true;
+    state = null;
+    const clip = MASCOT_CLIPS[name];
+    showSheet(name);
+    const loops = Math.max(1, options.loop ?? 1);
+    const total = clip.ms.reduce((a, b) => a + b, 0) * loops;
+    if (options.moveTo !== undefined) {
+      move(options.moveTo, total);
+    }
+    return new Promise<boolean>((resolve) => {
+      let round = 0;
+      let i = 0;
+      const step = (): void => {
+        if (mine !== generation) {
+          resolve(false);
+          return;
+        }
+        if (i >= clip.seq.length) {
+          round += 1;
+          i = 0;
+        }
+        if (round >= loops) {
+          clipping = false;
+          resolve(true);
+          return;
+        }
+        show(clip.seq[i]);
+        timer = setTimeout(step, clip.ms[i]);
+        i += 1;
+      };
+      step();
+    });
+  };
+
   return {
-    setState,
+    setState: (name) => {
+      setState(name);
+    },
+    playClip,
+    resume: () => {
+      clipping = false;
+      if (target !== null) {
+        generation += 1;
+        clearTimeout(timer);
+        enter(target);
+      }
+    },
+    move,
     destroy: () => {
       generation += 1;
+      clipping = false;
       clearTimeout(timer);
     },
   };

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AppShell from '@/Layouts/AppShell';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
@@ -8,7 +8,8 @@ import ConversationPanel, {
 } from '@/Components/shared/ConversationPanel';
 import Mascot from '@/Components/shared/Mascot';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
-import type { MascotName } from '@/lib/mascot';
+import { MASCOT_LEAVE_MS, type MascotName } from '@/lib/mascot';
+import { markMascotEntrance } from '@/lib/mascotEntrance';
 import { RELAXMATE_INTRO } from '@/lib/relaxmate';
 import { useStartConversation } from '@/lib/useStartConversation';
 
@@ -26,9 +27,38 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
   const consent = usePage<SharedConsentProps>().props.consent ?? null;
   const [consentOpen, setConsentOpen] = useState(needsConsent(consent));
   const [attention, setAttention] = useState(false);
-  const { starting, start } = useStartConversation(consent, () => setConsentOpen(true));
+  const [leaving, setLeaving] = useState(false);
+  const timer = useRef<number | undefined>(undefined);
 
-  const mascot: MascotName = starting ? 'thinking' : attention ? 'listening' : 'idle';
+  useEffect(() => () => window.clearTimeout(timer.current), []);
+
+  // Permintaan gagal dan halaman tetap di sini: maskot kembali.
+  const wasStarting = useRef(false);
+
+  /** Maskot berjalan keluar lebih dulu, baru pindah ke Percakapan (langsung bila gerak dikurangi). */
+  const leaveThen = (go: () => void): void => {
+    if (leaving) {
+      return;
+    }
+    markMascotEntrance();
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      go();
+      return;
+    }
+    setLeaving(true);
+    timer.current = window.setTimeout(go, MASCOT_LEAVE_MS);
+  };
+
+  const { starting, start } = useStartConversation(consent, () => setConsentOpen(true), leaveThen);
+
+  useEffect(() => {
+    if (wasStarting.current && !starting) {
+      setLeaving(false);
+    }
+    wasStarting.current = starting;
+  }, [starting]);
+
+  const mascot: MascotName = leaving ? 'walk' : starting ? 'thinking' : attention ? 'listening' : 'idle';
   const startProps = {
     onMouseEnter: () => setAttention(true),
     onMouseLeave: () => setAttention(false),
@@ -47,6 +77,7 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
             starting={starting}
             onStart={start}
             startProps={startProps}
+            onOpen={(href) => leaveThen(() => router.visit(href))}
             className="lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)]"
           />
         </div>
@@ -55,11 +86,12 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
           data-load
           className="order-1 flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-10 text-center shadow-card lg:order-2 lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)] lg:px-8"
         >
-          <div aria-hidden="true" className="relative mb-2 h-52.5 w-55 md:h-73 md:w-75">
+          <div aria-hidden="true" className="relative mb-2 h-52.5 w-55 overflow-hidden md:h-73 md:w-75">
             <div className="absolute inset-x-2 bottom-0 h-37.5 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-brand-soft/50 md:h-52.5" />
             <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
             <Mascot
               state={mascot}
+              walkOutMs={MASCOT_LEAVE_MS}
               className="absolute bottom-3 left-1/2 -translate-x-1/2 [--s:0.42] md:bottom-3.5 md:[--s:0.6]"
             />
           </div>
