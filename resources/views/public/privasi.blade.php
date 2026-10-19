@@ -4,7 +4,7 @@
 @section('description', 'Data apa yang disimpan RelaxBoss, bagaimana dilindungi, kapan dikirim ke penyedia AI, siapa yang dapat meninjau, dan cara menghapus akunmu.')
 
 @section('content')
-    {{-- DRAF SEMENTARA: dibaca founder dan ditelaah sebelum launch (TASK-030, OQ-5). --}}
+    {{-- Teks final untuk fitur yang berjalan. Telaah hukum (OQ-5) wajib selesai sebelum persetujuan pelatihan dipakai nyata (RULE-073). --}}
     @php
         $toc = [
             'data' => 'Data yang kami simpan',
@@ -45,8 +45,10 @@
 
         <x-legal-section id="ai" :title="$toc['ai']" icon="message-circle" tone="brand">
             <p>
-                RelaxMate dan Rekomendasi AI memakai penyedia AI pihak ketiga. Hanya setelah kamu menyetujuinya, isi percakapanmu (atau hasil Asesmenmu)
+                RelaxMate dan Rekomendasi AI memakai Groq, penyedia AI pihak ketiga yang servernya berada di luar Indonesia.
+                Hanya setelah kamu menyetujuinya, isi percakapanmu (atau hasil Asesmenmu)
                 dan jurusanmu, bila kamu isi, dikirim ke penyedia tersebut. Nama, email, dan kampusmu tidak dikirim.
+                Catatan moodmu tidak dikirim ke penyedia AI.
                 Jangan membagikan data yang sangat pribadi seperti alamat atau nomor identitas.
             </p>
         </x-legal-section>
@@ -77,6 +79,7 @@
 
         <x-legal-section id="cadangan" :title="$toc['cadangan']" icon="archive" tone="yellow">
             <p>Kami menyimpan cadangan database selama {{ $backupDays }} hari. Data yang sudah kamu hapus bisa masih ada di cadangan sampai masa itu berakhir.</p>
+            <p class="mt-3 text-sm text-text-secondary">Terakhir diperbarui: 19 Oktober 2026.</p>
         </x-legal-section>
 
         <x-slot:after>

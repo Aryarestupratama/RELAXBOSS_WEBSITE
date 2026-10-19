@@ -4,7 +4,7 @@
 @section('description', 'Aturan pemakaian RelaxBoss: bukan layanan medis, tanggung jawab akun, batas pemakaian wajar, dan keterbatasan RelaxMate.')
 
 @section('content')
-    {{-- DRAF SEMENTARA: dibaca founder sebelum launch (TASK-030). --}}
+    {{-- Teks final untuk fitur yang berjalan (TASK-030). --}}
     @php
         $toc = [
             'layanan' => 'Bukan layanan medis',
@@ -73,6 +73,7 @@
                 Cara kami memperlakukan datamu dijelaskan di <a href="{{ url('/privasi') }}" class="font-medium text-brand-strong underline underline-offset-2">Kebijakan privasi</a>.
                 Ketentuan ini dapat diperbarui, dan versi terbaru selalu ada di halaman ini.
             </p>
+            <p class="mt-3 text-sm text-text-secondary">Terakhir diperbarui: 19 Oktober 2026.</p>
         </x-legal-section>
     </x-legal-page>
 @endsection

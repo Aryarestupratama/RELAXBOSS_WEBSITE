@@ -102,7 +102,7 @@
                             <h3 class="mt-4 text-xl font-semibold">{{ $contact['name'] ?? '' }}</h3>
                             @if (filled($phone))
                                 <p class="mt-2">
-                                    <a href="tel:{{ preg_replace('/[^0-9+]/', '', $phone) }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-2">{{ $phone }}</a>
+                                    <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-2">{{ $phone }}</a>
                                 </p>
                             @endif
                             @if (is_string($link) && str_starts_with($link, 'https://'))

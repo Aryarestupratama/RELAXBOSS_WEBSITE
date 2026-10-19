@@ -90,9 +90,18 @@ return [
         ],
     ],
 
-    // Dummy sampai TASK-030 (RULE-008, RULE-048).
+    // Kontak bantuan krisis (OQ-3, RULE-049). Hanya yang terverifikasi dari sumber resmi.
+    // Healing119.id: layanan Kemenkes, 24 jam, gratis, dilayani tenaga kesehatan terlatih
+    // (FAQ Healing119.id, kesprimkom.kemkes.go.id). Verifikasi dengan menelepon sebelum go-live.
+    // Tambahkan kontak Laboratorium Terapan Psikologi di sini hanya setelah dikonfirmasi tertulis (OQ-2).
     'crisis_contacts' => [
-        ['name' => 'Kontak Krisis Dummy', 'phone' => null, 'url' => null, 'note' => 'dummy', 'dummy' => true],
+        [
+            'name' => 'Healing119.id (Kementerian Kesehatan)',
+            'phone' => '119 ext 8',
+            'url' => 'https://www.healing119.id',
+            'note' => 'Layanan konseling gratis, 24 jam.',
+            'dummy' => false,
+        ],
     ],
 
     // Kosong sampai OQ-2 terjawab (RULE-049).

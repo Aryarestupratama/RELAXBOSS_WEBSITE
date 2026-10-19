@@ -15,9 +15,13 @@ export const CRISIS_DUMMY_LABEL = 'Contoh sementara, bukan kontak yang sebenarny
 
 export const CRISIS_NO_CONTACTS = 'Daftar kontak sedang disiapkan.';
 
-/** Hanya angka dan plus untuk tautan tel:. */
+/**
+ * Hanya angka dan plus untuk tautan tel:. Ekstensi ("119 ext 8") menjadi jeda koma ("119,8"),
+ * supaya tidak terhubung ke nomor "1198".
+ */
 export function telHref(phone: string): string {
-  return `tel:${phone.replace(/[^0-9+]/g, '')}`;
+  const dial = phone.replace(/\s*(?:ext\.?|ekstensi)\s*(\d+)/i, ',$1');
+  return `tel:${dial.replace(/[^0-9+,]/g, '')}`;
 }
 
 /** Tautan hanya dirender bila diawali https:// (Architecture 8). */
