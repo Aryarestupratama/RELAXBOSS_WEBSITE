@@ -2,6 +2,13 @@
 
 declare(strict_types=1);
 
+// Kontak Laboratorium Terapan Psikologi (OQ-2, OQ-3): hanya tampil bila PSYCH_LAB_HOTLINE_PHONE terisi
+// di .env, yaitu setelah dikonfirmasi tertulis (RULE-049). Nomor dinormalkan ke format +62.
+$labDigits = preg_replace('/\D+/', '', (string) env('PSYCH_LAB_HOTLINE_PHONE', '')) ?? '';
+if (str_starts_with($labDigits, '0')) {
+    $labDigits = '62'.substr($labDigits, 1);
+}
+
 return [
     'admin_seed' => [
         'email' => env('ADMIN_SEED_EMAIL'),
@@ -115,6 +122,13 @@ return [
             'note' => 'Layanan konseling gratis, 24 jam.',
             'dummy' => false,
         ],
+        ...($labDigits === '' ? [] : [[
+            'name' => (string) env('PSYCH_LAB_HOTLINE_NAME', 'Laboratorium Terapan Psikologi'),
+            'phone' => '+'.$labDigits,
+            'url' => null,
+            'note' => 'Kontak konsultasi psikologi.',
+            'dummy' => false,
+        ]]),
     ],
 
     // Kosong sampai OQ-2 terjawab (RULE-049).
