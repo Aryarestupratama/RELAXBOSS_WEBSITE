@@ -28,3 +28,8 @@ Thumbs.db
 # Berkas ekspor data AI tidak boleh masuk repo (RULE-013, RULE-070)
 *.jsonl
 /storage/app/private/exports
+# Cadangan database tidak boleh masuk repo (RULE-013)
+*.sql
+*.sql.gz
+*.sqlite.gz
+/storage/app/private/backups

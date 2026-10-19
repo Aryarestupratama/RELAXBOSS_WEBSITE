@@ -1,58 +1,67 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# RelaxBoss
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Aplikasi web pendamping kesehatan mental untuk mahasiswa: Asesmen mandiri, Mood Tracker, dan RelaxMate (teman curhat berbasis AI). RelaxBoss **bukan layanan medis** dan tidak menggantikan psikolog atau psikiater; hasil Asesmen bukan diagnosis.
 
-## About Laravel
+Dibangun dan dikelola oleh satu orang (founder). Dokumen proyek (PRD, Architecture, Schema, Design, Rules, progress) disimpan di luar repo ini.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Fitur
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Asesmen**: kuesioner dengan skor per subskala, langkah PFA, riwayat, dan Rekomendasi AI (butuh persetujuan).
+- **Mood Tracker**: catatan mood dan tenaga, grafik 7 dan 30 hari.
+- **RelaxMate**: percakapan dengan AI, pemeriksaan krisis berbasis aturan sebelum AI dipanggil, dan kontak bantuan.
+- **Admin**: statistik agregat, kelola Instrumen, kelola akun, dan tinjauan percakapan tanpa identitas (tercatat, hanya baca).
+- **Halaman Publik**: Beranda, Tentang, Asesmen, Konsultasi, Privasi, Ketentuan, dengan sitemap dan robots dinamis.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Stack
 
-## Learning Laravel
+Laravel 13, PHP 8.3, Inertia 3, React 19, TypeScript (strict), Tailwind 4, shadcn/ui. Database MySQL di produksi dan SQLite di lokal. AI lewat Groq. Tanpa queue worker; pekerjaan terjadwal hanya lewat `schedule:run`.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Menjalankan di lokal
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Syarat: PHP 8.3 atau lebih baru, Composer, Node.js, dan npm.
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+composer install
+cp .env.example .env          # Windows PowerShell: Copy-Item .env.example .env
+php artisan key:generate
+php artisan migrate:fresh --seed
+npm install
+npm run build                 # atau: npm run dev (Vite) bersama php artisan serve
+php artisan serve
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+Seeder lokal membuat data **dummy** saja: akun `demo-a@example.test`, `demo-b@example.test`, dan seterusnya (sandi `password`), serta Instrumen berslug `demo-`. Admin dibuat dari `ADMIN_SEED_EMAIL` dan `ADMIN_SEED_PASSWORD` di `.env`. Seeder demo tidak berjalan di luar lingkungan `local`.
 
-## Contributing
+Untuk menguji AI sungguhan, isi `GROQ_KEYS_CHAT` dan `GROQ_KEYS_ASSESSMENT` di `.env`. Tanpa key, fitur AI memakai teks statis.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Perintah Artisan penting
 
-## Code of Conduct
+| Perintah | Fungsi |
+|---|---|
+| `php artisan relaxboss:check-crisis` | Periksa `resources/crisis/cases.json`; jalankan setiap prompt AI atau kata kunci krisis berubah |
+| `php artisan relaxboss:preflight` | Periksa kesiapan produksi; gagal berarti jangan go-live |
+| `php artisan relaxboss:backup-db` | Cadangkan database ke `storage/app/private/backups` (dijadwalkan harian) |
+| `php artisan relaxboss:export-ai-data {chat\|assessment}` | Ekspor data AI dari pengguna yang menyetujui, tanpa identitas |
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Cron produksi: `* * * * * php artisan schedule:run`. Contoh konfigurasi produksi ada di `.env.production.example`.
 
-## Security Vulnerabilities
+## Struktur singkat
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+```
+app/Actions, app/Services     logika bisnis (controller tipis)
+app/Http                      controller, request, middleware
+config/relaxboss.php          semua konstanta produk
+resources/js                  halaman dan komponen React (Inertia)
+resources/views               halaman Publik (Blade) dan email
+resources/prompts             prompt sistem AI, satu per fitur
+resources/crisis              kata kunci dan kasus uji krisis
+```
 
-## License
+## Privasi dan keamanan
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- Isi sensitif (pesan, catatan mood, jawaban Asesmen, rekomendasi AI) disimpan terenkripsi.
+- Nama, email, ID, dan kampus tidak dikirim ke penyedia AI.
+- Admin hanya dapat membaca isi percakapan dan rekomendasi AI tanpa identitas, dan setiap pembukaan dicatat.
+- Rahasia hanya di `.env`; jangan pernah memasukkan `.env`, key, atau cadangan database ke repo.
+
+Detail lengkap ada di halaman Privasi dan Ketentuan di aplikasi.

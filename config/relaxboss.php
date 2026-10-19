@@ -90,6 +90,19 @@ return [
         ],
     ],
 
+    // Cadangan database (TASK-031). Retensi 14 hari juga ditulis di halaman Privasi, jadi angkanya satu tempat ini (RULE-026).
+    'backup' => [
+        'retention_days' => 14,
+        // Relatif terhadap storage_path(); non-publik dan tidak masuk repo (RULE-013).
+        'path' => 'app/private/backups',
+        // Preflight gagal bila cadangan terbaru lebih tua dari ini (cron harian + selisih).
+        'max_age_hours' => 26,
+        'timeout_seconds' => 300,
+        'mysqldump_path' => env('BACKUP_MYSQLDUMP_PATH', 'mysqldump'),
+        // Opsi tambahan, dipisah spasi. Hapus nilainya bila mysqldump di hosting tidak mengenal opsi ini.
+        'mysqldump_extra' => env('BACKUP_MYSQLDUMP_EXTRA', '--no-tablespaces'),
+    ],
+
     // Kontak bantuan krisis (OQ-3, RULE-049). Hanya yang terverifikasi dari sumber resmi.
     // Healing119.id: layanan Kemenkes, 24 jam, gratis, dilayani tenaga kesehatan terlatih
     // (FAQ Healing119.id, kesprimkom.kemkes.go.id). Verifikasi dengan menelepon sebelum go-live.

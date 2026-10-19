@@ -39,7 +39,7 @@ class PublicPageController extends Controller
     public function privacy(): View
     {
         return view('public.privasi', [
-            'backupDays' => 14,
+            'backupDays' => (int) config('relaxboss.backup.retention_days'),
         ]);
     }
 

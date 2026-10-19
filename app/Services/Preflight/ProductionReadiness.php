@@ -10,6 +10,7 @@ use App\Enums\UserRole;
 use App\Models\Assessment;
 use App\Models\User;
 use App\Services\Ai\PromptLoader;
+use App\Services\Backup\DatabaseBackup;
 use RuntimeException;
 use Throwable;
 
@@ -29,7 +30,10 @@ final class ProductionReadiness
 
     private const ADMIN_PASSWORD_MIN_LENGTH = 12;
 
-    public function __construct(private readonly PromptLoader $prompts) {}
+    public function __construct(
+        private readonly PromptLoader $prompts,
+        private readonly DatabaseBackup $backup,
+    ) {}
 
     /** Aman dilayani? Hanya pemeriksaan config yang blocking. */
     public function isSafeToServe(): bool
@@ -125,6 +129,8 @@ final class ProductionReadiness
             ),
         ];
 
+        $checks[] = $this->backupCheck();
+
         foreach (AiFeature::cases() as $feature) {
             $checks[] = $this->promptCheck($feature);
             $checks[] = new PreflightCheck(
@@ -171,6 +177,20 @@ final class ProductionReadiness
             : $default;
 
         return strtolower((string) config("logging.channels.{$channel}.level", 'debug'));
+    }
+
+    /** Halaman Privasi berjanji ada cadangan harian (RULE-049), jadi cadangan terbaru wajib ada. */
+    private function backupCheck(): PreflightCheck
+    {
+        $maxAge = (float) config('relaxboss.backup.max_age_hours');
+        $age = $this->backup->latestAgeHours();
+
+        return new PreflightCheck(
+            'backup_recent',
+            'Ada cadangan database dalam '.(int) $maxAge.' jam terakhir',
+            $age !== null && $age <= $maxAge,
+            'Jalankan php artisan relaxboss:backup-db sekali, lalu pastikan cron schedule:run aktif (TASK-031).',
+        );
     }
 
     private function promptCheck(AiFeature $feature): PreflightCheck
