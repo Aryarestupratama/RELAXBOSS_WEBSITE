@@ -6,10 +6,13 @@ namespace App\Services\Preflight;
 
 use App\DTOs\PreflightCheck;
 use App\Enums\AiFeature;
+use App\Enums\ArticleStatus;
 use App\Enums\UserRole;
+use App\Models\Article;
 use App\Models\Assessment;
 use App\Models\User;
 use App\Services\Ai\PromptLoader;
+use App\Services\Article\ArticleClaimScanner;
 use App\Services\Backup\DatabaseBackup;
 use RuntimeException;
 use Throwable;
@@ -30,9 +33,13 @@ final class ProductionReadiness
 
     private const ADMIN_PASSWORD_MIN_LENGTH = 12;
 
+    /** Jumlah artikel yang disebut di petunjuk pemeriksaan klaim; sisanya diringkas. */
+    private const CLAIM_HINT_LIMIT = 5;
+
     public function __construct(
         private readonly PromptLoader $prompts,
         private readonly DatabaseBackup $backup,
+        private readonly ArticleClaimScanner $claims,
     ) {}
 
     /** Aman dilayani? Hanya pemeriksaan config yang blocking. */
@@ -212,6 +219,27 @@ final class ProductionReadiness
     }
 
     /**
+     * Petunjuk pemeriksaan klaim artikel (RULE-049). Hanya slug dan jenis temuan, tidak ada isi artikel.
+     *
+     * @param  array<string, list<string>>  $flagged  slug => jenis temuan
+     */
+    private function claimHint(array $flagged): string
+    {
+        $parts = [];
+
+        foreach (array_slice($flagged, 0, self::CLAIM_HINT_LIMIT, true) as $slug => $kinds) {
+            $parts[] = $slug.' ('.implode(', ', $kinds).')';
+        }
+
+        $rest = count($flagged) - count($parts);
+
+        return 'Baca ulang sebelum go-live (RULE-049), pemindai ini hanya heuristik: '
+            .implode('; ', $parts)
+            .($rest > 0 ? "; dan {$rest} artikel lain" : '')
+            .'. Klaim UMB hanya boleh tampil setelah OQ-2 terkonfirmasi.';
+    }
+
+    /**
      * @return list<PreflightCheck>
      */
     private function databaseChecks(): array
@@ -219,6 +247,13 @@ final class ProductionReadiness
         try {
             $demoAssessments = Assessment::query()->active()->where('slug', 'like', 'demo-%')->exists();
             $demoAccounts = User::query()->where('email', 'like', '%@example.test')->exists();
+            // Tanpa scope `published()`: scope itu sudah menyembunyikan `demo-` di produksi, sedangkan
+            // pemeriksaan ini justru mencari barisnya. Artikel terjadwal (terbit, tanggal belum tiba) ikut dihitung.
+            $demoArticles = Article::query()
+                ->where('slug', 'like', 'demo-%')
+                ->where('status', ArticleStatus::Published->value)
+                ->exists();
+            $flaggedArticles = $this->claims->flaggedPublished();
             $realAdmin = User::query()
                 ->where('role', UserRole::Admin->value)
                 ->where('is_active', true)
@@ -248,6 +283,19 @@ final class ProductionReadiness
                 'Tidak ada akun @example.test',
                 ! $demoAccounts,
                 'Hapus akun dummy (demo-a, demo-b, dan lainnya) dari database produksi.',
+            ),
+            new PreflightCheck(
+                'demo_articles',
+                'Tidak ada artikel demo- yang berstatus terbit',
+                ! $demoArticles,
+                'Kembalikan artikel berslug demo- ke draf lewat Admin Artikel (tidak ada tombol hapus), lalu terbitkan artikel asli.',
+            ),
+            new PreflightCheck(
+                'article_claims',
+                'Artikel terbit tidak memuat klaim yang belum terkonfirmasi (UMB, validasi, diagnosis)',
+                $flaggedArticles === [],
+                $this->claimHint($flaggedArticles),
+                blocking: false,
             ),
             new PreflightCheck(
                 'admin_exists',
