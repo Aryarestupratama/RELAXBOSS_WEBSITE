@@ -44,6 +44,13 @@ return [
         // Jumlah akun per halaman di daftar Pengguna admin (FR-024). Angka asumsi (RULE-026).
         'users_per_page' => 25,
 
+        // Admin Artikel (FR-021, SCR-026). Angka asumsi (RULE-026).
+        'articles' => [
+            'per_page' => 25,
+            // Batas panjang isi Markdown (karakter).
+            'body_max_chars' => 100000,
+        ],
+
         // Tinjauan admin tanpa identitas (FR-031, SCR-022). Angka asumsi (RULE-026).
         'monitoring' => [
             'per_page' => 20,

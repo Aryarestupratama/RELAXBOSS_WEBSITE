@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\MonitoringController as AdminMonitoringController;
@@ -86,6 +87,19 @@ Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->nam
     Route::put('/asesmen/{assessment}', [AdminAssessmentController::class, 'update'])
         ->whereNumber('assessment')
         ->name('assessments.update');
+    // Kelola artikel edukasi (SCR-026, API-022 sampai API-024). Konten publik; tanpa hapus (kembalikan ke draf).
+    Route::get('/artikel', [AdminArticleController::class, 'index'])->name('articles.index');
+    Route::get('/artikel/baru', [AdminArticleController::class, 'create'])->name('articles.create');
+    Route::post('/artikel', [AdminArticleController::class, 'store'])->name('articles.store');
+    Route::post('/artikel/pratinjau', [AdminArticleController::class, 'preview'])
+        ->middleware('throttle:60,1')
+        ->name('articles.preview');
+    Route::get('/artikel/{article}/ubah', [AdminArticleController::class, 'edit'])
+        ->whereNumber('article')
+        ->name('articles.edit');
+    Route::put('/artikel/{article}', [AdminArticleController::class, 'update'])
+        ->whereNumber('article')
+        ->name('articles.update');
     // Daftar Pengguna terbatas dan nonaktifkan akun (SCR-021, API-019). Tanpa hapus dan tanpa detail pengguna.
     Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
     Route::patch('/pengguna/{user}/status', [AdminUserController::class, 'updateStatus'])

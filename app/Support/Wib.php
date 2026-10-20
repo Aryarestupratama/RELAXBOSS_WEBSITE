@@ -25,6 +25,12 @@ final class Wib
         return CarbonImmutable::instance($moment)->setTimezone(self::TIMEZONE);
     }
 
+    /** Mengubah isian waktu lokal WIB (mis. `2026-10-20T09:30` dari kolom datetime-local) menjadi waktu UTC untuk disimpan. */
+    public static function fromLocal(string $local): CarbonImmutable
+    {
+        return CarbonImmutable::parse($local, self::TIMEZONE)->utc();
+    }
+
     /** Tanggal WIB (Y-m-d) untuk $moment, atau sekarang bila null. Dipakai mis. `mood_entries.entry_date`. */
     public static function date(?CarbonInterface $moment = null): string
     {
