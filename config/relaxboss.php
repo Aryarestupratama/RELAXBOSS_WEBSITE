@@ -31,6 +31,10 @@ return [
         'assessment_ai_per_day' => 5,
         'pfa_answer_max_chars' => 1000,
         'history_per_page' => 15,
+        // Artikel edukasi per halaman di /artikel (FR-021). Angka asumsi (RULE-026).
+        'articles_per_page' => 9,
+        // Artikel terkait di bawah artikel (tautan internal). Angka asumsi.
+        'articles_related' => 3,
     ],
 
     'admin' => [

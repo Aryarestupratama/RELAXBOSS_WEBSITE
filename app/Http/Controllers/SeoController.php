@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Models\Article;
 use App\Models\Assessment;
 use Illuminate\Http\Response;
 
@@ -12,12 +13,12 @@ use Illuminate\Http\Response;
  */
 class SeoController extends Controller
 {
-    /** Halaman Publik tetap. Info Asesmen (daftar dan tiap detail) ditambahkan dinamis di `sitemap()`. */
-    private const SITEMAP_PATHS = ['/', '/asesmen', '/tentang', '/konsultasi', '/privasi', '/ketentuan'];
+    /** Halaman Publik tetap. Info Asesmen dan Artikel (daftar dan tiap detail) ditambahkan dinamis di `sitemap()`. */
+    private const SITEMAP_PATHS = ['/', '/asesmen', '/artikel', '/tentang', '/konsultasi', '/privasi', '/ketentuan'];
 
     public function sitemap(): Response
     {
-        $paths = self::SITEMAP_PATHS;
+        $entries = array_map(static fn (string $path): array => ['path' => $path, 'lastmod' => null], self::SITEMAP_PATHS);
 
         $slugs = Assessment::query()
             ->publiclyListed()
@@ -26,13 +27,24 @@ class SeoController extends Controller
             ->pluck('slug');
 
         foreach ($slugs as $slug) {
-            $paths[] = '/asesmen/'.$slug;
+            $entries[] = ['path' => '/asesmen/'.$slug, 'lastmod' => null];
+        }
+
+        // Artikel terbit saja (`published()` sudah menyaring draf, terjadwal, dan `demo-` di produksi).
+        $articles = Article::query()
+            ->published()
+            ->orderByDesc('published_at')
+            ->get(['slug', 'updated_at']);
+
+        foreach ($articles as $article) {
+            $entries[] = ['path' => '/artikel/'.$article->slug, 'lastmod' => $article->updated_at?->utc()->toAtomString()];
         }
 
         $lines = ['<?xml version="1.0" encoding="UTF-8"?>', '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'];
 
-        foreach ($paths as $path) {
-            $lines[] = '  <url><loc>'.e(url($path)).'</loc></url>';
+        foreach ($entries as $entry) {
+            $lastmod = $entry['lastmod'] === null ? '' : '<lastmod>'.e($entry['lastmod']).'</lastmod>';
+            $lines[] = '  <url><loc>'.e(url($entry['path'])).'</loc>'.$lastmod.'</url>';
         }
 
         $lines[] = '</urlset>';

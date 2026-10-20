@@ -2,6 +2,7 @@
     $defaultDescription = 'Kenali kondisimu lewat asesmen, pantau mood harian, dan bercerita kapan saja dengan RelaxMate. Gratis, langsung dari browser.';
     $navLinks = [
         'Asesmen' => ['pattern' => 'asesmen*', 'href' => '/asesmen'],
+        'Artikel' => ['pattern' => 'artikel*', 'href' => '/artikel'],
         'Tentang' => ['pattern' => 'tentang', 'href' => '/tentang'],
         'Konsultasi' => ['pattern' => 'konsultasi', 'href' => '/konsultasi'],
     ];
@@ -13,13 +14,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'RelaxBoss')</title>
     <meta name="description" content="@yield('description', $defaultDescription)">
-    <link rel="canonical" href="{{ url()->current() }}">
-    <meta property="og:type" content="website">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+    <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:locale" content="id_ID">
     <meta property="og:site_name" content="RelaxBoss">
     <meta property="og:title" content="@yield('title', 'RelaxBoss')">
     <meta property="og:description" content="@yield('description', $defaultDescription)">
-    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:url" content="@yield('canonical', url()->current())">
     <link rel="icon" type="image/png" href="{{ asset('images/logo-relaxboss.png') }}">
     @stack('head')
     @vite(['resources/css/app.css', 'resources/js/public.ts'])
