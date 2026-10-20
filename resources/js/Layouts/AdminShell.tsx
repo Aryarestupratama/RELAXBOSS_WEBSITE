@@ -1,19 +1,31 @@
-import type { ReactNode } from 'react';
-import { Head, Link, usePage } from '@inertiajs/react';
+import { useEffect, type ReactNode } from 'react';
+import { Head, Link, router, usePage } from '@inertiajs/react';
+import {
+  Activity,
+  ArrowLeft,
+  BookOpen,
+  ClipboardCheck,
+  LayoutDashboard,
+  LogOut,
+  Users,
+  type LucideIcon,
+} from 'lucide-react';
 import Logo from '@/Components/shared/Logo';
 import LogoutButton from '@/Components/shared/LogoutButton';
+import { initMotion } from '@/lib/motion';
 
 type NavItem = {
   label: string;
   href: string;
+  icon: LucideIcon;
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'Ringkasan', href: '/admin' },
-  { label: 'Asesmen', href: '/admin/asesmen' },
-  { label: 'Artikel', href: '/admin/artikel' },
-  { label: 'Pengguna', href: '/admin/pengguna' },
-  { label: 'Monitoring', href: '/admin/monitoring' },
+  { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
+  { label: 'Asesmen', href: '/admin/asesmen', icon: ClipboardCheck },
+  { label: 'Artikel', href: '/admin/artikel', icon: BookOpen },
+  { label: 'Pengguna', href: '/admin/pengguna', icon: Users },
+  { label: 'Monitoring', href: '/admin/monitoring', icon: Activity },
 ];
 
 type AdminShellProps = {
@@ -26,14 +38,24 @@ function isActive(currentUrl: string, href: string): boolean {
   return href === '/admin' ? path === href : path === href || path.startsWith(`${href}/`);
 }
 
-/** Kerangka area admin (SCR-019 dst.). Bukan pengganti pemeriksaan server: middleware `admin` menjaga route. */
+const railItem =
+  'flex h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-xs transition-colors';
+
+/**
+ * Kerangka area admin (SCR-019 dst.). Bukan pengganti pemeriksaan server: middleware `admin` menjaga route.
+ * Layar >= 768px: rail ikon di kiri (pola sama dengan `AppShell`). HP: bar atas dan bar tab di bawah.
+ */
 export default function AdminShell({ title, children }: AdminShellProps) {
   const { url } = usePage();
+
+  useEffect(() => {
+    initMotion();
+  }, [url]);
 
   return (
     <>
       <Head title={`${title} | Admin RelaxBoss`} />
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-neutral-soft pb-20 md:pb-0 md:pl-30">
         <a
           href="#konten"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:shadow-popover"
@@ -41,47 +63,104 @@ export default function AdminShell({ title, children }: AdminShellProps) {
           Lewati ke konten
         </a>
 
-        <header className="border-b border-border bg-card">
-          <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-2">
-            <div className="flex items-center gap-3">
-              <Logo />
-              <span className="rounded-md bg-neutral-soft px-2 py-1 text-sm font-medium text-brand-strong">Admin</span>
+        {/* Rail (>= 768px) */}
+        <aside className="fixed inset-y-4 left-4 z-40 hidden w-22 flex-col items-center justify-between rounded-2xl bg-primary py-5 shadow-popover md:flex">
+          <div className="flex w-full flex-col items-center gap-6 px-2">
+            <div className="flex flex-col items-center gap-1.5">
+              <a href="/" aria-label="RelaxBoss, ke Beranda" className="inline-flex min-h-11 items-center">
+                <img src="/images/logo-relaxboss.png" width={40} height={40} alt="" className="size-10 rounded-lg" />
+              </a>
+              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-text">Admin</span>
             </div>
+            <nav aria-label="Navigasi admin" className="flex w-full flex-col gap-2">
+              {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+                const active = isActive(url, href);
+                return (
+                  <Link
+                    key={href}
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`${railItem} ${
+                      active
+                        ? 'bg-brand text-on-primary'
+                        : 'text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary'
+                    }`}
+                  >
+                    <Icon className="size-5.5" aria-hidden="true" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </nav>
+          </div>
+          <div className="flex w-full flex-col gap-1.5 border-t border-on-primary/10 px-2 pt-3">
+            {/* Dashboard pengguna adalah halaman Inertia lain; tautan biasa sudah cukup */}
+            <Link href="/dashboard" className={`${railItem} h-14 text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary`}>
+              <ArrowLeft className="size-5" aria-hidden="true" />
+              Aplikasi
+            </Link>
+            <button
+              type="button"
+              onClick={() => router.post('/keluar')}
+              className={`${railItem} h-14 text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary`}
+            >
+              <LogOut className="size-5" aria-hidden="true" />
+              Keluar
+            </button>
+          </div>
+        </aside>
 
+        {/* Bar atas (HP) */}
+        <header className="border-b border-border bg-card md:hidden">
+          <div className="flex items-center justify-between gap-3 px-4 py-2">
+            <div className="flex items-center gap-2">
+              <Logo />
+              <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-text">Admin</span>
+            </div>
             <div className="flex items-center gap-1">
-              {/* Dashboard pengguna adalah halaman Inertia lain; tautan biasa sudah cukup */}
               <Link
                 href="/dashboard"
                 className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-brand-strong"
               >
-                Ke aplikasi
+                Aplikasi
               </Link>
               <LogoutButton />
             </div>
           </div>
-
-          <nav aria-label="Navigasi admin" className="mx-auto flex max-w-6xl flex-wrap gap-1 px-4 pb-2">
-            {NAV_ITEMS.map(({ label, href }) => {
-              const active = isActive(url, href);
-              return (
-                <Link
-                  key={href}
-                  href={href}
-                  aria-current={active ? 'page' : undefined}
-                  className={`inline-flex min-h-11 items-center rounded-lg px-3 transition-colors hover:text-brand-strong ${
-                    active ? 'font-medium text-brand-strong' : 'text-text-secondary'
-                  }`}
-                >
-                  {label}
-                </Link>
-              );
-            })}
-          </nav>
         </header>
 
-        <main id="konten" className="mx-auto w-full max-w-6xl px-4 py-6 md:py-8">
-          {children}
+        <main id="konten" className="mx-auto w-full max-w-[80rem] px-4 py-6 md:px-8 md:py-8">
+          <div data-load="">
+            <p className="mb-4 hidden text-sm text-text-secondary md:block">RelaxBoss / Admin</p>
+            {children}
+          </div>
         </main>
+
+        {/* Bar tab (HP) */}
+        <nav
+          aria-label="Navigasi admin bawah"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
+        >
+          <ul className="grid grid-cols-5">
+            {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
+              const active = isActive(url, href);
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    aria-current={active ? 'page' : undefined}
+                    className={`flex min-h-14 flex-col items-center justify-center gap-1 text-xs ${
+                      active ? 'font-medium text-brand-strong' : 'text-text-secondary'
+                    }`}
+                  >
+                    <Icon className="size-5" aria-hidden="true" />
+                    {label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
       </div>
     </>
   );

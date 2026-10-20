@@ -11,7 +11,7 @@ type MonitoringItemProps = {
 /** CMP-020. Satu butir tinjauan admin: judul, isi sebagai teks biasa, dan penanda. Hanya baca. */
 export default function MonitoringItem({ title, badges, children }: MonitoringItemProps) {
   return (
-    <li className="rounded-xl border border-border bg-card p-4">
+    <li className="rounded-xl bg-card p-4 shadow-card">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <h3 className="text-base font-medium">{title}</h3>
         {badges ? <div className="flex flex-wrap gap-1">{badges}</div> : null}

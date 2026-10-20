@@ -55,10 +55,10 @@ export default function Index({ assessments }: IndexProps) {
             }
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <div className="overflow-x-auto rounded-xl bg-card shadow-card">
             <table className="w-full min-w-[40rem] text-left">
               <caption className="sr-only">Daftar Instrumen Asesmen</caption>
-              <thead className="border-b border-border text-sm text-text-secondary">
+              <thead className="bg-neutral-soft text-sm text-text-secondary">
                 <tr>
                   <th scope="col" className="px-4 py-3 font-medium">
                     Asesmen

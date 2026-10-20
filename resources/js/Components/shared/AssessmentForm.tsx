@@ -25,7 +25,7 @@ type AssessmentFormProps = {
   status: string | null;
 };
 
-const cardClass = 'rounded-xl border border-border bg-card p-5 shadow-card';
+const cardClass = 'rounded-xl bg-card p-5 shadow-card';
 
 function Section({ id, title, intro, children }: { id: string; title: string; intro?: string; children: ReactNode }) {
   return (

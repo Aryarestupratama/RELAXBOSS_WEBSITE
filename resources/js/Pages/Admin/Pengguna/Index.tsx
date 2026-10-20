@@ -121,10 +121,10 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
             message={search !== '' ? 'Tidak ada akun dengan email itu.' : 'Belum ada akun terdaftar.'}
           />
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border bg-card">
+          <div className="overflow-x-auto rounded-xl bg-card shadow-card">
             <table className="w-full min-w-[40rem] text-left">
               <caption className="sr-only">Daftar akun pengguna</caption>
-              <thead className="border-b border-border text-sm text-text-secondary">
+              <thead className="bg-neutral-soft text-sm text-text-secondary">
                 <tr>
                   <th scope="col" className="px-4 py-3 font-medium">
                     Email
