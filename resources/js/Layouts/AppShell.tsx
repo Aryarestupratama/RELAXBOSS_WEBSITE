@@ -10,9 +10,6 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react';
-import HelpPill from '@/Components/shared/HelpPill';
-import Logo from '@/Components/shared/Logo';
-import LogoutButton from '@/Components/shared/LogoutButton';
 import { initMotion } from '@/lib/motion';
 
 type NavItem = {
@@ -31,7 +28,7 @@ const NAV_ITEMS: NavItem[] = [
 
 type AppShellProps = {
   title: string;
-  /** Tautan bantuan di pojok kanan atas (layar >= 768px). Halaman yang menampilkannya sendiri (Dashboard) mematikannya. */
+  /** Tombol bantuan di navbar (layar >= 768px). Halaman yang menampilkannya sendiri (Dashboard) mematikannya. */
   showHelp?: boolean;
   /** Konten lebih lebar (Dashboard). Halaman lain tetap sempit agar enak dibaca. */
   wide?: boolean;
@@ -52,12 +49,24 @@ function isActive(currentUrl: string, href: string): boolean {
   return path === href || path.startsWith(`${href}/`);
 }
 
+/* Satu kurva gerak dengan navbar publik dan motion.ts: [0.2, 0.7, 0.2, 1]. */
+const EASE = 'ease-[cubic-bezier(0.2,0.7,0.2,1)]';
+
+/*
+ * Item rail (putih, garis --primary): teks dan ikon --primary; hover = pil --primary membesar dari tengah
+ * dengan teks --on-primary; halaman aktif = --brand dengan teks --on-primary (RULE-052) dan --shadow-lift.
+ */
 const railItem =
-  'flex h-16 w-full flex-col items-center justify-center gap-1 rounded-xl text-xs transition-colors';
+  `group relative isolate flex h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-[0.6875rem] font-medium text-primary transition-all duration-300 ${EASE} ` +
+  'before:absolute before:inset-0 before:-z-10 before:scale-75 before:rounded-xl before:bg-primary before:opacity-0 before:transition-all before:duration-300 before:ease-[cubic-bezier(0.2,0.7,0.2,1)] ' +
+  'hover:text-on-primary hover:before:scale-100 hover:before:opacity-100 ' +
+  'aria-[current=page]:bg-brand aria-[current=page]:text-on-primary aria-[current=page]:shadow-lift aria-[current=page]:before:opacity-0';
+
+const iconMotion = `size-5 transition-transform duration-300 ${EASE} group-hover:-translate-y-0.5 group-hover:scale-110 group-aria-[current=page]:scale-110`;
 
 /**
- * Kerangka area pengguna. Layar >= 768px: rail ikon bernavigasi di kiri (navy, melayang).
- * HP: bar atas (logo, bantuan, keluar) dan bar tab di bawah.
+ * Kerangka area pengguna. Layar >= 768px: rail ikon ringkas di kiri (navy, melayang) dengan hover pil dan penanda aktif.
+ * HP: bar atas ringkas dan bar tab di bawah.
  */
 export default function AppShell({
   title,
@@ -77,7 +86,7 @@ export default function AppShell({
     <>
       <Head title={`${title} | RelaxBoss`} />
       <div
-        className={`bg-neutral-soft pb-20 md:pb-0 md:pl-30 ${
+        className={`bg-neutral-soft pb-16 md:pb-0 md:pl-28 ${
           fill ? 'relative flex h-dvh min-h-144 flex-col overflow-hidden' : 'min-h-screen'
         }`}
       >
@@ -89,39 +98,35 @@ export default function AppShell({
         </a>
 
         {/* Rail (>= 768px) */}
-        <aside className="fixed inset-y-4 left-4 z-40 hidden w-22 flex-col items-center justify-between rounded-2xl bg-primary py-5 shadow-popover md:flex">
-          <div className="flex w-full flex-col items-center gap-6 px-2">
-            <a href="/" aria-label="RelaxBoss, ke Beranda" className="inline-flex min-h-11 items-center">
-              <img src="/images/logo-relaxboss.png" width={40} height={40} alt="" className="size-10 rounded-lg" />
+        <aside className="fixed inset-y-3 left-3 z-40 hidden w-24 flex-col items-center justify-between rounded-2xl border-[1.5px] border-primary bg-card py-5 shadow-lift md:flex">
+          <div className="flex w-full flex-col items-center gap-6 px-2.5">
+            <a href="/" aria-label="RelaxBoss, ke Beranda" data-press className="inline-flex min-h-11 items-center">
+              <img src="/images/logo-relaxboss.png" width={36} height={36} alt="" className="size-9 rounded-lg" />
             </a>
             <nav aria-label="Navigasi utama" className="flex w-full flex-col gap-2">
-              {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
-                const active = isActive(url, href);
-                return (
-                  <Link
-                    key={href}
-                    href={href}
-                    aria-current={active ? 'page' : undefined}
-                    className={`${railItem} ${
-                      active
-                        ? 'bg-brand text-on-primary'
-                        : 'text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary'
-                    }`}
-                  >
-                    <Icon className="size-5.5" aria-hidden="true" />
-                    {label}
-                  </Link>
-                );
-              })}
+              {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
+                <Link
+                  key={href}
+                  href={href}
+                  data-press
+                  aria-current={isActive(url, href) ? 'page' : undefined}
+                  className={railItem}
+                >
+                  <Icon className={iconMotion} aria-hidden="true" />
+                  {label}
+                </Link>
+              ))}
             </nav>
           </div>
-          <div className="w-full px-2">
-            <button
-              type="button"
-              onClick={() => router.post('/keluar')}
-              className={`${railItem} h-14 text-on-primary/70 hover:bg-on-primary/10 hover:text-on-primary`}
-            >
-              <LogOut className="size-5" aria-hidden="true" />
+          <div className="flex w-full flex-col gap-2 px-2.5">
+            {showHelp ? (
+              <a href="/konsultasi" data-press className={railItem}>
+                <LifeBuoy className={iconMotion} aria-hidden="true" />
+                Bantuan
+              </a>
+            ) : null}
+            <button type="button" data-press onClick={() => router.post('/keluar')} className={railItem}>
+              <LogOut className={iconMotion} aria-hidden="true" />
               Keluar
             </button>
           </div>
@@ -129,33 +134,43 @@ export default function AppShell({
 
         {/* Bar atas (HP) */}
         <header className="shrink-0 border-b border-border bg-card md:hidden">
-          <div className="flex items-center justify-between gap-3 px-4 py-2">
-            <Logo />
+          <div className="flex items-center justify-between gap-3 px-4 py-1.5">
+            <a
+              href="/"
+              aria-label="RelaxBoss, ke Beranda"
+              className="inline-flex min-h-11 items-center gap-2 text-base font-semibold text-text"
+            >
+              <img src="/images/logo-relaxboss.png" width={28} height={28} alt="" className="size-7 rounded-lg" />
+              RelaxBoss
+            </a>
             <div className="flex items-center gap-1">
               <a
                 href="/konsultasi"
                 aria-label="Butuh bantuan sekarang?"
-                className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-lg text-crisis-text"
+                className="inline-flex size-11 items-center justify-center rounded-lg text-crisis-text"
               >
                 <LifeBuoy className="size-5" aria-hidden="true" />
               </a>
-              <LogoutButton />
+              <button
+                type="button"
+                data-press
+                onClick={() => router.post('/keluar')}
+                className="inline-flex h-9 items-center gap-1.5 rounded-lg border-[1.5px] border-primary px-3 text-sm font-medium text-primary"
+              >
+                <LogOut className="size-4" aria-hidden="true" />
+                Keluar
+              </button>
             </div>
           </div>
         </header>
 
         <main
           id="konten"
-          className={`mx-auto w-full px-4 py-6 md:px-8 md:py-8 ${wide ? 'max-w-[90rem]' : 'max-w-5xl'} ${
+          className={`mx-auto w-full px-4 py-5 md:px-6 md:py-7 ${wide ? 'max-w-6xl' : 'max-w-4xl'} ${
             fill ? 'flex min-h-0 flex-1 flex-col' : ''
-          }`}
+          } [&_h1:not([class])]:text-2xl md:[&_h1:not([class])]:text-[1.75rem] [&_h2:not([class])]:text-lg`}
         >
           <div data-load={staggered ? undefined : ''} className={fill ? 'flex min-h-0 flex-1 flex-col' : undefined}>
-            {showHelp ? (
-              <div className="mb-4 hidden shrink-0 justify-end md:flex">
-                <HelpPill />
-              </div>
-            ) : null}
             {children}
           </div>
         </main>
@@ -163,7 +178,7 @@ export default function AppShell({
         {/* Bar tab (HP) */}
         <nav
           aria-label="Navigasi bawah"
-          className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card md:hidden"
+          className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur md:hidden"
         >
           <ul className="grid grid-cols-5">
             {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
@@ -172,12 +187,19 @@ export default function AppShell({
                 <li key={href}>
                   <Link
                     href={href}
+                    data-press
                     aria-current={active ? 'page' : undefined}
-                    className={`flex min-h-14 flex-col items-center justify-center gap-1 text-xs ${
-                      active ? 'font-medium text-brand-strong' : 'text-text-secondary'
+                    className={`group flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors duration-300 ${EASE} ${
+                      active ? 'text-brand-strong' : 'text-text-secondary hover:text-nav-hover'
                     }`}
                   >
-                    <Icon className="size-5" aria-hidden="true" />
+                    <span
+                      className={`flex h-6 w-11 items-center justify-center rounded-full transition-all duration-300 ${EASE} ${
+                        active ? 'bg-brand-soft/30' : 'group-hover:bg-nav-hover/[0.07]'
+                      }`}
+                    >
+                      <Icon className="size-[1.125rem]" aria-hidden="true" />
+                    </span>
                     {label}
                   </Link>
                 </li>

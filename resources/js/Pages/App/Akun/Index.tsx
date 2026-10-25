@@ -87,7 +87,7 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
         <p className="mt-2 text-text-secondary">Data akunmu dan pengaturan privasi.</p>
       </div>
 
-      <div className="mt-8 grid items-start gap-6 lg:grid-cols-[13.75rem_minmax(0,1fr)]">
+      <div className="mt-6 grid items-start gap-5 lg:grid-cols-[13.75rem_minmax(0,1fr)]">
         <nav aria-label="Bagian akun" data-load className="hidden md:block lg:sticky lg:top-8">
           <ul className="flex gap-2 overflow-x-auto lg:flex-col lg:gap-1.5 lg:rounded-xl lg:border lg:border-border lg:bg-card lg:p-3 lg:shadow-card">
             {SECTIONS.map(({ id, label, icon: Icon }) => {
@@ -113,16 +113,16 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
 
         <div className="min-w-0 space-y-5">
           <section id="info-akun" aria-labelledby="judul-info-akun" data-load className={`${cardClass} scroll-mt-8`}>
-            <h2 id="judul-info-akun" className="text-lg font-semibold">
+            <h2 id="judul-info-akun" className="text-base font-semibold">
               Info akun
             </h2>
 
             <div className="mt-5 flex items-center gap-4" aria-hidden="true">
-              <span className="grid size-18 shrink-0 select-none place-items-center rounded-full bg-brand-soft text-3xl font-semibold text-text">
+              <span className="grid size-14 shrink-0 select-none place-items-center rounded-full bg-brand-soft text-2xl font-semibold text-text">
                 {initial}
               </span>
               <div className="min-w-0">
-                <p className="truncate text-lg font-semibold">{profile.name}</p>
+                <p className="truncate text-base font-semibold">{profile.name}</p>
                 <p className="truncate text-text-secondary">{profile.email}</p>
               </div>
             </div>
@@ -156,7 +156,7 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
             data-load
             className={`${cardClass} scroll-mt-8`}
           >
-            <h2 id="judul-persetujuan" className="text-lg font-semibold">
+            <h2 id="judul-persetujuan" className="text-base font-semibold">
               Persetujuan pelatihan
             </h2>
             <p className="mt-3 text-base font-medium">{CONSENT_TRAINING_QUESTION}</p>
@@ -211,9 +211,9 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
             id="hapus-akun"
             aria-labelledby="judul-hapus-akun"
             data-load
-            className="scroll-mt-8 rounded-xl border border-destructive/40 bg-destructive/5 p-5 md:p-6"
+            className="scroll-mt-8 rounded-xl border border-destructive/40 bg-destructive/5 p-5 md:p-5"
           >
-            <h2 id="judul-hapus-akun" className="text-lg font-semibold text-crisis-text">
+            <h2 id="judul-hapus-akun" className="text-base font-semibold text-crisis-text">
               Hapus akun
             </h2>
             <p className="mt-2 text-text-secondary">

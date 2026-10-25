@@ -68,7 +68,7 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
 
   return (
     <AppShell title="RelaxMate" wide staggered>
-      <div className="flex flex-col gap-6 lg:flex-row">
+      <div className="flex flex-col gap-5 lg:flex-row">
         <div data-load className="order-2 lg:order-1 lg:w-85 lg:shrink-0">
           <ConversationPanel
             conversations={conversations}

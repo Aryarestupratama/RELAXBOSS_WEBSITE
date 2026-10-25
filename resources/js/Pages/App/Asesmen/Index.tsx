@@ -42,7 +42,7 @@ export default function Index({ assessments }: IndexProps) {
         {assessments.length === 0 ? (
           <div
             data-load="pop"
-            className="mx-auto flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-8 text-center shadow-card"
+            className="mx-auto flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-6 text-center shadow-card"
           >
             <img
               src="/images/asesmen/asesmen-kosong.webp"
@@ -65,7 +65,7 @@ export default function Index({ assessments }: IndexProps) {
                   className="group flex h-full items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-popover sm:gap-5 sm:p-5"
                 >
                   <span
-                    className={`grid size-20 shrink-0 place-items-center rounded-xl sm:size-22 ${THUMB_TONES[index % THUMB_TONES.length]}`}
+                    className={`grid size-16 shrink-0 place-items-center rounded-xl sm:size-18 ${THUMB_TONES[index % THUMB_TONES.length]}`}
                     aria-hidden="true"
                   >
                     <span className="grid size-14 place-items-center rounded-full bg-card sm:size-16">
@@ -80,7 +80,7 @@ export default function Index({ assessments }: IndexProps) {
                   </span>
 
                   <span className="min-w-0 flex-1">
-                    <span className="block text-lg font-semibold">{assessment.name}</span>
+                    <span className="block text-base font-semibold">{assessment.name}</span>
                     <span className="mt-1 line-clamp-2 block text-text-secondary">{assessment.description}</span>
                     <span className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary">
                       <span className="inline-flex items-center gap-1.5">

@@ -219,7 +219,7 @@ export default function Show({
       </Link>
 
       {/* Tinggi dari AppShell `fill`: baris ini mengisi sisa layar, tidak ada tinggi tetap. Yang digulir hanya daftar dan riwayat pesan. */}
-      <div className="flex min-h-0 flex-1 flex-col gap-6 lg:flex-row">
+      <div className="flex min-h-0 flex-1 flex-col gap-5 lg:flex-row">
         <div data-load className="hidden min-h-0 lg:flex lg:w-85 lg:shrink-0">
           <ConversationPanel
             conversations={conversations}
@@ -248,7 +248,7 @@ export default function Show({
               <Mascot state={mascot} className="absolute -left-2 -top-1 [--s:0.22]" />
             </span>
             <div className="min-w-0">
-              <h1 className="text-xl leading-tight md:text-2xl">RelaxMate</h1>
+              <h1 className="text-lg leading-tight md:text-xl">RelaxMate</h1>
               <p className="text-sm text-text-secondary">{conversation.label}</p>
             </div>
           </header>
@@ -276,7 +276,7 @@ export default function Show({
               ref={scrollRef}
               tabIndex={0}
               aria-label="Riwayat pesan"
-              className="flex flex-1 flex-col overflow-y-auto bg-neutral-soft/40 p-4 md:p-6"
+              className="flex flex-1 flex-col overflow-y-auto bg-neutral-soft/40 p-4 md:p-5"
             >
               {messages.length === 0 && !sending ? (
                 <div className="m-auto flex flex-col items-center text-center">

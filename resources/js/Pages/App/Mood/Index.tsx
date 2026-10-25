@@ -142,9 +142,9 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
           </Alert>
         ) : null}
 
-        <div className="grid items-start gap-6 lg:grid-cols-12">
+        <div className="grid items-start gap-5 lg:grid-cols-12">
           <section aria-labelledby="mood-form-title" data-load className={`${cardClass} lg:col-span-5`}>
-            <h2 id="mood-form-title" className="text-lg font-semibold">
+            <h2 id="mood-form-title" className="text-base font-semibold">
               Catat mood
             </h2>
 
@@ -213,7 +213,7 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
 
           <section aria-labelledby="mood-chart-title" data-load className={`${cardClass} lg:col-span-7`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
-              <h2 id="mood-chart-title" className="text-lg font-semibold">
+              <h2 id="mood-chart-title" className="text-base font-semibold">
                 Polamu
               </h2>
               <div role="group" aria-label="Rentang grafik" className="flex gap-2">
@@ -251,9 +251,9 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
           </section>
         </div>
 
-        <div className="grid items-start gap-6 lg:grid-cols-12">
+        <div className="grid items-start gap-5 lg:grid-cols-12">
           <section aria-labelledby="mood-today-title" data-load className={`${cardClass} lg:col-span-5`}>
-            <h2 id="mood-today-title" className="text-lg font-semibold">
+            <h2 id="mood-today-title" className="text-base font-semibold">
               Hari ini
             </h2>
             <div className="mt-4">
@@ -267,7 +267,7 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
 
           {daysWithEntries.length > 0 ? (
             <section aria-labelledby="mood-day-title" data-load className={`${cardClass} lg:col-span-7`}>
-              <h2 id="mood-day-title" className="text-lg font-semibold">
+              <h2 id="mood-day-title" className="text-base font-semibold">
                 Lihat catatan satu hari
               </h2>
               <select

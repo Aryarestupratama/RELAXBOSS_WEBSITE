@@ -139,7 +139,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
 
         {showForm ? (
           <section aria-labelledby="pfa-title" className="mt-8 rounded-xl border border-border bg-card p-5 shadow-card">
-            <h2 id="pfa-title" className="text-lg font-semibold">
+            <h2 id="pfa-title" className="text-base font-semibold">
               Mau cerita sedikit tentang konteksnya?
             </h2>
             <p className="mt-1 text-text-secondary">
@@ -193,7 +193,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
 
         {savedAnswers.length > 0 ? (
           <section aria-labelledby="saved-title" className="mt-8">
-            <h2 id="saved-title" className="text-lg font-semibold">
+            <h2 id="saved-title" className="text-base font-semibold">
               Jawabanmu sudah tersimpan
             </h2>
             <dl className="mt-3 space-y-3">
@@ -217,7 +217,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
           </div>
         ) : (
           <section aria-labelledby="rec-title" className="mt-8">
-            <h2 id="rec-title" className="text-lg font-semibold">
+            <h2 id="rec-title" className="text-base font-semibold">
               Rekomendasi
             </h2>
 

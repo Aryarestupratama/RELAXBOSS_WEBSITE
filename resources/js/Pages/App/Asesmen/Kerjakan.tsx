@@ -139,14 +139,14 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
 
         <section data-load className="mt-8 overflow-hidden rounded-3xl border border-border bg-card shadow-card">
           <div className="grid lg:grid-cols-12">
-            <div className="flex flex-col gap-5 bg-brand-soft/40 p-6 md:p-8 lg:col-span-5">
+            <div className="flex flex-col gap-5 bg-brand-soft/40 p-5 md:p-6 lg:col-span-5">
               <img
                 src="/images/asesmen/asesmen-kerjakan.webp"
                 width={160}
                 height={160}
                 alt=""
                 data-float
-                className="size-24 object-contain lg:size-40"
+                className="size-20 object-contain lg:size-32"
               />
 
               {index === 0 && assessment.instructions ? (
@@ -159,13 +159,13 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
                 key={question.id}
                 ref={headingRef}
                 tabIndex={-1}
-                className="text-2xl leading-snug font-semibold outline-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300 md:text-[1.75rem]"
+                className="text-xl leading-snug font-semibold outline-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300 md:text-[1.75rem]"
               >
                 {question.text}
               </h1>
             </div>
 
-            <div className="flex flex-col justify-between gap-8 p-6 md:p-8 lg:col-span-7">
+            <div className="flex flex-col justify-between gap-6 p-5 md:p-6 lg:col-span-7">
               <div
                 key={question.id}
                 className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-300"
