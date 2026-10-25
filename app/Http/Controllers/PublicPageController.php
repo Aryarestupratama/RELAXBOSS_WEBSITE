@@ -23,7 +23,7 @@ class PublicPageController extends Controller
     public function about(): View
     {
         return view('public.tentang', [
-            'umb' => (string) config('relaxboss.umb'),
+            'about' => (array) config('relaxboss.about'),
         ]);
     }
 

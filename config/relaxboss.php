@@ -145,6 +145,23 @@ return [
     // Kosong sampai OQ-2 terjawab (RULE-049).
     'umb' => '',
 
+    // Cerita di halaman Tentang (SCR-004). Klaim publik (RULE-049): isi hanya yang sudah terkonfirmasi.
+    // Kosongkan sebuah bagian (atau seluruh blok) untuk menyembunyikannya. Jabatan tanpa nama pribadi;
+    // tambahkan nama hanya dengan izin yang bersangkutan.
+    'about' => [
+        'collaboration' => 'RelaxBoss adalah hasil kolaborasi Fakultas Psikologi dan Fakultas Ilmu Komputer Universitas Mercu Buana.',
+        'award' => [
+            'title' => 'Medali Emas',
+            'event' => 'Pekan Inovasi Universitas Mercu Buana',
+            'year' => '2025',
+        ],
+        'supervisors' => [
+            'Dekan Fakultas Ilmu Komputer',
+            'Dekan Fakultas Psikologi',
+            'Kepala Laboratorium Psikologi Terapan',
+        ],
+    ],
+
     // Eksportir data AI (FR-030, RULE-072). Fitur AI baru = satu kelas AiDataExporter + satu baris di sini.
     'exporters' => [
         \App\Services\Export\ChatExporter::class,
