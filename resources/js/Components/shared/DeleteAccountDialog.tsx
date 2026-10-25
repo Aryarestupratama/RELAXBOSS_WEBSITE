@@ -62,10 +62,10 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
           onClose();
         }
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-border bg-card p-6 text-card-foreground shadow-popover backdrop:bg-primary/40"
+      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl bg-card p-5 text-card-foreground shadow-popover backdrop:bg-primary/40"
     >
       <div className="flex items-start justify-between gap-3">
-        <h2 id="delete-account-title" className="text-lg font-semibold">
+        <h2 id="delete-account-title" className="text-base font-bold">
           Hapus akun?
         </h2>
         <button
@@ -73,16 +73,16 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
           onClick={onClose}
           disabled={form.processing}
           aria-label="Tutup"
-          className="-mt-1 -mr-2 inline-flex size-11 shrink-0 items-center justify-center rounded-lg text-text-secondary transition-colors hover:bg-neutral-soft hover:text-text disabled:opacity-50"
+          className="-mt-1 -mr-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-neutral-soft hover:text-text disabled:opacity-50"
         >
           <X className="size-5" aria-hidden="true" />
         </button>
       </div>
-      <p id="delete-account-desc" className="mt-2 text-text-secondary">
+      <p id="delete-account-desc" className="mt-1 text-[0.8125rem] leading-relaxed text-text-secondary">
         Semua datamu akan dihapus permanen dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.
       </p>
 
-      <form onSubmit={submit} noValidate className="mt-5 space-y-5">
+      <form onSubmit={submit} noValidate className="mt-4 space-y-4">
         {errors.account ? (
           <Alert variant="destructive">
             <AlertDescription>{errors.account}</AlertDescription>
@@ -102,11 +102,11 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
           )}
         </FormField>
 
-        <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <Button type="button" variant="ghost" onClick={onClose} disabled={form.processing}>
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <Button type="button" variant="ghost" className="rounded-full! px-5 text-sm" onClick={onClose} disabled={form.processing}>
             Batal
           </Button>
-          <Button type="submit" variant="destructive" disabled={form.processing}>
+          <Button type="submit" variant="destructive" className="rounded-full! px-5 text-sm" disabled={form.processing}>
             {form.processing ? 'Memproses...' : 'Hapus akun saya'}
           </Button>
         </div>
