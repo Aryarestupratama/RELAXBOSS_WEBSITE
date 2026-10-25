@@ -38,6 +38,51 @@ function initToc(): void {
     update();
 }
 
+/**
+ * Tooltip "i" (komponen info-tip): ketuk membuka atau menutup (hover dan fokus ditangani CSS), Esc menutup
+ * (WCAG 1.4.13), dan ketukan di luar menutup. Tanpa JS, hover dan fokus keyboard tetap bekerja.
+ */
+function initInfoTips(): void {
+    const tips = Array.from(document.querySelectorAll<HTMLElement>('[data-info-tip]'));
+    if (tips.length === 0) return;
+
+    const reset = (tip: HTMLElement): void => {
+        tip.removeAttribute('data-open');
+        tip.removeAttribute('data-dismissed');
+    };
+
+    tips.forEach((tip) => {
+        const button = tip.querySelector('button');
+        button?.addEventListener('click', () => {
+            tip.removeAttribute('data-dismissed');
+            if (tip.hasAttribute('data-open')) tip.removeAttribute('data-open');
+            else tip.setAttribute('data-open', '');
+        });
+        tip.addEventListener('mouseleave', () => tip.removeAttribute('data-dismissed'));
+        tip.addEventListener('focusout', (event) => {
+            if (!tip.contains(event.relatedTarget as Node | null)) reset(tip);
+        });
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return;
+        tips.forEach((tip) => {
+            if (tip.hasAttribute('data-open') || tip.matches(':hover, :focus-within')) {
+                tip.removeAttribute('data-open');
+                tip.setAttribute('data-dismissed', '');
+            }
+        });
+    });
+
+    document.addEventListener('click', (event) => {
+        tips.forEach((tip) => {
+            if (!tip.contains(event.target as Node)) reset(tip);
+        });
+    });
+}
+
 initToc();
+
+initInfoTips();
 
 initMotion();
