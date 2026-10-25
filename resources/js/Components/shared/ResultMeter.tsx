@@ -27,13 +27,13 @@ export default function ResultMeter({ subScale, score, maxScore, interpretation,
 
   return (
     <div>
-      <svg role="img" aria-label={label} width="100%" height="12" className="block">
-        <rect width="100%" height="12" rx="6" className="fill-neutral-soft" />
+      <svg role="img" aria-label={label} width="100%" height="10" className="block">
+        <rect width="100%" height="10" rx="5" className="fill-border" />
         {percent > 0 ? (
-          <rect width={`${percent}%`} height="12" rx="6" className={FILL[severityOf(severity)]} />
+          <rect width={`${percent}%`} height="10" rx="5" className={FILL[severityOf(severity)]} />
         ) : null}
       </svg>
-      <p className="mt-1.5 text-sm text-text-secondary" aria-hidden="true">
+      <p className="mt-1.5 text-xs text-text-secondary" aria-hidden="true">
         Skor {score} dari {maxScore}
       </p>
     </div>

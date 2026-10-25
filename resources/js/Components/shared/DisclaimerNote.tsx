@@ -5,7 +5,7 @@ export default function DisclaimerNote({ children }: { children: ReactNode }) {
   return (
     <div
       role="note"
-      className="rounded-lg border border-l-4 border-border border-l-brand-strong bg-card p-4 text-sm text-text"
+      className="rounded-2xl border-l-4 border-l-brand-strong bg-card px-4 py-3 text-[0.8125rem] leading-relaxed text-text shadow-card"
     >
       {children}
     </div>
