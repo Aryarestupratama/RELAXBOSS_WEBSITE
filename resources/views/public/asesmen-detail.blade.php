@@ -76,15 +76,10 @@
                     <h2 id="aspek" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Yang dilihat</h2>
                     <p class="mt-3 text-base text-text-secondary">Hasilmu ditampilkan terpisah untuk tiap aspek berikut.</p>
                 </div>
-                <ul data-stagger class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                <ul data-stagger class="mt-6 flex flex-wrap gap-3">
                     @foreach ($assessment['sub_scales'] as $subScale)
                         <li data-item>
-                            <div data-lift class="flex h-full flex-col gap-3 rounded-2xl p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $tones[$loop->index % 4] }}">
-                                <span class="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
-                                    <svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 2l1.8 6.5L20 10l-6.2 1.5L12 18l-1.8-6.5L4 10l6.2-1.5z"/></svg>
-                                </span>
-                                <h3 class="text-base font-semibold">{{ $subScale }}</h3>
-                            </div>
+                            <span data-lift class="inline-block rounded-2xl px-5 py-3 text-base font-semibold text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $tones[$loop->index % 4] }}">{{ $subScale }}</span>
                         </li>
                     @endforeach
                 </ul>
@@ -137,43 +132,16 @@
         </section>
     @endif
 
-    {{-- 5. Catatan penting --}}
+    {{-- 5. Catatan: teks biasa dengan ikon "i", bukan kartu (pola Asesmen, Artikel, Tentang, Konsultasi) --}}
     <section class="bg-background" aria-label="Catatan penting">
-        <div class="mx-auto max-w-6xl px-4 pt-10 md:pt-14">
-            <div data-reveal class="mx-auto max-w-3xl">
-                <div class="flex items-start gap-3 rounded-2xl bg-soft-sky p-4 text-sm text-text" role="note">
-                    <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                    <p>Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.</p>
-                </div>
-                <p class="mt-3">
-                    <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline underline-offset-4">
-                        Bicara dengan profesional
-                        <x-icon name="arrow-right" class="size-4" />
-                    </a>
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-14 md:pt-14 md:pb-20">
+            <div data-reveal class="mx-auto flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
+                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                <p>
+                    Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
+                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
                 </p>
             </div>
-        </div>
-    </section>
-
-    {{-- 6. Penutup untuk tamu --}}
-    @guest
-        <section class="bg-background" aria-labelledby="judul-penutup">
-            <div class="mx-auto max-w-6xl px-4 pt-10 md:pt-14">
-                <div data-reveal class="rounded-3xl bg-surface-alt px-5 py-8 md:px-10 md:py-10">
-                    <div class="max-w-xl">
-                        <h2 id="judul-penutup" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Mulai dari satu langkah kecil.</h2>
-                        <p class="mt-3 text-base text-text-secondary">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
-                        <div class="mt-5"><x-button-link href="{{ url('/daftar') }}" class="rounded-full! px-6 text-sm">Daftar gratis</x-button-link></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-    @endguest
-
-    {{-- 7. Bantuan --}}
-    <section class="bg-background" aria-label="Bantuan">
-        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
-            <x-help-box data-reveal />
         </div>
     </section>
 @endsection
