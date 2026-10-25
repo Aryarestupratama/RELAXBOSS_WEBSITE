@@ -5,6 +5,11 @@
 @import "@fontsource/poppins/latin-500.css";
 @import "@fontsource/poppins/latin-600.css";
 @import "@fontsource/poppins/latin-700.css";
+@import "@fontsource/plus-jakarta-sans/latin-400.css";
+@import "@fontsource/plus-jakarta-sans/latin-500.css";
+@import "@fontsource/plus-jakarta-sans/latin-600.css";
+@import "@fontsource/plus-jakarta-sans/latin-700.css";
+@import "@fontsource/plus-jakarta-sans/latin-800.css";
 @import "./motion.css";
 
 /* Mode terang saja untuk rilis pertama (Design bagian 2). Varian dark: dari
@@ -15,8 +20,8 @@
 @source '../../storage/framework/views/*.php';
 
 @theme inline {
-    /* Font (Design bagian 2: Poppins lokal, tanpa CDN) */
-    --font-sans: 'Poppins', system-ui, sans-serif;
+    /* Font (Design bagian 2: lokal, tanpa CDN). Plus Jakarta Sans sejak TASK-028Q; Poppins tetap terpasang sebagai cadangan. */
+    --font-sans: 'Plus Jakarta Sans', 'Poppins', system-ui, sans-serif;
     --font-heading: var(--font-sans);
 
     /* Warna shadcn */
@@ -65,6 +70,11 @@
     --color-crisis-bg: var(--crisis-bg);
     --color-crisis-text: var(--crisis-text);
     --color-neutral-soft: var(--neutral-soft);
+    --color-surface-alt: var(--surface-alt);
+    --color-soft-lavender: var(--soft-lavender);
+    --color-soft-sky: var(--soft-sky);
+    --color-soft-mint: var(--soft-mint);
+    --color-soft-peach: var(--soft-peach);
 
     /* Radius: 8px tombol dan input (lg), 12px kartu (xl) */
     --radius-sm: calc(var(--radius) * 0.6);
@@ -78,6 +88,8 @@
     /* Bayangan */
     --shadow-card: 0 1px 2px rgba(31, 29, 46, 0.06);
     --shadow-popover: 0 8px 24px rgba(31, 29, 46, 0.12);
+    --shadow-lift: 0 1px 2px rgba(25, 35, 56, 0.06), 0 8px 22px rgba(25, 35, 56, 0.08);
+    --shadow-lift-hover: 0 2px 4px rgba(25, 35, 56, 0.08), 0 18px 40px rgba(25, 35, 56, 0.16);
 }
 
 :root {
@@ -115,6 +127,13 @@
     --crisis-bg: #FEF2F2;
     --crisis-text: #991B1B;
     --neutral-soft: #F5F3EE;
+    /* TASK-028Q: latar bagian selang-seling dan empat pastel kartu Beranda (turunan lebih terang dari
+       --brand-soft, --mood-blue, --mood-green, --mood-peach). Teks di atasnya --text. */
+    --surface-alt: #F7F9FC;
+    --soft-lavender: #DED4FF;
+    --soft-sky: #C9E2F8;
+    --soft-mint: #CDEEDD;
+    --soft-peach: #FBDCCD;
 
     /* Variabel shadcn dipetakan ke token di atas (Design bagian 3) */
     --background: var(--page-bg);

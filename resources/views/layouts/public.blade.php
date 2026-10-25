@@ -78,37 +78,28 @@
         @yield('content')
     </main>
 
-    <footer class="bg-primary text-on-primary">
-        <div class="mx-auto grid max-w-6xl gap-8 px-4 py-10 md:grid-cols-[1.4fr_1fr_1fr]">
-            <div>
-                <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center gap-2 text-xl font-semibold" aria-label="RelaxBoss, ke Beranda">
-                    <img src="{{ asset('images/logo-relaxboss.png') }}" width="32" height="32" alt="" class="size-8 rounded-lg ring-1 ring-on-primary/25">
+    <footer class="bg-surface-alt">
+        <div class="mx-auto max-w-6xl px-4 pt-9 pb-6">
+            <div class="flex flex-col items-center justify-between gap-5 md:flex-row">
+                <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center gap-2 text-xl font-semibold text-text" aria-label="RelaxBoss, ke Beranda">
+                    <img src="{{ asset('images/logo-relaxboss.png') }}" width="32" height="32" alt="" class="size-8 rounded-lg">
                     RelaxBoss
                 </a>
-                <p class="mt-2 text-on-primary/85">Gratis untuk mahasiswa.</p>
-                <p class="mt-4 max-w-xs text-sm text-on-primary/75">RelaxBoss bukan psikolog atau layanan medis.</p>
+
+                <nav aria-label="Jelajahi">
+                    <ul class="flex flex-wrap justify-center gap-x-7">
+                        @foreach ($navLinks as $label => $link)
+                            <li><a href="{{ url($link['href']) }}" class="inline-flex min-h-11 items-center text-sm font-medium text-text-secondary transition-colors hover:text-brand-strong">{{ $label }}</a></li>
+                        @endforeach
+                    </ul>
+                </nav>
             </div>
 
-            <nav aria-label="Jelajahi">
-                <p class="font-medium">Jelajahi</p>
-                <ul class="mt-2">
-                    @foreach ($navLinks as $label => $link)
-                        <li><a href="{{ url($link['href']) }}" class="inline-flex min-h-11 items-center text-on-primary/85 underline-offset-4 transition-colors hover:text-on-primary hover:underline">{{ $label }}</a></li>
-                    @endforeach
-                </ul>
-            </nav>
-
-            <nav aria-label="Bantuan dan kebijakan">
-                <p class="font-medium">Bantuan</p>
-                <ul class="mt-2">
-                    <li class="py-1"><a href="{{ url('/konsultasi') }}" data-press class="inline-flex min-h-11 items-center rounded-lg bg-mood-yellow px-4 font-medium text-text transition duration-200 hover:shadow-card">Butuh bantuan sekarang?</a></li>
-                    <li><a href="{{ url('/privasi') }}" class="inline-flex min-h-11 items-center text-on-primary/85 underline-offset-4 transition-colors hover:text-on-primary hover:underline">Privasi</a></li>
-                    <li><a href="{{ url('/ketentuan') }}" class="inline-flex min-h-11 items-center text-on-primary/85 underline-offset-4 transition-colors hover:text-on-primary hover:underline">Ketentuan</a></li>
-                </ul>
-            </nav>
-        </div>
-        <div class="border-t border-on-primary/15">
-            <p class="mx-auto max-w-6xl px-4 py-4 text-sm text-on-primary/75">&copy; {{ date('Y') }} RelaxBoss</p>
+            <div class="mt-6 flex flex-wrap items-center justify-center gap-x-6 border-t border-border pt-5 text-sm text-text-muted">
+                <p>&copy; {{ date('Y') }} RelaxBoss</p>
+                <a href="{{ url('/privasi') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-brand-strong">Privasi</a>
+                <a href="{{ url('/ketentuan') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-brand-strong">Ketentuan</a>
+            </div>
         </div>
     </footer>
 </body>
