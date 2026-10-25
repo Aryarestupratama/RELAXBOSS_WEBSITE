@@ -30,43 +30,51 @@
         Lewati ke konten
     </a>
 
+    @php
+        // Gerak hover satu kurva dengan halaman Publik lain (motion.ts: [0.2, 0.7, 0.2, 1]).
+        $ease = 'ease-[cubic-bezier(0.2,0.7,0.2,1)]';
+        // Tautan: latar pil lembut membesar dari tengah dan teks beralih ke --nav-hover (tanpa garis bawah).
+        // ::before = pil, ::after = area sentuh 44px agar tampilan kecil tetap mudah ditekan.
+        $navLink = 'group relative isolate inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium text-text-secondary transition-colors duration-300 '.$ease
+            .' before:absolute before:inset-0 before:-z-10 before:scale-75 before:rounded-full before:bg-nav-hover/[0.07] before:opacity-0 before:transition-all before:duration-300 before:ease-[cubic-bezier(0.2,0.7,0.2,1)]'
+            .' after:absolute after:inset-x-0 after:-inset-y-1 hover:text-nav-hover hover:before:scale-100 hover:before:opacity-100'
+            .' aria-[current=page]:text-brand-strong aria-[current=page]:before:scale-100 aria-[current=page]:before:bg-brand-soft/30 aria-[current=page]:before:opacity-100';
+        $btnBase = 'inline-flex h-10 items-center justify-center rounded-lg border-[1.5px] px-4 text-sm font-medium transition-all duration-300 '.$ease;
+        $btnOutline = $btnBase.' border-primary text-primary hover:border-nav-hover hover:bg-nav-hover hover:text-on-primary hover:shadow-lift';
+        $btnSolid = $btnBase.' border-primary bg-primary text-on-primary hover:-translate-y-px hover:border-nav-hover hover:bg-nav-hover hover:shadow-lift-hover';
+    @endphp
+
     <header class="border-b border-border bg-card md:sticky md:top-0 md:z-40 md:bg-card/90 md:backdrop-blur">
-        <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-3">
-            <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center gap-2 text-xl font-semibold text-text" aria-label="RelaxBoss, ke Beranda">
-                <img src="{{ asset('images/logo-relaxboss.png') }}" width="32" height="32" alt="" class="size-8 rounded-lg">
+        <div class="mx-auto flex max-w-6xl items-center gap-4 px-4 py-2">
+            <a href="{{ url('/') }}" class="inline-flex min-h-11 items-center gap-2 text-base font-semibold text-text" aria-label="RelaxBoss, ke Beranda">
+                <img src="{{ asset('images/logo-relaxboss.png') }}" width="28" height="28" alt="" class="size-7 rounded-lg">
                 RelaxBoss
             </a>
 
-            <nav aria-label="Navigasi utama" class="hidden items-center gap-8 md:flex">
+            <span class="hidden h-6 w-px bg-border md:block" aria-hidden="true"></span>
+
+            <nav aria-label="Navigasi utama" class="hidden items-center gap-1 md:flex">
                 @foreach ($navLinks as $label => $link)
-                    <a href="{{ url($link['href']) }}"
-                       class="relative inline-flex min-h-11 items-center text-text-secondary transition-colors hover:text-text aria-[current=page]:font-medium aria-[current=page]:text-text after:absolute after:inset-x-0 after:bottom-1.5 after:h-0.5 after:origin-left after:scale-x-0 after:rounded-full after:bg-brand after:transition-transform after:duration-300 hover:after:scale-x-100 aria-[current=page]:after:scale-x-100"
+                    <a href="{{ url($link['href']) }}" class="{{ $navLink }}"
                        @if (request()->is($link['pattern'])) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
             </nav>
 
-            <div class="flex items-center gap-2">
+            <div class="ml-auto flex items-center gap-2">
                 @auth
-                    <a href="{{ url('/dashboard') }}" data-press class="inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium text-primary transition duration-200 hover:bg-primary hover:text-on-primary">
-                        Dashboard
-                    </a>
+                    <a href="{{ url('/dashboard') }}" data-press class="{{ $btnOutline }}">Dashboard</a>
                 @else
-                    <a href="{{ url('/masuk') }}" data-press class="inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-5 py-2.5 font-medium text-primary transition duration-200 hover:bg-primary hover:text-on-primary">
-                        Masuk
-                    </a>
-                    <a href="{{ url('/daftar') }}" data-press class="hidden min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary bg-primary px-5 py-2.5 font-medium text-on-primary transition duration-200 hover:shadow-card hover:brightness-130 sm:inline-flex">
-                        Daftar gratis
-                    </a>
+                    <a href="{{ url('/masuk') }}" data-press class="{{ $btnOutline }}">Masuk</a>
+                    <a href="{{ url('/daftar') }}" data-press class="hidden sm:inline-flex {{ $btnSolid }}">Daftar gratis</a>
                 @endauth
             </div>
         </div>
 
         <nav aria-label="Navigasi utama di HP" class="border-t border-border md:hidden">
-            <ul class="mx-auto flex max-w-6xl justify-around px-4">
+            <ul class="mx-auto flex max-w-6xl justify-around px-4 py-1.5">
                 @foreach ($navLinks as $label => $link)
                     <li>
-                        <a href="{{ url($link['href']) }}"
-                           class="inline-flex min-h-11 items-center border-b-2 border-transparent px-3 text-sm text-text-secondary transition-colors hover:text-text aria-[current=page]:border-brand aria-[current=page]:font-medium aria-[current=page]:text-text"
+                        <a href="{{ url($link['href']) }}" class="{{ $navLink }}"
                            @if (request()->is($link['pattern'])) aria-current="page" @endif>{{ $label }}</a>
                     </li>
                 @endforeach
