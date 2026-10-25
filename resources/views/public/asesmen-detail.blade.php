@@ -5,97 +5,108 @@
 
 @section('content')
     @php
-        $img = asset('images/asesmen');
-        // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand-soft text-text'];
+        // Pastel kartu mengikuti Beranda (Design SCR-001).
+        $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
     @endphp
 
-    {{-- Kepala --}}
-    <section class="overflow-hidden bg-neutral-soft">
-        <div class="mx-auto max-w-6xl px-4 py-10 lg:py-14">
-            <a href="{{ url('/asesmen') }}" class="inline-flex min-h-11 items-center gap-2 font-medium text-brand-strong underline underline-offset-4">
+    {{-- 1. Kepala: teks di kiri, kartu ringkasan pastel di kanan (tanpa ilustrasi) --}}
+    <section class="bg-background" aria-labelledby="judul-asesmen">
+        <div class="mx-auto max-w-6xl px-4 pt-8 pb-8 md:pt-10 md:pb-12">
+            <a href="{{ url('/asesmen') }}" class="inline-flex min-h-11 items-center gap-2 text-sm font-medium text-text-secondary underline-offset-4 transition-colors hover:text-text hover:underline">
                 <x-icon name="arrow-left" class="size-4" />
                 Semua asesmen
             </a>
 
-            <div class="mt-4 grid items-center gap-10 lg:grid-cols-2">
+            <div class="mt-2 grid items-center gap-8 lg:grid-cols-[3fr_2fr] lg:gap-14">
                 <div>
-                    <h1 data-load class="text-[1.75rem] leading-[1.2] font-semibold md:text-5xl md:leading-[1.15]">{{ $assessment['name'] }}</h1>
+                    <h1 id="judul-asesmen" data-load class="text-[1.75rem] leading-[1.1] font-bold tracking-tight md:text-4xl lg:text-5xl">{{ $assessment['name'] }}</h1>
 
                     @if ($assessment['is_demo'])
-                        <p data-load class="mt-3 text-sm text-warning">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</p>
+                        <p data-load class="mt-3 w-fit rounded-full bg-soft-peach px-3 py-1 text-xs font-medium text-text">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</p>
                     @endif
 
-                    <p data-load class="mt-5 max-w-prose text-lg text-text-secondary">{{ $assessment['description'] }}</p>
+                    <p data-load class="mt-4 max-w-prose text-base text-text-secondary">{{ $assessment['description'] }}</p>
 
-                    <p data-load class="mt-5 flex flex-wrap items-center gap-x-6 gap-y-1 text-text-secondary">
-                        <span class="inline-flex items-center gap-2">
-                            <x-icon name="clock" class="size-5 text-brand-strong" />
-                            Sekitar {{ $assessment['estimated_minutes'] }} menit
-                        </span>
-                        <span class="inline-flex items-center gap-2">
-                            <x-icon name="list-checks" class="size-5 text-brand-strong" />
-                            {{ $assessment['question_count'] }} pertanyaan
-                        </span>
-                    </p>
-
-                    <div data-load class="mt-8 flex flex-wrap gap-3">
-                        <x-button-link href="{{ url('/app/asesmen/'.$assessment['slug']) }}">Mulai asesmen</x-button-link>
+                    <div data-load class="mt-6 flex flex-wrap gap-3">
+                        <x-button-link href="{{ url('/app/asesmen/'.$assessment['slug']) }}" class="rounded-full! px-6 text-sm">Mulai asesmen</x-button-link>
                         @guest
-                            <x-button-link href="{{ url('/daftar') }}" variant="outline">Daftar gratis</x-button-link>
+                            <x-button-link href="{{ url('/daftar') }}" variant="outline" class="rounded-full! border-2! bg-card px-6 text-sm">Daftar gratis</x-button-link>
                         @endguest
                     </div>
                     @guest
-                        <p data-load class="mt-4 max-w-prose text-sm text-text-secondary">
+                        <p data-load class="mt-3 max-w-prose text-sm text-text-secondary">
                             Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.
                         </p>
                     @endguest
                 </div>
 
-                <div data-load="pop" class="mx-auto w-full max-w-md">
-                    <div class="grid aspect-square place-items-center overflow-hidden rounded-xl border border-border bg-card p-6 shadow-card">
-                        <img src="{{ $img }}/asesmen-detail.webp" width="900" height="900" fetchpriority="high"
-                             alt="RelaxMate, robot pendamping, bersandar di papan catatan besar berisi tiga centang, ditemani dua karakter perasaan."
-                             class="h-auto w-full max-w-72 object-contain">
+                <div data-load="pop" class="w-full max-w-md justify-self-center lg:max-w-none">
+                    <div class="rounded-3xl bg-soft-mint p-6 text-text shadow-lift">
+                        <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+                            <x-icon name="clipboard-check" class="size-5" />
+                        </span>
+                        <h2 class="mt-3 text-xl font-bold">Sekilas</h2>
+                        <dl class="mt-3 space-y-3 text-sm">
+                            <div class="flex items-center gap-3">
+                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="clock" class="size-4" /></span>
+                                <div>
+                                    <dt class="text-xs text-text-secondary">Waktu pengerjaan</dt>
+                                    <dd class="font-semibold">Sekitar {{ $assessment['estimated_minutes'] }} menit</dd>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="list-checks" class="size-4" /></span>
+                                <div>
+                                    <dt class="text-xs text-text-secondary">Jumlah pertanyaan</dt>
+                                    <dd class="font-semibold">{{ $assessment['question_count'] }} pertanyaan</dd>
+                                </div>
+                            </div>
+                        </dl>
                     </div>
                 </div>
             </div>
         </div>
     </section>
 
-    {{-- Yang dilihat --}}
+    {{-- 2. Yang dilihat --}}
     @if (count($assessment['sub_scales']) > 0)
-        <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-labelledby="aspek">
-            <h2 id="aspek" data-reveal class="text-2xl md:text-3xl">Yang dilihat</h2>
-            <p data-reveal class="mt-2 text-text-secondary">Hasilmu ditampilkan terpisah untuk tiap aspek berikut.</p>
-            <ul data-stagger class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($assessment['sub_scales'] as $subScale)
-                    <li data-item data-lift class="rounded-xl border border-border bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
-                        <span class="grid size-10 place-items-center rounded-full {{ $circles[$loop->index % 3] }}" aria-hidden="true">
-                            <svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 2l1.8 6.5L20 10l-6.2 1.5L12 18l-1.8-6.5L4 10l6.2-1.5z"/></svg>
-                        </span>
-                        <h3 class="mt-4">{{ $subScale }}</h3>
-                    </li>
-                @endforeach
-            </ul>
+        <section class="bg-background" aria-labelledby="aspek">
+            <div class="mx-auto max-w-6xl px-4 pb-10 md:pb-14">
+                <div data-reveal class="max-w-xl">
+                    <h2 id="aspek" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Yang dilihat</h2>
+                    <p class="mt-3 text-base text-text-secondary">Hasilmu ditampilkan terpisah untuk tiap aspek berikut.</p>
+                </div>
+                <ul data-stagger class="mt-6 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+                    @foreach ($assessment['sub_scales'] as $subScale)
+                        <li data-item>
+                            <div data-lift class="flex h-full flex-col gap-3 rounded-2xl p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $tones[$loop->index % 4] }}">
+                                <span class="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+                                    <svg class="size-5 fill-current" viewBox="0 0 24 24"><path d="M12 2l1.8 6.5L20 10l-6.2 1.5L12 18l-1.8-6.5L4 10l6.2-1.5z"/></svg>
+                                </span>
+                                <h3 class="text-base font-semibold">{{ $subScale }}</h3>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            </div>
         </section>
     @endif
 
-    {{-- Cara mengerjakan --}}
-    <section class="bg-neutral-soft" aria-labelledby="cara">
-        <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
-            <h2 id="cara" data-reveal class="text-2xl md:text-3xl">Cara mengerjakan</h2>
-            <div data-reveal class="mt-8 rounded-xl border border-border bg-card p-6 shadow-card lg:p-8">
+    {{-- 3. Cara mengerjakan --}}
+    <section class="bg-surface-alt" aria-labelledby="cara">
+        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+            <h2 id="cara" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Cara mengerjakan</h2>
+            <div data-reveal class="mt-6 rounded-3xl bg-card p-5 shadow-lift md:p-8">
                 @if (filled($assessment['instructions']))
-                    <p class="max-w-prose text-text-secondary">{{ $assessment['instructions'] }}</p>
+                    <p class="max-w-prose text-base text-text-secondary">{{ $assessment['instructions'] }}</p>
                 @endif
-                <p class="@if (filled($assessment['instructions'])) mt-3 @endif max-w-prose text-text-secondary">Satu pertanyaan tampil pada satu waktu. Tidak ada jawaban benar atau salah, jawab sesuai keadaanmu.</p>
+                <p class="@if (filled($assessment['instructions'])) mt-3 @endif max-w-prose text-base text-text-secondary">Satu pertanyaan tampil pada satu waktu. Tidak ada jawaban benar atau salah, jawab sesuai keadaanmu.</p>
 
                 @if (count($assessment['options']) > 0)
-                    <h3 class="mt-6">Pilihan jawaban</h3>
+                    <h3 class="mt-6 text-base font-semibold">Pilihan jawaban</h3>
                     <ul class="mt-3 flex flex-wrap gap-2">
                         @foreach ($assessment['options'] as $option)
-                            <li class="rounded-full border border-border bg-neutral-soft px-4 py-2 text-sm font-medium text-text">{{ $option }}</li>
+                            <li class="rounded-full bg-soft-sky px-4 py-1.5 text-sm font-medium text-text">{{ $option }}</li>
                         @endforeach
                     </ul>
                 @endif
@@ -103,52 +114,66 @@
         </div>
     </section>
 
-    {{-- Tentang instrumen: hanya bila sumber atau validasi terisi dan bukan Instrumen contoh (RULE-049) --}}
+    {{-- 4. Tentang instrumen: hanya bila sumber atau validasi terisi dan bukan Instrumen contoh (RULE-049) --}}
     @if (filled($assessment['source']) || filled($assessment['validated_by']))
-        <section class="mx-auto max-w-6xl px-4 pt-12 md:pt-16" aria-labelledby="sumber">
-            <h2 id="sumber" data-reveal class="text-2xl md:text-3xl">Tentang instrumen</h2>
-            <dl data-reveal class="mt-4 max-w-prose space-y-3 text-text-secondary">
-                @if (filled($assessment['source']))
-                    <div>
-                        <dt class="text-sm">Sumber</dt>
-                        <dd class="text-text">{{ $assessment['source'] }}</dd>
-                    </div>
-                @endif
-                @if (filled($assessment['validated_by']))
-                    <div>
-                        <dt class="text-sm">Divalidasi oleh</dt>
-                        <dd class="text-text">{{ $assessment['validated_by'] }}</dd>
-                    </div>
-                @endif
-            </dl>
+        <section class="bg-background" aria-labelledby="sumber">
+            <div class="mx-auto max-w-6xl px-4 pt-10 md:pt-14">
+                <h2 id="sumber" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Tentang instrumen</h2>
+                <dl data-reveal class="mt-4 max-w-prose space-y-3 text-text-secondary">
+                    @if (filled($assessment['source']))
+                        <div>
+                            <dt class="text-sm">Sumber</dt>
+                            <dd class="text-base text-text">{{ $assessment['source'] }}</dd>
+                        </div>
+                    @endif
+                    @if (filled($assessment['validated_by']))
+                        <div>
+                            <dt class="text-sm">Divalidasi oleh</dt>
+                            <dd class="text-base text-text">{{ $assessment['validated_by'] }}</dd>
+                        </div>
+                    @endif
+                </dl>
+            </div>
         </section>
     @endif
 
-    {{-- Disclaimer --}}
-    <section class="mx-auto max-w-6xl px-4 pt-12 md:pt-16" aria-label="Catatan penting">
-        <div data-reveal class="mx-auto max-w-3xl">
-            <x-disclaimer>
-                Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
-            </x-disclaimer>
-            <p class="mt-4">
-                <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-4">Bicara dengan profesional</a>
-            </p>
+    {{-- 5. Catatan penting --}}
+    <section class="bg-background" aria-label="Catatan penting">
+        <div class="mx-auto max-w-6xl px-4 pt-10 md:pt-14">
+            <div data-reveal class="mx-auto max-w-3xl">
+                <div class="flex items-start gap-3 rounded-2xl bg-soft-sky p-4 text-sm text-text" role="note">
+                    <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                    <p>Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.</p>
+                </div>
+                <p class="mt-3">
+                    <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center gap-2 text-sm font-semibold text-primary underline underline-offset-4">
+                        Bicara dengan profesional
+                        <x-icon name="arrow-right" class="size-4" />
+                    </a>
+                </p>
+            </div>
         </div>
     </section>
 
-    {{-- Penutup untuk tamu --}}
+    {{-- 6. Penutup untuk tamu --}}
     @guest
-        <section class="mx-auto max-w-6xl px-4 pt-14" aria-labelledby="judul-penutup">
-            <div data-reveal class="text-center">
-                <h2 id="judul-penutup" class="text-[1.75rem] md:text-5xl">Mulai dari satu langkah kecil.</h2>
-                <p class="mx-auto mt-4 max-w-prose text-text-secondary">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
-                <div class="mt-8"><x-button-link href="{{ url('/daftar') }}">Daftar gratis</x-button-link></div>
+        <section class="bg-background" aria-labelledby="judul-penutup">
+            <div class="mx-auto max-w-6xl px-4 pt-10 md:pt-14">
+                <div data-reveal class="rounded-3xl bg-surface-alt px-5 py-8 md:px-10 md:py-10">
+                    <div class="max-w-xl">
+                        <h2 id="judul-penutup" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Mulai dari satu langkah kecil.</h2>
+                        <p class="mt-3 text-base text-text-secondary">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
+                        <div class="mt-5"><x-button-link href="{{ url('/daftar') }}" class="rounded-full! px-6 text-sm">Daftar gratis</x-button-link></div>
+                    </div>
+                </div>
             </div>
         </section>
     @endguest
 
-    {{-- Bantuan --}}
-    <section class="mx-auto max-w-6xl px-4 py-12" aria-label="Bantuan">
-        <x-help-box data-reveal />
+    {{-- 7. Bantuan --}}
+    <section class="bg-background" aria-label="Bantuan">
+        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+            <x-help-box data-reveal />
+        </div>
     </section>
 @endsection

@@ -5,125 +5,95 @@
 
 @section('content')
     @php
-        $img = asset('images/asesmen');
-        // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-        $accents = [
-            ['circle' => 'bg-mood-yellow text-text'],
-            ['circle' => 'bg-mood-green text-text'],
-            ['circle' => 'bg-brand-soft text-text'],
-        ];
+        // Hanya lingkaran ikon yang berwarna (pastel Beranda); kartu sendiri putih.
+        $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
     @endphp
 
-    {{-- Hero --}}
-    <section class="overflow-hidden bg-neutral-soft">
-        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2 lg:py-16">
-            <div>
-                <h1 data-load class="text-[1.75rem] leading-[1.2] font-semibold md:text-5xl md:leading-[1.15]">Asesmen</h1>
-                <p data-load class="mt-5 max-w-prose text-lg text-text-secondary">
-                    Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Pilih asesmen yang ingin kamu coba,
-                    lalu masuk atau daftar gratis untuk mengerjakannya.
-                </p>
-                @guest
-                    <div data-load class="mt-8 flex flex-wrap gap-3">
-                        <x-button-link href="{{ url('/daftar') }}">Daftar gratis</x-button-link>
-                        <x-button-link href="{{ url('/masuk') }}" variant="outline">Masuk</x-button-link>
-                    </div>
-                @endguest
-            </div>
-
-            <div data-load="pop" class="relative mx-auto w-full max-w-md">
-                <div>
-                    <img src="{{ $img }}/asesmen-hero.webp" width="1200" height="900" fetchpriority="high"
-                         alt="RelaxMate, robot pendamping, memegang papan catatan dan pensil di antara karakter perasaan berwarna biru, kuning, merah, dan hijau."
-                         class="h-auto w-full">
-                </div>
-                {{-- Label emosi: hiasan, dipasang lewat kode agar teks tajam --}}
-                <div class="hidden sm:block" aria-hidden="true">
-                    <span data-float class="absolute top-[41%] left-[19%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-blue"></span>Sedih</span>
-                    <span data-float class="absolute top-[42%] left-[81%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-yellow"></span>Cemas</span>
-                    <span data-float class="absolute top-[84%] left-[18%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-red"></span>Stres</span>
-                    <span data-float class="absolute top-[86%] left-[82%] -translate-x-1/2 inline-flex items-center gap-2 rounded-full bg-card px-3 py-1 text-xs font-medium text-text shadow-card"><span class="size-3 rounded-full bg-mood-green"></span>Lega</span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    {{-- Daftar asesmen --}}
-    <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-label="Daftar asesmen">
-        @if ($assessments->isEmpty())
-            <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                <img src="{{ $img }}/asesmen-kosong.webp" width="700" height="700" loading="lazy" alt=""
-                     class="size-44 object-contain">
-                <p class="mt-4 text-lg font-medium text-text">Daftar asesmen sedang disiapkan.</p>
-                <div class="mt-6"><x-button-link href="{{ url('/') }}">Kembali ke Beranda</x-button-link></div>
-            </div>
-        @else
-            <ul data-stagger class="grid gap-4 md:grid-cols-2 lg:gap-6">
-                @foreach ($assessments as $item)
-                    <li data-item data-lift class="flex flex-col rounded-xl border border-border bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
-                        <span class="grid size-14 place-items-center rounded-full {{ $accents[$loop->index % 3]['circle'] }}" aria-hidden="true">
-                            <x-icon name="clipboard-check" class="size-7" />
-                        </span>
-
-                        <h2 class="mt-4 text-2xl font-semibold">
-                            <a href="{{ url('/asesmen/'.$item['slug']) }}" class="text-text underline-offset-4 hover:text-brand-strong hover:underline">{{ $item['name'] }}</a>
-                        </h2>
-
-                        @if ($item['is_demo'])
-                            <p class="mt-1 text-sm text-warning">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</p>
-                        @endif
-
-                        <p class="mt-2 text-text-secondary">{{ $item['summary'] }}</p>
-
-                        <p class="mt-4 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-text-secondary">
-                            <span class="inline-flex items-center gap-1.5">
-                                <x-icon name="clock" class="size-4 text-brand-strong" />
-                                Sekitar {{ $item['estimated_minutes'] }} menit
-                            </span>
-                            <span class="inline-flex items-center gap-1.5">
-                                <x-icon name="list-checks" class="size-4 text-brand-strong" />
-                                {{ $item['question_count'] }} pertanyaan
-                            </span>
-                        </p>
-
-                        @if (count($item['sub_scales']) > 0)
-                            <ul class="mt-4 flex flex-wrap gap-2" aria-label="Aspek yang diukur">
-                                @foreach ($item['sub_scales'] as $subScale)
-                                    <li class="rounded-full bg-neutral-soft px-3 py-1 text-sm text-text">{{ $subScale }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-
-                        <div class="mt-auto pt-6">
-                            <x-button-link href="{{ url('/asesmen/'.$item['slug']) }}" variant="outline" aria-label="Lihat detail {{ $item['name'] }}">Lihat detail</x-button-link>
-                        </div>
-                    </li>
-                @endforeach
-            </ul>
-        @endif
-
-        @guest
-            <x-disclaimer data-reveal class="mt-8 flex items-start gap-3">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-brand-strong" />
-                <p>Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.</p>
-            </x-disclaimer>
-        @endguest
-    </section>
-
-    {{-- Disclaimer --}}
-    <section class="bg-neutral-soft" aria-label="Catatan penting">
-        <div data-reveal class="mx-auto max-w-3xl px-4 py-12 text-center">
-            <x-disclaimer class="text-left">
-                Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
-            </x-disclaimer>
-            <p class="mt-4">
-                <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-4">Bicara dengan profesional</a>
+    {{-- 1. Judul: di tengah, tanpa tombol (Masuk dan Daftar sudah ada di navbar) --}}
+    <section class="bg-background" aria-labelledby="judul-asesmen">
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-8 text-center md:pt-14 md:pb-10">
+            <h1 id="judul-asesmen" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">Asesmen</h1>
+            <p data-load class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
+                Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Pilih asesmen yang ingin kamu coba,
+                lalu masuk atau daftar gratis untuk mengerjakannya.
             </p>
         </div>
     </section>
 
-    {{-- Bantuan --}}
-    <section class="mx-auto max-w-6xl px-4 py-12" aria-label="Bantuan">
-        <x-help-box data-reveal />
+    {{-- 2. Kartu asesmen (putih, menonjol lewat bayangan) dan catatan di bawahnya --}}
+    <section class="bg-background" aria-label="Daftar asesmen">
+        <div class="mx-auto max-w-6xl px-4 pb-14 md:pb-20">
+            @if ($assessments->isEmpty())
+                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-10 text-center">
+                    <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-7" /></span>
+                    <p class="mt-4 text-lg font-semibold text-text">Daftar asesmen sedang disiapkan.</p>
+                    <div class="mt-5"><x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link></div>
+                </div>
+            @else
+                <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($assessments as $item)
+                        <li data-item>
+                            <article data-lift class="group relative flex h-full flex-col rounded-2xl border border-border/60 bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring md:p-6">
+                                <span class="grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
+                                    <x-icon name="clipboard-check" class="size-5" />
+                                </span>
+
+                                <h2 class="mt-4 text-lg leading-snug font-bold">
+                                    {{-- Satu tautan; after:inset-0 membuat seluruh kartu bisa diklik --}}
+                                    <a href="{{ url('/asesmen/'.$item['slug']) }}" class="text-text after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">{{ $item['name'] }}</a>
+                                </h2>
+
+                                <p class="mt-2 text-sm leading-relaxed text-text-secondary">{{ $item['summary'] }}</p>
+
+                                <p class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <x-icon name="clock" class="size-4 text-primary" />
+                                        Sekitar {{ $item['estimated_minutes'] }} menit
+                                    </span>
+                                    <span class="inline-flex items-center gap-1.5">
+                                        <x-icon name="list-checks" class="size-4 text-primary" />
+                                        {{ $item['question_count'] }} pertanyaan
+                                    </span>
+                                </p>
+
+                                @if (count($item['sub_scales']) > 0)
+                                    <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Aspek yang diukur">
+                                        @foreach ($item['sub_scales'] as $subScale)
+                                            <li class="rounded-full bg-surface-alt px-2.5 py-0.5 text-xs text-text">{{ $subScale }}</li>
+                                        @endforeach
+                                    </ul>
+                                @endif
+
+                                @if ($item['is_demo'])
+                                    <p class="mt-4 rounded-lg bg-soft-peach px-3 py-2 text-xs leading-snug text-text">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</p>
+                                @endif
+
+                                {{-- Ajakan di dasar kartu: hiasan, tautan ada di judul --}}
+                                <div class="mt-auto pt-5">
+                                    <span class="flex items-center justify-between border-t border-border/60 pt-4 text-sm font-semibold text-primary" aria-hidden="true">
+                                        Lihat detail
+                                        <x-icon name="arrow-right" class="size-4 transition-transform duration-200 group-hover:translate-x-1" />
+                                    </span>
+                                </div>
+                            </article>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
+            {{-- 3. Catatan: teks biasa dengan ikon "i", bukan kartu --}}
+            <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
+                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                <div class="space-y-1.5">
+                    @guest
+                        <p>Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.</p>
+                    @endguest
+                    <p>
+                        Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
+                        <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
+                    </p>
+                </div>
+            </div>
+        </div>
     </section>
 @endsection
