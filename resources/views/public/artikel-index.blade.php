@@ -7,6 +7,7 @@
     ]));
     $canonical = rtrim($canonical, '?');
     $title = $activeCategoryLabel ? 'Artikel '.$activeCategoryLabel.' | RelaxBoss' : 'Artikel | RelaxBoss';
+    $pill = 'inline-flex min-h-11 items-center rounded-full border border-border/60 bg-card px-4 text-sm font-medium text-text transition-colors hover:bg-soft-lavender aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-on-primary';
 @endphp
 
 @section('title', $title)
@@ -14,27 +15,25 @@
 @section('canonical', e($canonical))
 
 @section('content')
-    {{-- Hero --}}
-    <section class="overflow-hidden bg-neutral-soft">
-        <div class="mx-auto max-w-6xl px-4 py-12 lg:py-16">
-            <h1 data-load class="text-[1.75rem] leading-[1.2] font-semibold md:text-5xl md:leading-[1.15]">
+    {{-- 1. Judul di tengah (pola Asesmen) dan pil kategori --}}
+    <section class="bg-background" aria-labelledby="judul-artikel">
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-8 text-center md:pt-14 md:pb-10">
+            <h1 id="judul-artikel" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">
                 {{ $activeCategoryLabel ? 'Artikel: '.$activeCategoryLabel : 'Artikel' }}
             </h1>
-            <p data-load class="mt-5 max-w-prose text-lg text-text-secondary">
+            <p data-load class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
                 Bacaan singkat seputar kesehatan mental untuk mahasiswa, dengan bahasa yang mudah dipahami.
             </p>
 
             @if ($categories->isNotEmpty())
-                <nav data-load aria-label="Kategori artikel" class="mt-8">
-                    <ul class="flex flex-wrap gap-2">
+                <nav data-load aria-label="Kategori artikel" class="mt-6">
+                    <ul class="flex flex-wrap justify-center gap-2">
                         <li>
-                            <a href="{{ url('/artikel') }}" @if ($activeCategory === null) aria-current="page" @endif
-                               class="inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-text transition-colors hover:bg-brand-soft aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-on-primary">Semua</a>
+                            <a href="{{ url('/artikel') }}" @if ($activeCategory === null) aria-current="page" @endif class="{{ $pill }}">Semua</a>
                         </li>
                         @foreach ($categories as $category)
                             <li>
-                                <a href="{{ url('/artikel').'?kategori='.$category['value'] }}" @if ($activeCategory === $category['value']) aria-current="page" @endif
-                                   class="inline-flex min-h-11 items-center rounded-full border border-border bg-card px-4 text-text transition-colors hover:bg-brand-soft aria-[current=page]:border-primary aria-[current=page]:bg-primary aria-[current=page]:text-on-primary">{{ $category['label'] }}</a>
+                                <a href="{{ url('/artikel').'?kategori='.$category['value'] }}" @if ($activeCategory === $category['value']) aria-current="page" @endif class="{{ $pill }}">{{ $category['label'] }}</a>
                             </li>
                         @endforeach
                     </ul>
@@ -43,58 +42,56 @@
         </div>
     </section>
 
-    {{-- Daftar artikel --}}
-    <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-label="Daftar artikel">
-        @if ($articles->isEmpty())
-            <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                <img src="{{ asset('images/landing/robot-wave.webp') }}" width="800" height="800" loading="lazy" alt="" class="size-44 object-contain">
-                <p class="mt-4 text-lg font-medium text-text">
-                    {{ $activeCategory ? 'Belum ada artikel untuk kategori ini.' : 'Artikel sedang disiapkan.' }}
-                </p>
-                <div class="mt-6">
-                    @if ($activeCategory)
-                        <x-button-link href="{{ url('/artikel') }}">Lihat semua artikel</x-button-link>
-                    @else
-                        <x-button-link href="{{ url('/') }}">Kembali ke Beranda</x-button-link>
-                    @endif
+    {{-- 2. Daftar artikel --}}
+    <section class="bg-background" aria-label="Daftar artikel">
+        <div class="mx-auto max-w-6xl px-4 pb-8 md:pb-10">
+            @if ($articles->isEmpty())
+                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-8 text-center">
+                    <img src="{{ asset('images/landing/robot-wave.webp') }}" width="800" height="800" loading="lazy" alt="" class="size-32 object-contain">
+                    <p class="mt-3 text-lg font-semibold text-text">
+                        {{ $activeCategory ? 'Belum ada artikel untuk kategori ini.' : 'Artikel sedang disiapkan.' }}
+                    </p>
+                    <div class="mt-5">
+                        @if ($activeCategory)
+                            <x-button-link href="{{ url('/artikel') }}" class="rounded-full! px-6 text-sm">Lihat semua artikel</x-button-link>
+                        @else
+                            <x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link>
+                        @endif
+                    </div>
                 </div>
-            </div>
-        @else
-            <ul data-stagger class="grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-                @foreach ($articles as $item)
-                    <x-article-card :item="$item" :index="$loop->index" />
-                @endforeach
-            </ul>
+            @else
+                <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($articles as $item)
+                        <x-article-card :item="$item" :index="$loop->index" />
+                    @endforeach
+                </ul>
 
-            @if ($articles->hasPages())
-                <nav aria-label="Halaman artikel" class="mt-10 flex items-center justify-between gap-4">
-                    @if ($articles->previousPageUrl())
-                        <x-button-link href="{{ $articles->previousPageUrl() }}" variant="outline">Sebelumnya</x-button-link>
-                    @else
-                        <span></span>
-                    @endif
-                    @if ($articles->nextPageUrl())
-                        <x-button-link href="{{ $articles->nextPageUrl() }}" variant="outline">Berikutnya</x-button-link>
-                    @endif
-                </nav>
+                @if ($articles->hasPages())
+                    <nav aria-label="Halaman artikel" class="mt-8 flex items-center justify-between gap-4">
+                        @if ($articles->previousPageUrl())
+                            <x-button-link href="{{ $articles->previousPageUrl() }}" variant="outline" class="rounded-full! border-2! bg-card px-5 text-sm">Sebelumnya</x-button-link>
+                        @else
+                            <span></span>
+                        @endif
+                        @if ($articles->nextPageUrl())
+                            <x-button-link href="{{ $articles->nextPageUrl() }}" variant="outline" class="rounded-full! border-2! bg-card px-5 text-sm">Berikutnya</x-button-link>
+                        @endif
+                    </nav>
+                @endif
             @endif
-        @endif
-    </section>
-
-    {{-- Disclaimer --}}
-    <section class="bg-neutral-soft" aria-label="Catatan penting">
-        <div data-reveal class="mx-auto max-w-3xl px-4 py-12 text-center">
-            <x-disclaimer class="text-left">
-                Artikel ini bersifat edukasi, bukan diagnosis dan bukan pengganti konsultasi dengan psikolog atau tenaga profesional.
-            </x-disclaimer>
-            <p class="mt-4">
-                <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-4">Bicara dengan profesional</a>
-            </p>
         </div>
     </section>
 
-    {{-- Bantuan --}}
-    <section class="mx-auto max-w-6xl px-4 py-12" aria-label="Bantuan">
-        <x-help-box data-reveal />
+    {{-- 3. Catatan: teks biasa dengan ikon "i" (pola halaman Asesmen), bukan kartu --}}
+    <section class="bg-background" aria-label="Catatan penting">
+        <div class="mx-auto max-w-6xl px-4 pb-14 md:pb-20">
+            <div data-reveal class="mx-auto flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
+                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                <p>
+                    Artikel ini bersifat edukasi, bukan diagnosis dan bukan pengganti konsultasi dengan psikolog atau tenaga profesional.
+                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
+                </p>
+            </div>
+        </div>
     </section>
 @endsection

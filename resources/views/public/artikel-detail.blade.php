@@ -11,9 +11,9 @@
 @endpush
 
 @section('content')
-    {{-- Kepala --}}
-    <section class="bg-neutral-soft">
-        <div class="mx-auto max-w-3xl px-4 py-10 lg:py-14">
+    {{-- 1. Kepala: jejak halaman, kategori, judul, ringkasan, meta --}}
+    <section class="bg-background">
+        <div class="mx-auto max-w-3xl px-4 pt-6 pb-8 md:pt-8 md:pb-10">
             <nav aria-label="Jejak halaman">
                 <ol class="flex flex-wrap items-center gap-x-2 text-sm text-text-secondary">
                     <li><a href="{{ url('/') }}" class="inline-flex min-h-11 items-center underline-offset-4 hover:text-text hover:underline">Beranda</a></li>
@@ -23,70 +23,76 @@
             </nav>
 
             <p data-load class="mt-2">
-                <a href="{{ url('/artikel').'?kategori='.$article['category'] }}" class="inline-flex min-h-11 items-center rounded-full bg-brand-soft px-4 text-sm font-medium text-text">{{ $article['category_label'] }}</a>
+                <a href="{{ url('/artikel').'?kategori='.$article['category'] }}" class="inline-flex min-h-11 items-center rounded-full bg-soft-lavender px-4 text-sm font-medium text-text transition-shadow hover:shadow-lift">{{ $article['category_label'] }}</a>
             </p>
 
-            <h1 data-load class="mt-2 text-[1.75rem] leading-[1.2] font-semibold md:text-4xl md:leading-[1.2]">{{ $article['title'] }}</h1>
+            <h1 data-load class="mt-2 text-[1.75rem] leading-[1.15] font-bold tracking-tight md:text-4xl lg:text-[2.75rem]">{{ $article['title'] }}</h1>
 
             @if ($article['is_demo'])
-                <p data-load class="mt-3 text-sm text-warning">Artikel contoh untuk pengembangan, bukan konten yang sebenarnya.</p>
+                <p data-load class="mt-3 w-fit rounded-full bg-soft-peach px-3 py-1 text-xs font-medium text-text">Artikel contoh untuk pengembangan, bukan konten yang sebenarnya.</p>
             @endif
 
-            <p data-load class="mt-4 text-lg text-text-secondary">{{ $article['excerpt'] }}</p>
+            <p data-load class="mt-4 max-w-prose text-base text-text-secondary md:text-lg">{{ $article['excerpt'] }}</p>
 
-            <p data-load class="mt-5 flex flex-wrap items-center gap-x-5 gap-y-1 text-sm text-text-secondary">
-                <span class="inline-flex items-center gap-1.5"><x-icon name="user" class="size-4 text-brand-strong" />{{ $article['author'] }}</span>
-                <span>Terbit <time datetime="{{ $article['published_iso'] }}">{{ $article['published_label'] }}</time></span>
+            <ul data-load class="mt-5 flex flex-wrap items-center gap-2 text-xs text-text" aria-label="Info artikel">
+                <li class="inline-flex items-center gap-1.5 rounded-full bg-surface-alt px-3 py-1.5"><x-icon name="user" class="size-4 text-primary" />{{ $article['author'] }}</li>
+                <li class="rounded-full bg-surface-alt px-3 py-1.5">Terbit <time datetime="{{ $article['published_iso'] }}">{{ $article['published_label'] }}</time></li>
                 @if ($article['updated_label'])
-                    <span>Diperbarui {{ $article['updated_label'] }}</span>
+                    <li class="rounded-full bg-surface-alt px-3 py-1.5">Diperbarui {{ $article['updated_label'] }}</li>
                 @endif
-                <span class="inline-flex items-center gap-1.5"><x-icon name="clock" class="size-4 text-brand-strong" />{{ $article['reading_minutes'] }} menit baca</span>
-            </p>
+                <li class="inline-flex items-center gap-1.5 rounded-full bg-surface-alt px-3 py-1.5"><x-icon name="clock" class="size-4 text-primary" />{{ $article['reading_minutes'] }} menit baca</li>
+            </ul>
         </div>
     </section>
 
-    {{-- Isi --}}
-    <article class="mx-auto max-w-3xl px-4 py-10 md:py-14">
-        <x-article-prose :html="$article['html']" />
-    </article>
+    {{-- 2. Isi --}}
+    <section class="bg-background">
+        <article class="mx-auto max-w-3xl px-4 pb-10 md:pb-14">
+            <x-article-prose :html="$article['html']" />
+        </article>
+    </section>
 
-    {{-- Asesmen terkait --}}
+    {{-- 3. Asesmen terkait --}}
     @if ($assessment)
-        <section class="mx-auto max-w-3xl px-4 pb-10" aria-label="Asesmen terkait">
-            <div data-reveal class="rounded-xl bg-brand-soft p-6 text-text">
-                <h2 class="text-xl font-semibold">Ingin mengenali kondisimu?</h2>
-                <p class="mt-2">Coba asesmen {{ $assessment['name'] }} untuk gambaran awal. Hasilnya bukan diagnosis.</p>
-                <div class="mt-4"><x-button-link href="{{ url('/asesmen/'.$assessment['slug']) }}">Lihat asesmen</x-button-link></div>
+        <section class="bg-background" aria-label="Asesmen terkait">
+            <div class="mx-auto max-w-3xl px-4 pb-10 md:pb-14">
+                <div data-reveal class="flex flex-col gap-5 rounded-3xl bg-soft-lavender p-6 text-text shadow-lift sm:flex-row sm:items-center md:p-8">
+                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-5" /></span>
+                    <div class="flex-1">
+                        <h2 class="text-xl font-bold">Ingin mengenali kondisimu?</h2>
+                        <p class="mt-1 text-sm leading-relaxed text-text-secondary">Coba asesmen {{ $assessment['name'] }} untuk gambaran awal. Hasilnya bukan diagnosis.</p>
+                    </div>
+                    <x-button-link href="{{ url('/asesmen/'.$assessment['slug']) }}" class="rounded-full! px-6 text-sm">Lihat asesmen</x-button-link>
+                </div>
             </div>
         </section>
     @endif
 
-    {{-- Disclaimer --}}
-    <section class="bg-neutral-soft" aria-label="Catatan penting">
-        <div data-reveal class="mx-auto max-w-3xl px-4 py-10">
-            <x-disclaimer>
-                Artikel ini bersifat edukasi, bukan diagnosis dan bukan pengganti konsultasi dengan psikolog atau tenaga profesional.
-            </x-disclaimer>
-            <p class="mt-4">
-                <a href="{{ url('/konsultasi') }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-4">Bicara dengan profesional</a>
-            </p>
+
+    {{-- 4. Catatan: teks biasa dengan ikon "i" (pola halaman Asesmen) --}}
+    <section class="bg-background" aria-label="Catatan penting">
+        <div class="mx-auto max-w-3xl px-4 pb-10 md:pb-14">
+            <div data-reveal class="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
+                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                <p>
+                    Artikel ini bersifat edukasi, bukan diagnosis dan bukan pengganti konsultasi dengan psikolog atau tenaga profesional.
+                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
+                </p>
+            </div>
         </div>
     </section>
 
-    {{-- Artikel lainnya --}}
+    {{-- 5. Artikel lainnya --}}
     @if ($related->isNotEmpty())
-        <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-labelledby="artikel-lain">
-            <h2 id="artikel-lain" class="text-2xl font-semibold">Artikel lainnya</h2>
-            <ul data-stagger class="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
-                @foreach ($related as $item)
-                    <x-article-card :item="$item" :index="$loop->index" />
-                @endforeach
-            </ul>
+        <section class="bg-surface-alt" aria-labelledby="artikel-lain">
+            <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+                <h2 id="artikel-lain" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Artikel lainnya</h2>
+                <ul data-stagger class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($related as $item)
+                        <x-article-card :item="$item" :index="$loop->index" />
+                    @endforeach
+                </ul>
+            </div>
         </section>
     @endif
-
-    {{-- Bantuan --}}
-    <section class="mx-auto max-w-6xl px-4 pb-12" aria-label="Bantuan">
-        <x-help-box data-reveal />
-    </section>
 @endsection
