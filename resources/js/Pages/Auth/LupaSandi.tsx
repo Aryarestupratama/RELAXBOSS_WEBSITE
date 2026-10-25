@@ -1,10 +1,11 @@
 import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
 import FormField from '@/Components/shared/FormField';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
+import { AUTH_INPUT, AUTH_LINK } from '@/lib/authStyles';
 
 type LupaSandiProps = {
   status: string | null;
@@ -29,22 +30,22 @@ export default function LupaSandi({ status, expireMinutes }: LupaSandiProps) {
 
   return (
     <GuestLayout title="Lupa Kata Sandi">
-      <h1>Lupa kata sandi?</h1>
-      <p className="mt-2 text-text-secondary">
-        Masukkan emailmu. Kalau terdaftar, kami kirim tautan untuk membuat kata sandi baru.
-      </p>
+      <div data-m-enter className="text-center">
+        <h1 className="text-[1.625rem] leading-tight font-semibold tracking-tight">Lupa kata sandi?</h1>
+        <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-secondary">Masukkan emailmu. Kalau terdaftar, kami kirim tautan untuk membuat kata sandi baru.</p>
+      </div>
 
-      <form onSubmit={submit} noValidate className="mt-6 space-y-5">
+      <form data-m-enter onSubmit={submit} noValidate className="mt-5 space-y-3.5">
         {status === 'reset-link-sent' ? (
-          <Alert>
-            <AlertDescription>
+          <Alert className="px-3 py-2.5 text-[0.8125rem]">
+            <AlertDescription className="text-[0.8125rem]">
               Kalau email itu terdaftar, tautan untuk mengatur ulang kata sandi sudah kami kirim. Cek
               kotak masuk dan folder spam.
             </AlertDescription>
           </Alert>
         ) : null}
 
-        <FormField id="email" label="Email" error={errors.email}>
+        <FormField id="email" label="Email" compact error={errors.email}>
           {(control) => (
             <Input
               {...control}
@@ -52,24 +53,23 @@ export default function LupaSandi({ status, expireMinutes }: LupaSandiProps) {
               type="email"
               autoComplete="email"
               required
+              className={AUTH_INPUT}
               value={form.data.email}
               onChange={(event) => form.setData('email', event.target.value)}
             />
           )}
         </FormField>
 
-        <Button type="submit" className="w-full" disabled={form.processing}>
-          {form.processing ? 'Memproses...' : 'Kirim tautan'}
-        </Button>
+        <AuthSubmitButton processing={form.processing}>Kirim tautan</AuthSubmitButton>
 
-        <p className="text-sm text-text-secondary">
+        <p className="text-[0.8125rem] text-text-secondary">
           Tautannya berlaku {expireMinutes} menit. Belum ada emailnya? Periksa folder spam dulu.
         </p>
       </form>
 
-      <p className="mt-6 text-center text-sm text-text-secondary">
+      <p data-m-enter className="mt-5 text-center text-[0.8125rem] text-text-secondary">
         Ingat kata sandimu?{' '}
-        <Link href="/masuk" className="font-medium text-brand-strong underline underline-offset-4">
+        <Link href="/masuk" className={AUTH_LINK}>
           Kembali masuk
         </Link>
       </p>

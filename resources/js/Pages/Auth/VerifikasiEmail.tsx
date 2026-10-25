@@ -1,9 +1,9 @@
 import type { FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
 import LogoutButton from '@/Components/shared/LogoutButton';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
 
 type VerifikasiEmailProps = {
   email: string;
@@ -30,26 +30,28 @@ export default function VerifikasiEmail({
 
   return (
     <GuestLayout title="Verifikasi Email">
-      <h1>Cek emailmu</h1>
-      {sendFailed ? null : (
-        <p className="mt-2 text-text-secondary">
-          Kami mengirim tautan verifikasi ke <strong className="text-text">{email}</strong>. Klik
-          tautannya dalam {expireMinutes} menit untuk mengaktifkan akunmu.
-        </p>
-      )}
+      <div data-m-enter className="text-center">
+        <h1 className="text-[1.625rem] leading-tight font-semibold tracking-tight">Cek emailmu</h1>
+        {sendFailed ? null : (
+          <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-secondary">
+            Kami mengirim tautan verifikasi ke <strong className="text-text">{email}</strong>. Klik
+            tautannya dalam {expireMinutes} menit untuk mengaktifkan akunmu.
+          </p>
+        )}
+      </div>
 
-      <div className="mt-6 space-y-4">
+      <div data-m-enter className="mt-5 space-y-3.5">
         {status === 'verification-link-sent' ? (
-          <Alert>
-            <AlertDescription>
+          <Alert className="px-3 py-2.5 text-[0.8125rem]">
+            <AlertDescription className="text-[0.8125rem]">
               Email verifikasi sudah dikirim. Cek kotak masuk dan folder spam.
             </AlertDescription>
           </Alert>
         ) : null}
 
         {sendFailed ? (
-          <Alert variant="destructive">
-            <AlertDescription>
+          <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
+            <AlertDescription className="text-[0.8125rem]">
               Akunmu sudah dibuat, tetapi email belum berhasil terkirim. Tekan &quot;Kirim ulang
               email&quot; untuk mencoba lagi.
             </AlertDescription>
@@ -57,18 +59,16 @@ export default function VerifikasiEmail({
         ) : null}
 
         {errors.resend ? (
-          <Alert variant="destructive">
-            <AlertDescription>{errors.resend}</AlertDescription>
+          <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
+            <AlertDescription className="text-[0.8125rem]">{errors.resend}</AlertDescription>
           </Alert>
         ) : null}
 
         <form onSubmit={resend}>
-          <Button type="submit" className="w-full" disabled={form.processing}>
-            {form.processing ? 'Memproses...' : 'Kirim ulang email'}
-          </Button>
+          <AuthSubmitButton processing={form.processing}>Kirim ulang email</AuthSubmitButton>
         </form>
 
-        <p className="text-sm text-text-secondary">
+        <p className="text-center text-[0.8125rem] text-text-secondary">
           Belum ada emailnya? Periksa folder spam dulu. Kirim ulang dibatasi {resendPerHour} kali
           per jam.
         </p>

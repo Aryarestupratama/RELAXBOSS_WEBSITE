@@ -2,13 +2,14 @@ import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import { CircleAlert } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
 import CheckboxField from '@/Components/shared/CheckboxField';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import RequiredMark from '@/Components/shared/RequiredMark';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
+import { AUTH_INPUT, AUTH_LINK } from '@/lib/authStyles';
 
 type DaftarProps = {
   minPasswordLength: number;
@@ -39,35 +40,36 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
   };
 
   return (
-    <GuestLayout title="Daftar" illustration="daftar" wide>
-      <h1>Buat akunmu</h1>
-      <p className="mt-2 text-text-secondary">
-        Mulai dari satu langkah kecil. Setelah mendaftar, kami kirim tautan verifikasi ke emailmu.
-      </p>
+    <GuestLayout title="Daftar" illustration="daftar" tab="daftar" wide>
+      <div data-m-enter className="text-center">
+        <h1 className="text-[1.625rem] leading-tight font-semibold tracking-tight">Buat akunmu</h1>
+        <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-secondary">Mulai dari satu langkah kecil. Setelah mendaftar, kami kirim tautan verifikasi ke emailmu.</p>
+      </div>
 
-      <form onSubmit={submit} noValidate className="mt-5 space-y-4 lg:space-y-3">
+      <form data-m-enter onSubmit={submit} noValidate className="mt-5 space-y-3">
         {errors.register ? (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
             <CircleAlert aria-hidden="true" />
-            <AlertDescription>{errors.register}</AlertDescription>
+            <AlertDescription className="text-[0.8125rem]">{errors.register}</AlertDescription>
           </Alert>
         ) : null}
 
-        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
-          <FormField id="name" label="Nama" required error={errors.name}>
+        <div className="space-y-3 sm:grid sm:grid-cols-2 sm:items-start sm:gap-3 sm:space-y-0">
+          <FormField id="name" label="Nama" required compact error={errors.name}>
             {(control) => (
               <Input
                 {...control}
                 name="name"
                 autoComplete="name"
                 required
+                className={AUTH_INPUT}
                 value={form.data.name}
                 onChange={(event) => form.setData('name', event.target.value)}
               />
             )}
           </FormField>
 
-          <FormField id="email" label="Email" required error={errors.email}>
+          <FormField id="email" label="Email" required compact error={errors.email}>
             {(control) => (
               <Input
                 {...control}
@@ -75,6 +77,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
                 type="email"
                 autoComplete="email"
                 required
+                className={AUTH_INPUT}
                 value={form.data.email}
                 onChange={(event) => form.setData('email', event.target.value)}
               />
@@ -86,12 +89,14 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
           id="password"
           label="Kata sandi"
           required
+          compact
           hint={`Minimal ${minPasswordLength} karakter.`}
           error={errors.password}
         >
           {(control) => (
             <PasswordInput
               {...control}
+              compact
               name="password"
               autoComplete="new-password"
               required
@@ -101,10 +106,11 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
           )}
         </FormField>
 
-        <div className="space-y-4 lg:grid lg:grid-cols-2 lg:gap-3 lg:space-y-0">
+        <div className="space-y-3 sm:grid sm:grid-cols-2 sm:items-start sm:gap-3 sm:space-y-0">
           <FormField
             id="major"
             label="Jurusan (opsional)"
+            compact
             hint="Membantu RelaxMate memahami konteksmu."
             error={errors.major}
           >
@@ -113,6 +119,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
                 {...control}
                 name="major"
                 autoComplete="off"
+                className={AUTH_INPUT}
                 value={form.data.major}
                 onChange={(event) => form.setData('major', event.target.value)}
               />
@@ -122,6 +129,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
           <FormField
             id="institution_name"
             label="Kampus (opsional)"
+            compact
             hint="Hanya untuk profilmu, tidak dikirim ke AI."
             error={errors.institution_name}
           >
@@ -130,6 +138,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
                 {...control}
                 name="institution_name"
                 autoComplete="organization"
+                className={AUTH_INPUT}
                 value={form.data.institution_name}
                 onChange={(event) => form.setData('institution_name', event.target.value)}
               />
@@ -140,32 +149,35 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
         <CheckboxField
           id="terms"
           required
+          compact
           checked={form.data.terms}
           onChange={(checked) => form.setData('terms', checked)}
           error={errors.terms}
           label={
-            <span className="text-sm">
+            <span className="text-[0.8125rem] leading-snug text-text-secondary">
               Saya telah membaca{' '}
-              <a href="/ketentuan" target="_blank" rel="noopener noreferrer" className="font-medium text-brand-strong underline underline-offset-4">
+              <a href="/ketentuan" target="_blank" rel="noopener noreferrer" className={AUTH_LINK}>
                 Ketentuan penggunaan
               </a>{' '}
               dan{' '}
-              <a href="/privasi" target="_blank" rel="noopener noreferrer" className="font-medium text-brand-strong underline underline-offset-4">
-                Kebijakan privasi
-              </a>
-              .<RequiredMark />
+              <span className="whitespace-nowrap">
+                <a href="/privasi" target="_blank" rel="noopener noreferrer" className={AUTH_LINK}>
+                  Kebijakan privasi
+                </a>
+                .<RequiredMark />
+              </span>
             </span>
           }
         />
 
-        <Button type="submit" className="w-full" disabled={form.processing || !form.data.terms}>
-          {form.processing ? 'Memproses...' : 'Daftar'}
-        </Button>
+        <AuthSubmitButton processing={form.processing} disabled={!form.data.terms}>
+          Daftar
+        </AuthSubmitButton>
       </form>
 
-      <p className="mt-5 text-center text-sm text-text-secondary">
+      <p data-m-enter className="mt-4 text-center text-[0.8125rem] text-text-secondary">
         Sudah punya akun?{' '}
-        <Link href="/masuk" className="font-medium text-brand-strong underline underline-offset-4">
+        <Link href="/masuk" className={AUTH_LINK}>
           Masuk
         </Link>
       </p>

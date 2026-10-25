@@ -1,10 +1,11 @@
 import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
+import { AUTH_LINK } from '@/lib/authStyles';
 
 type ResetSandiProps = {
   token: string;
@@ -31,24 +32,26 @@ export default function ResetSandi({ token, email, minPasswordLength }: ResetSan
 
   return (
     <GuestLayout title="Kata Sandi Baru">
-      <h1>Buat kata sandi baru</h1>
-      <p className="mt-2 text-text-secondary">
-        {email ? (
-          <>
-            Untuk akun <strong className="text-text">{email}</strong>. Setelah disimpan, kamu masuk
-            dengan kata sandi yang baru.
-          </>
-        ) : (
-          'Setelah disimpan, kamu masuk dengan kata sandi yang baru.'
-        )}
-      </p>
+      <div data-m-enter className="text-center">
+        <h1 className="text-[1.625rem] leading-tight font-semibold tracking-tight">Buat kata sandi baru</h1>
+        <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-secondary">
+          {email ? (
+            <>
+              Untuk akun <strong className="text-text">{email}</strong>. Setelah disimpan, kamu masuk
+              dengan kata sandi yang baru.
+            </>
+          ) : (
+            'Setelah disimpan, kamu masuk dengan kata sandi yang baru.'
+          )}
+        </p>
+      </div>
 
-      <form onSubmit={submit} noValidate className="mt-6 space-y-5">
+      <form data-m-enter onSubmit={submit} noValidate className="mt-5 space-y-3.5">
         {linkInvalid ? (
-          <Alert variant="destructive">
-            <AlertDescription>
+          <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
+            <AlertDescription className="text-[0.8125rem]">
               Tautan reset ini tidak valid atau sudah kedaluwarsa.{' '}
-              <Link href="/lupa-sandi" className="font-medium underline underline-offset-4">
+              <Link href="/lupa-sandi" className={AUTH_LINK}>
                 Minta tautan baru
               </Link>
             </AlertDescription>
@@ -58,12 +61,14 @@ export default function ResetSandi({ token, email, minPasswordLength }: ResetSan
         <FormField
           id="password"
           label="Kata sandi baru"
+          compact
           hint={`Minimal ${minPasswordLength} karakter.`}
           error={errors.password}
         >
           {(control) => (
             <PasswordInput
               {...control}
+              compact
               name="password"
               autoComplete="new-password"
               required
@@ -73,9 +78,7 @@ export default function ResetSandi({ token, email, minPasswordLength }: ResetSan
           )}
         </FormField>
 
-        <Button type="submit" className="w-full" disabled={form.processing}>
-          {form.processing ? 'Memproses...' : 'Simpan kata sandi'}
-        </Button>
+        <AuthSubmitButton processing={form.processing}>Simpan kata sandi</AuthSubmitButton>
       </form>
     </GuestLayout>
   );

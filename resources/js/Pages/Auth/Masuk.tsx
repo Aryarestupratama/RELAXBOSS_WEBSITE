@@ -2,17 +2,16 @@ import { useEffect, type FormEvent } from 'react';
 import { Link, useForm } from '@inertiajs/react';
 import { CircleAlert, CircleCheck } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
+import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
-import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
+import { AUTH_INPUT, AUTH_LINK } from '@/lib/authStyles';
 
 type MasukProps = {
   status: string | null;
 };
-
-const linkClass = 'font-medium text-brand-strong underline underline-offset-4';
 
 /** SCR-008 */
 export default function Masuk({ status }: MasukProps) {
@@ -31,28 +30,30 @@ export default function Masuk({ status }: MasukProps) {
   };
 
   return (
-    <GuestLayout title="Masuk" illustration="masuk">
-      <h1>Masuk</h1>
-      <p className="mt-2 text-text-secondary">Senang kamu kembali. Masuk untuk melanjutkan.</p>
+    <GuestLayout title="Masuk" illustration="masuk" tab="masuk">
+      <div data-m-enter className="text-center">
+        <h1 className="text-[1.625rem] leading-tight font-semibold tracking-tight">Masuk</h1>
+        <p className="mt-1.5 text-[0.8125rem] leading-relaxed text-text-secondary">Senang kamu kembali. Masuk untuk melanjutkan.</p>
+      </div>
 
-      <form onSubmit={submit} noValidate className="mt-6 space-y-5">
+      <form data-m-enter onSubmit={submit} noValidate className="mt-5 space-y-3.5">
         {status === 'password-reset' ? (
-          <Alert>
+          <Alert className="px-3 py-2.5 text-[0.8125rem]">
             <CircleCheck className="text-success!" aria-hidden="true" />
-            <AlertDescription>
+            <AlertDescription className="text-[0.8125rem]">
               Kata sandimu sudah diganti. Silakan masuk dengan kata sandi yang baru.
             </AlertDescription>
           </Alert>
         ) : null}
 
         {errors.login ? (
-          <Alert variant="destructive">
+          <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
             <CircleAlert aria-hidden="true" />
-            <AlertDescription>{errors.login}</AlertDescription>
+            <AlertDescription className="text-[0.8125rem]">{errors.login}</AlertDescription>
           </Alert>
         ) : null}
 
-        <FormField id="email" label="Email" error={errors.email}>
+        <FormField id="email" label="Email" compact error={errors.email}>
           {(control) => (
             <Input
               {...control}
@@ -60,16 +61,18 @@ export default function Masuk({ status }: MasukProps) {
               type="email"
               autoComplete="email"
               required
+              className={AUTH_INPUT}
               value={form.data.email}
               onChange={(event) => form.setData('email', event.target.value)}
             />
           )}
         </FormField>
 
-        <FormField id="password" label="Kata sandi" error={errors.password}>
+        <FormField id="password" label="Kata sandi" compact error={errors.password}>
           {(control) => (
             <PasswordInput
               {...control}
+              compact
               name="password"
               autoComplete="current-password"
               required
@@ -79,20 +82,18 @@ export default function Masuk({ status }: MasukProps) {
           )}
         </FormField>
 
-        <div className="text-right text-sm">
-          <Link href="/lupa-sandi" className={linkClass}>
+        <div className="-mt-1 text-right text-[0.8125rem]">
+          <Link href="/lupa-sandi" className={AUTH_LINK}>
             Lupa kata sandi?
           </Link>
         </div>
 
-        <Button type="submit" className="w-full" disabled={form.processing}>
-          {form.processing ? 'Memproses...' : 'Masuk'}
-        </Button>
+        <AuthSubmitButton processing={form.processing}>Masuk</AuthSubmitButton>
       </form>
 
-      <p className="mt-6 text-center text-sm text-text-secondary">
+      <p data-m-enter className="mt-5 text-center text-[0.8125rem] text-text-secondary">
         Belum punya akun?{' '}
-        <Link href="/daftar" className={linkClass}>
+        <Link href="/daftar" className={AUTH_LINK}>
           Daftar
         </Link>
       </p>
