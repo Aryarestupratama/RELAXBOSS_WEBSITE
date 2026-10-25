@@ -126,8 +126,10 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
               {last_attempt ? (
                 <Link
                   href="/app/riwayat"
-                  className="inline-flex min-h-11 items-center text-[0.8125rem] font-medium text-brand-strong underline underline-offset-4"
+                  data-press
+                  className="inline-flex min-h-11 items-center gap-2 rounded-full border-[1.5px] border-primary bg-card px-4 text-[0.8125rem] font-medium text-primary transition-colors duration-200 hover:bg-primary hover:text-on-primary"
                 >
+                  <History className="size-4" aria-hidden="true" />
                   Lihat riwayat
                 </Link>
               ) : null}

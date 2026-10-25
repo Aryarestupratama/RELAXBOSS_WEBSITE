@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
-import { router, useForm } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight } from 'lucide-react';
+import { Link, router, useForm } from '@inertiajs/react';
+import { ArrowLeft, ArrowRight, Info } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
 import LikertScale, { type LikertOption } from '@/Components/shared/LikertScale';
@@ -105,30 +105,44 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
 
   return (
     <AppShell title={assessment.name} wide staggered>
-      <div>
-        <div data-load className="text-center">
-          <p className="text-sm font-medium text-text-secondary">{assessment.name}</p>
+      <div className="mx-auto max-w-2xl">
+        <div data-load>
+          <div className="flex items-center justify-between gap-3">
+            <Link
+              href={`/app/asesmen/${assessment.slug}`}
+              className="group inline-flex min-h-11 min-w-0 items-center gap-2 text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text"
+            >
+              <ArrowLeft
+                className="size-4 shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5"
+                aria-hidden="true"
+              />
+              <span className="truncate">{assessment.name}</span>
+            </Link>
+            <p
+              className="shrink-0 rounded-full bg-card px-3 py-1 text-xs font-semibold shadow-card"
+              aria-live="polite"
+            >
+              Butir {index + 1} dari {total}
+            </p>
+          </div>
           <div
             role="progressbar"
             aria-label="Kemajuan pengerjaan"
             aria-valuemin={1}
             aria-valuemax={total}
             aria-valuenow={index + 1}
-            className="mt-3 grid gap-1"
+            className="mt-1 grid gap-1"
             style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }}
           >
             {questions.map((item, position) => (
               <span
                 key={item.id}
                 className={`h-1.5 rounded-full transition-colors duration-300 ${
-                  position <= index ? 'bg-primary' : 'bg-border'
+                  position <= index ? 'bg-brand' : 'bg-border'
                 }`}
               />
             ))}
           </div>
-          <p className="mt-2 text-sm text-text-secondary" aria-live="polite">
-            Butir {index + 1} dari {total}
-          </p>
         </div>
 
         {errors.answers ? (
@@ -137,70 +151,72 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
           </Alert>
         ) : null}
 
-        <section data-load className="mt-8 overflow-hidden rounded-3xl border border-border bg-card shadow-card">
-          <div className="grid lg:grid-cols-12">
-            <div className="flex flex-col gap-5 bg-brand-soft/40 p-5 md:p-6 lg:col-span-5">
-              <img
-                src="/images/asesmen/asesmen-kerjakan.webp"
-                width={160}
-                height={160}
-                alt=""
-                data-float
-                className="size-20 object-contain lg:size-32"
+        <section data-load className="mt-4 overflow-hidden rounded-3xl bg-card shadow-lift">
+          <div className="bg-soft-lavender px-5 py-5 md:px-6">
+            {index === 0 && assessment.instructions ? (
+              <p className="mb-4 flex items-start gap-2 rounded-xl bg-card/70 px-3.5 py-2.5 text-[0.8125rem] leading-relaxed text-text-secondary">
+                <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                {assessment.instructions}
+              </p>
+            ) : null}
+            <h1
+              key={question.id}
+              ref={headingRef}
+              tabIndex={-1}
+              className="text-lg leading-snug font-bold tracking-tight outline-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300 md:text-xl"
+            >
+              {question.text}
+            </h1>
+          </div>
+
+          <div className="p-4 md:p-5">
+            <div
+              key={question.id}
+              className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-300"
+            >
+              <LikertScale
+                name={`butir-${question.id}`}
+                legend={question.text}
+                options={options}
+                value={current}
+                onChange={choose}
+                disabled={form.processing}
               />
-
-              {index === 0 && assessment.instructions ? (
-                <p className="rounded-lg border border-border border-l-4 border-l-brand-strong bg-card px-4 py-3 text-sm text-text-secondary">
-                  {assessment.instructions}
-                </p>
-              ) : null}
-
-              <h1
-                key={question.id}
-                ref={headingRef}
-                tabIndex={-1}
-                className="text-xl leading-snug font-semibold outline-none motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-1 motion-safe:duration-300 md:text-[1.75rem]"
-              >
-                {question.text}
-              </h1>
             </div>
 
-            <div className="flex flex-col justify-between gap-6 p-5 md:p-6 lg:col-span-7">
-              <div
-                key={question.id}
-                className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-300"
-              >
-                <LikertScale
-                  name={`butir-${question.id}`}
-                  legend={question.text}
-                  options={options}
-                  value={current}
-                  onChange={choose}
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
+              {index > 0 ? (
+                <Button
+                  variant="outline"
+                  className="rounded-full! px-5 text-sm"
+                  onClick={() => setIndex(index - 1)}
                   disabled={form.processing}
-                />
-              </div>
+                >
+                  <ArrowLeft aria-hidden="true" />
+                  Sebelumnya
+                </Button>
+              ) : (
+                <span />
+              )}
 
-              <div className="flex items-center justify-between gap-3">
-                {index > 0 ? (
-                  <Button variant="outline" onClick={() => setIndex(index - 1)} disabled={form.processing}>
-                    <ArrowLeft aria-hidden="true" />
-                    Sebelumnya
-                  </Button>
-                ) : (
-                  <span />
-                )}
-
-                {isLast ? (
-                  <Button onClick={submit} disabled={current === null || form.processing}>
-                    {form.processing ? 'Memproses...' : 'Lihat hasil'}
-                  </Button>
-                ) : (
-                  <Button onClick={() => setIndex(index + 1)} disabled={current === null}>
-                    Berikutnya
-                    <ArrowRight aria-hidden="true" />
-                  </Button>
-                )}
-              </div>
+              {isLast ? (
+                <Button
+                  className="rounded-full! px-5 text-sm"
+                  onClick={submit}
+                  disabled={current === null || form.processing}
+                >
+                  {form.processing ? 'Memproses...' : 'Lihat hasil'}
+                </Button>
+              ) : (
+                <Button
+                  className="rounded-full! px-5 text-sm"
+                  onClick={() => setIndex(index + 1)}
+                  disabled={current === null}
+                >
+                  Berikutnya
+                  <ArrowRight aria-hidden="true" />
+                </Button>
+              )}
             </div>
           </div>
         </section>

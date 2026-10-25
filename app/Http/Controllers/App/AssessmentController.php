@@ -8,6 +8,7 @@ use App\Actions\Assessment\SaveAssessmentAttempt;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\SubmitAssessmentRequest;
 use App\Models\Assessment;
+use App\Services\Assessment\PublicAssessmentPresenter;
 use Illuminate\Http\RedirectResponse;
 use Inertia\Inertia;
 use Inertia\Response;
@@ -35,8 +36,16 @@ final class AssessmentController extends Controller
         return Inertia::render('App/Asesmen/Index', ['assessments' => $assessments]);
     }
 
+    /** Detail Asesmen sebelum mengerjakan: metadata saja, tanpa butir, skor, atau aturan skor. */
+    public function show(Assessment $activeAssessment, PublicAssessmentPresenter $presenter): Response
+    {
+        $activeAssessment->load('questions:id,assessment_id,sub_scale');
+
+        return Inertia::render('App/Asesmen/Show', ['assessment' => $presenter->detail($activeAssessment)]);
+    }
+
     /** SCR-013: pengerjaan, satu butir per layar. Skor tidak pernah dikirim ke klien. */
-    public function show(Assessment $activeAssessment): Response
+    public function work(Assessment $activeAssessment): Response
     {
         $activeAssessment->load('questions');
 

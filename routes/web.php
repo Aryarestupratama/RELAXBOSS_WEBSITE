@@ -34,6 +34,7 @@ Route::get('/dashboard', DashboardController::class)
 Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->group(function (): void {
     Route::get('/asesmen', [AssessmentController::class, 'index'])->name('assessments.index');
     Route::get('/asesmen/{activeAssessment}', [AssessmentController::class, 'show'])->name('assessments.show');
+    Route::get('/asesmen/{activeAssessment}/kerjakan', [AssessmentController::class, 'work'])->name('assessments.work');
     Route::post('/asesmen/{activeAssessment}/hasil', [AssessmentController::class, 'store'])->name('assessments.store');
     // Hasil dan riwayat (SCR-014, SCR-015). Selalu lewat relasi pemilik (RULE-033).
     Route::get('/riwayat', [AttemptController::class, 'index'])->name('attempts.index');

@@ -28,7 +28,7 @@
                     <p data-load class="mt-4 max-w-prose text-base text-text-secondary">{{ $assessment['description'] }}</p>
 
                     <div data-load class="mt-6 flex flex-wrap gap-3">
-                        <x-button-link href="{{ url('/app/asesmen/'.$assessment['slug']) }}" class="rounded-full! px-6 text-sm">Mulai asesmen</x-button-link>
+                        <x-button-link href="{{ url('/app/asesmen/'.$assessment['slug'].'/kerjakan') }}" class="rounded-full! px-6 text-sm">Mulai asesmen</x-button-link>
                         @guest
                             <x-button-link href="{{ url('/daftar') }}" variant="outline" class="rounded-full! border-2! bg-card px-6 text-sm">Daftar gratis</x-button-link>
                         @endguest

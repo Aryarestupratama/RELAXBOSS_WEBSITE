@@ -23,6 +23,7 @@ type LikertScaleProps = {
 export default function LikertScale({ name, legend, options, value, onChange, disabled = false }: LikertScaleProps) {
   return (
     <RadioGroup
+      className="gap-2!"
       name={name}
       aria-label={legend}
       value={value === null ? '' : String(value)}
@@ -36,10 +37,10 @@ export default function LikertScale({ name, legend, options, value, onChange, di
           <label
             key={option.value}
             htmlFor={id}
-            className={`flex min-h-14 cursor-pointer items-center gap-4 rounded-2xl border-[1.5px] px-5 py-3 text-base transition-colors ${
+            className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border-[1.5px] px-4 py-2.5 text-sm transition-all duration-200 motion-safe:hover:translate-x-0.5 ${
               selected
                 ? 'border-primary bg-mood-yellow font-semibold'
-                : 'border-border bg-card hover:bg-neutral-soft'
+                : 'border-border bg-card hover:border-primary/40 hover:bg-neutral-soft'
             } ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
           >
             <RadioGroupItem id={id} value={String(option.value)} />

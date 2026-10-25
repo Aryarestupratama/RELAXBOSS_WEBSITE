@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, Clock, History, ListChecks } from 'lucide-react';
+import { Clock, History, ListChecks, ArrowUpRight } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 
 type AssessmentCard = {
@@ -15,93 +15,90 @@ type IndexProps = {
   assessments: AssessmentCard[];
 };
 
-/** Warna kotak thumbnail bergantian: kuning, hijau, ungu muda, persik (token pastel, teks `--text`). */
-const THUMB_TONES = ['bg-mood-yellow', 'bg-mood-green', 'bg-brand-soft', 'bg-mood-peach'] as const;
+/** Pastel bergantian, sama dengan kartu fitur Beranda dan Dashboard (teks di atasnya `--text`, RULE-052). */
+const TONES = ['bg-soft-peach', 'bg-soft-mint', 'bg-soft-lavender', 'bg-soft-sky'] as const;
 
 /** SCR-012 */
 export default function Index({ assessments }: IndexProps) {
   return (
     <AppShell title="Asesmen" wide staggered>
-      <div data-load>
-        <div className="flex flex-wrap items-end justify-between gap-x-4 gap-y-2">
-          <h1>Asesmen</h1>
-          <Link
-            href="/app/riwayat"
-            className="inline-flex min-h-11 items-center gap-2 font-medium text-brand-strong underline underline-offset-4"
-          >
-            <History className="size-4" aria-hidden="true" />
-            Lihat riwayat
-          </Link>
+      <div data-load className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+        <div>
+          <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Asesmen</h1>
+          <p className="mt-1 max-w-prose text-sm text-text-secondary">
+            Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.
+          </p>
         </div>
-        <p className="mt-2 max-w-prose text-text-secondary">
-          Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.
-        </p>
+        <Link
+          href="/app/riwayat"
+          data-press
+          className="group inline-flex min-h-11 items-center gap-2 rounded-full border-[1.5px] border-primary bg-card px-4 text-[0.8125rem] font-medium text-primary transition-colors duration-200 hover:bg-primary hover:text-on-primary"
+        >
+          <History className="size-4" aria-hidden="true" />
+          Lihat riwayat
+        </Link>
       </div>
 
-      <div className="mt-8">
+      <div className="mt-5">
         {assessments.length === 0 ? (
           <div
             data-load="pop"
-            className="mx-auto flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-6 text-center shadow-card"
+            className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-border bg-card p-5 text-center shadow-lift"
           >
             <img
               src="/images/asesmen/asesmen-kosong.webp"
               width={160}
               height={160}
               alt=""
-              className="size-40 object-contain"
+              className="size-28 object-contain"
             />
-            <p className="mt-4 max-w-sm text-lg text-text-secondary">
+            <p className="mt-3 max-w-sm text-sm text-text-secondary">
               Belum ada asesmen yang tersedia. Coba lagi nanti, ya.
             </p>
           </div>
         ) : (
-          <ul className="grid gap-4 lg:grid-cols-2 lg:gap-5">
+          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {assessments.map((assessment, index) => (
               <li key={assessment.slug} data-load>
                 <Link
                   href={`/app/asesmen/${assessment.slug}`}
                   data-lift
-                  className="group flex h-full items-center gap-4 rounded-xl border border-border bg-card p-4 shadow-card transition-shadow hover:shadow-popover sm:gap-5 sm:p-5"
+                  data-press
+                  className={`group relative flex h-full min-h-44 flex-col rounded-3xl p-4 pb-14 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover ${TONES[index % TONES.length]}`}
                 >
+                  <span className="grid size-12 place-items-center rounded-full bg-card/60" aria-hidden="true">
+                    <img
+                      src="/images/landing/asesmen-checklist.webp"
+                      width={48}
+                      height={48}
+                      alt=""
+                      data-tilt="-6"
+                      className="size-8 object-contain"
+                    />
+                  </span>
+                  <span className="mt-3 block text-base leading-snug font-bold">{assessment.name}</span>
+                  <span className="mt-1 line-clamp-2 block text-[0.8125rem] leading-relaxed text-text-secondary">
+                    {assessment.description}
+                  </span>
+                  <span className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                    <span className="inline-flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1">
+                      <Clock className="size-3.5" aria-hidden="true" />
+                      <span className="sr-only">Perkiraan durasi: </span>
+                      {assessment.estimated_minutes} menit
+                    </span>
+                    <span className="inline-flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1">
+                      <ListChecks className="size-3.5" aria-hidden="true" />
+                      <span className="sr-only">Jumlah butir: </span>
+                      {assessment.question_count} butir
+                    </span>
+                  </span>
                   <span
-                    className={`grid size-16 shrink-0 place-items-center rounded-xl sm:size-18 ${THUMB_TONES[index % THUMB_TONES.length]}`}
+                    className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-neutral-soft text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
                     aria-hidden="true"
                   >
-                    <span className="grid size-14 place-items-center rounded-full bg-card sm:size-16">
-                      <img
-                        src="/images/landing/asesmen-checklist.webp"
-                        width={48}
-                        height={48}
-                        alt=""
-                        className="size-10 object-contain sm:size-12"
-                      />
-                    </span>
+                    <ArrowUpRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>
-
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-base font-semibold">{assessment.name}</span>
-                    <span className="mt-1 line-clamp-2 block text-text-secondary">{assessment.description}</span>
-                    <span className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary">
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock className="size-4" aria-hidden="true" />
-                        <span className="sr-only">Perkiraan durasi: </span>
-                        {assessment.estimated_minutes} menit
-                      </span>
-                      <span className="inline-flex items-center gap-1.5">
-                        <ListChecks className="size-4" aria-hidden="true" />
-                        <span className="sr-only">Jumlah butir: </span>
-                        {assessment.question_count} butir
-                      </span>
-                    </span>
-                  </span>
-
-                  <span
-                    className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-on-primary transition-transform motion-safe:group-hover:translate-x-0.5"
-                  >
-                    <ArrowRight className="size-5" aria-hidden="true" />
-                    <span className="sr-only">Mulai</span>
-                  </span>
+                  <span className="sr-only">Mulai</span>
                 </Link>
               </li>
             ))}
