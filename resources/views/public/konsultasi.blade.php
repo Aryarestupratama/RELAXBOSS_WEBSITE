@@ -5,9 +5,8 @@
 
 @section('content')
     @php
-        $img = asset('images/konsultasi');
-        // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-        $circles = ['bg-mood-yellow text-text', 'bg-mood-green text-text', 'bg-brand-soft text-text'];
+        // Pastel yang sama dengan Beranda dan Asesmen (Design 2); teks di atasnya --text.
+        $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
         // Butir ini bukan urutan langkah, jadi tanpa nomor.
         $signs = [
             ['icon' => 'moon', 'text' => 'Rasa tertekan berlangsung berminggu-minggu dan mengganggu kuliah, tidur, atau makanmu.'],
@@ -17,127 +16,106 @@
         ];
     @endphp
 
-    {{-- Hero --}}
-    <section class="overflow-hidden bg-neutral-soft">
-        <div class="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 lg:grid-cols-2 lg:py-16">
-            <div>
-                <h1 data-load class="text-[1.75rem] leading-[1.2] font-semibold md:text-5xl md:leading-[1.15]">Konsultasi profesional</h1>
-                <p data-load class="mt-5 max-w-prose text-lg text-text-secondary">
-                    RelaxBoss membantu mengenali kondisimu, tetapi tidak menggantikan psikolog atau tenaga kesehatan jiwa.
-                    Bicara dengan profesional adalah langkah yang wajar dan tidak perlu menunggu sampai keadaan parah.
-                </p>
-                <div data-load class="mt-8 flex flex-wrap gap-3">
-                    <x-button-link href="#kontak-bantuan">Lihat kontak bantuan</x-button-link>
-                    <x-button-link href="{{ url('/asesmen') }}" variant="outline">Lihat asesmen</x-button-link>
-                </div>
-            </div>
+    {{-- 1. Judul di tengah (pola Asesmen dan Artikel), tanpa ilustrasi dan tombol --}}
+    <section class="bg-background" aria-labelledby="judul-konsultasi">
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center md:pt-14 md:pb-8">
+            <h1 id="judul-konsultasi" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">Konsultasi profesional</h1>
+            <p data-load class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
+                RelaxBoss membantu mengenali kondisimu, tetapi tidak menggantikan psikolog atau tenaga kesehatan jiwa.
+                Bicara dengan profesional adalah langkah yang wajar dan tidak perlu menunggu sampai keadaan parah.
+            </p>
+        </div>
+    </section>
 
-            <div data-load="pop" class="mx-auto w-full max-w-md">
-                <div>
-                    <img src="{{ $img }}/konsultasi-hero.webp" width="900" height="900" fetchpriority="high"
-                         alt="RelaxMate, robot pendamping, duduk tenang di samping karakter perasaan biru yang lelah, dengan satu tangan bersandar lembut di dekatnya."
-                         class="h-auto w-full">
+    {{-- 2. Kotak darurat: tetap tampil karena ini inti halaman (warna krisis dari token) --}}
+    <section class="bg-background" aria-labelledby="darurat">
+        <div class="mx-auto max-w-6xl px-4 pb-10 md:pb-14">
+            <div data-reveal class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-crisis-text/30 bg-crisis-bg p-5 text-crisis-text md:flex-row md:items-center md:p-6">
+                <div class="flex items-start gap-4">
+                    <span class="mt-0.5 shrink-0" aria-hidden="true"><x-icon name="shield" class="size-6" /></span>
+                    <div>
+                        <h2 id="darurat" class="text-lg font-bold md:text-xl">Kalau kamu sedang dalam bahaya</h2>
+                        <p class="mt-1.5 max-w-2xl text-sm leading-relaxed">
+                            Kalau kamu berpikir untuk menyakiti dirimu sendiri, tolong hubungi bantuan sekarang atau minta seseorang yang kamu percaya menemanimu.
+                            Kamu tidak harus menghadapi ini sendirian.
+                        </p>
+                    </div>
                 </div>
+                <a href="#kontak-bantuan" class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold underline underline-offset-4">Lihat kontak bantuan</a>
             </div>
         </div>
     </section>
 
-    {{-- Kotak darurat --}}
-    <section class="mx-auto max-w-6xl px-4 pt-10 md:pt-12" aria-labelledby="darurat">
-        <div data-reveal class="flex flex-col items-start justify-between gap-4 rounded-xl border border-crisis-text/30 bg-crisis-bg p-5 text-crisis-text md:flex-row md:items-center lg:p-6">
-            <div class="flex items-start gap-4">
-                <span class="mt-1 shrink-0" aria-hidden="true"><x-icon name="shield" class="size-6" /></span>
-                <div>
-                    <h2 id="darurat" class="text-xl md:text-2xl">Kalau kamu sedang dalam bahaya</h2>
-                    <p class="mt-2 max-w-2xl">
-                        Kalau kamu berpikir untuk menyakiti dirimu sendiri, tolong hubungi bantuan sekarang atau minta seseorang yang kamu percaya menemanimu.
-                        Kamu tidak harus menghadapi ini sendirian.
-                    </p>
-                </div>
-            </div>
-            <a href="#kontak-bantuan" class="inline-flex min-h-11 shrink-0 items-center font-medium underline underline-offset-2">Lihat kontak bantuan</a>
-        </div>
-    </section>
-
-    {{-- Kapan sebaiknya mencari bantuan --}}
-    <section class="mx-auto max-w-6xl px-4 py-12 md:py-16" aria-labelledby="kapan">
-        <h2 id="kapan" data-reveal class="text-2xl md:text-3xl">Kapan sebaiknya mencari bantuan</h2>
-        <ul data-stagger class="mt-8 grid gap-4 md:grid-cols-2">
-            @foreach ($signs as $sign)
-                <li data-item class="flex items-center gap-4 rounded-xl border border-border bg-card p-5 shadow-card lg:p-6">
-                    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-neutral-soft text-primary" aria-hidden="true"><x-icon name="{{ $sign['icon'] }}" class="size-5" /></span>
-                    <p class="text-text">{{ $sign['text'] }}</p>
+    {{-- 3. Kapan sebaiknya mencari bantuan --}}
+    <section class="bg-surface-alt" aria-labelledby="kapan">
+        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+            <h2 id="kapan" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Kapan sebaiknya mencari bantuan</h2>
+            <ul data-stagger class="mt-6 grid gap-4 md:grid-cols-2">
+                @foreach ($signs as $sign)
+                    <li data-item class="flex items-center gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-lift">
+                        <span class="grid size-11 shrink-0 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true"><x-icon name="{{ $sign['icon'] }}" class="size-5" /></span>
+                        <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign['text'] }}</p>
+                    </li>
+                @endforeach
+                <li data-item class="flex items-center gap-4 rounded-2xl border border-l-4 border-border/60 border-l-crisis-text bg-card p-5 shadow-lift md:col-span-2">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-full bg-crisis-bg text-crisis-text" aria-hidden="true"><x-icon name="heart" class="size-5" /></span>
+                    <p class="text-sm font-semibold text-text md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
                 </li>
-            @endforeach
-            <li data-item class="flex items-center gap-4 rounded-xl border border-l-4 border-border border-l-crisis-text bg-card p-5 shadow-card md:col-span-2 lg:p-6">
-                <span class="grid size-10 shrink-0 place-items-center rounded-full bg-crisis-bg text-crisis-text" aria-hidden="true"><x-icon name="heart" class="size-5" /></span>
-                <p class="font-medium text-text">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
-            </li>
-        </ul>
+            </ul>
+        </div>
     </section>
 
-    {{-- Kontak bantuan --}}
-    <section id="kontak-bantuan" class="scroll-mt-24 bg-neutral-soft" aria-labelledby="kontak">
-        <div class="mx-auto max-w-6xl px-4 py-12 md:py-16">
-            <h2 id="kontak" data-reveal class="text-2xl md:text-3xl">Kontak bantuan</h2>
+    {{-- 4. Kontak bantuan (hanya dari config, OQ-3), ditutup catatan sebaris --}}
+    <section id="kontak-bantuan" class="scroll-mt-24 bg-background" aria-labelledby="kontak">
+        <div class="mx-auto max-w-6xl px-4 pt-10 pb-14 md:pt-14 md:pb-20">
+            <h2 id="kontak" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Kontak bantuan</h2>
 
             @if (count($contacts) === 0)
-                <div data-reveal="pop" class="mx-auto mt-8 flex max-w-xl flex-col items-center rounded-xl border border-border bg-card p-8 text-center shadow-card">
-                    <img src="{{ $img }}/konsultasi-kosong.webp" width="700" height="700" loading="lazy" alt="" class="size-44 object-contain">
-                    <p class="mt-4 text-lg font-medium text-text">Daftar kontak sedang disiapkan.</p>
-                    <div class="mt-6"><x-button-link href="{{ url('/asesmen') }}">Lihat asesmen</x-button-link></div>
+                <div data-reveal="pop" class="mx-auto mt-6 flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-10 text-center">
+                    <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="phone" class="size-7" /></span>
+                    <p class="mt-4 text-lg font-semibold text-text">Daftar kontak sedang disiapkan.</p>
                 </div>
             @else
-                <ul data-stagger class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                <ul data-stagger class="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
                     @foreach ($contacts as $contact)
                         @php
                             $phone = $contact['phone'] ?? null;
                             $link = $contact['url'] ?? null;
                             $isDummy = (bool) ($contact['dummy'] ?? false);
                         @endphp
-                        <li data-item data-lift class="flex flex-col rounded-xl border border-border bg-card p-5 shadow-card transition-shadow duration-300 hover:shadow-popover lg:p-6">
-                            <span class="grid size-12 place-items-center rounded-full {{ $circles[$loop->index % 3] }}" aria-hidden="true">
-                                <x-icon name="phone" class="size-6" />
+                        <li data-item data-lift class="flex flex-col rounded-2xl border border-border/60 bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-6">
+                            <span class="grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
+                                <x-icon name="phone" class="size-5" />
                             </span>
-                            <h3 class="mt-4 text-xl font-semibold">{{ $contact['name'] ?? '' }}</h3>
-                            @if (filled($phone))
-                                <p class="mt-2">
-                                    <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-2">{{ $phone }}</a>
-                                </p>
-                            @endif
-                            @if (is_string($link) && str_starts_with($link, 'https://'))
-                                <p>
-                                    <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center break-all font-medium text-brand-strong underline underline-offset-2">{{ $link }}</a>
-                                </p>
-                            @endif
-                            @if (filled($contact['note'] ?? null) && ! $isDummy)
-                                <p class="mt-1 text-sm text-text-secondary">{{ $contact['note'] }}</p>
-                            @endif
-                            @if ($isDummy)
-                                <p class="mt-auto pt-4 text-sm font-medium text-warning">Contoh sementara, bukan kontak yang sebenarnya.</p>
+                            {{-- Tiga zona tetap agar semua kartu sejajar: nama (tinggi dua baris), kontak, catatan di dasar --}}
+                            <h3 class="mt-4 text-lg leading-snug font-bold sm:min-h-[3.2rem]">{{ $contact['name'] ?? '' }}</h3>
+
+                            <div class="mt-2 flex flex-col">
+                                @if (filled($phone))
+                                    <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-semibold text-brand-strong underline underline-offset-4">{{ $phone }}</a>
+                                @endif
+                                @if (is_string($link) && str_starts_with($link, 'https://'))
+                                    <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm font-medium break-all text-brand-strong underline underline-offset-4">{{ $link }}</a>
+                                @endif
+                            </div>
+
+                            @if ($isDummy || filled($contact['note'] ?? null))
+                                <div class="mt-auto pt-4">
+                                    <p class="border-t border-border/60 pt-4 text-sm {{ $isDummy ? 'font-medium text-warning' : 'text-text-secondary' }}">
+                                        {{ $isDummy ? 'Contoh sementara, bukan kontak yang sebenarnya.' : $contact['note'] }}
+                                    </p>
+                                </div>
                             @endif
                         </li>
                     @endforeach
                 </ul>
             @endif
+
+            {{-- Catatan sebaris (pola Asesmen, Artikel, Tentang) --}}
+            <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
+                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
+                <p>RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.</p>
+            </div>
         </div>
     </section>
-
-    {{-- Disclaimer --}}
-    <section class="mx-auto max-w-6xl px-4 py-12" aria-label="Catatan penting">
-        <x-disclaimer data-reveal class="mx-auto max-w-3xl">
-            RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.
-        </x-disclaimer>
-    </section>
-
-    {{-- Penutup untuk tamu --}}
-    @guest
-        <section class="mx-auto max-w-6xl px-4 pb-14" aria-labelledby="judul-penutup">
-            <div data-reveal class="text-center">
-                <h2 id="judul-penutup" class="text-[1.75rem] md:text-5xl">Mulai dari satu langkah kecil.</h2>
-                <p class="mx-auto mt-4 max-w-prose text-text-secondary">Mulai dari asesmen atau catat mood pertamamu hari ini.</p>
-                <div class="mt-8"><x-button-link href="{{ url('/daftar') }}">Daftar gratis</x-button-link></div>
-            </div>
-        </section>
-    @endguest
 @endsection
