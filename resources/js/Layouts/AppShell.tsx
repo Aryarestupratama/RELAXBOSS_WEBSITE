@@ -166,7 +166,7 @@ export default function AppShell({
 
         <main
           id="konten"
-          className={`mx-auto w-full px-4 py-5 md:px-6 md:py-7 ${wide ? 'max-w-6xl' : 'max-w-4xl'} ${
+          className={`mx-auto w-full px-4 py-5 md:px-6 md:py-7 ${wide ? 'max-w-7xl' : 'max-w-4xl'} ${
             fill ? 'flex min-h-0 flex-1 flex-col' : ''
           } [&_h1:not([class])]:text-2xl md:[&_h1:not([class])]:text-[1.75rem] [&_h2:not([class])]:text-lg`}
         >
