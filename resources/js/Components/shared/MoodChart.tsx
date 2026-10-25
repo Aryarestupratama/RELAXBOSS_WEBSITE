@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay, type MoodEntryItem } from '@/lib/mood';
 
-const HEIGHT = 220;
+const HEIGHT = 200;
 const MARGIN = { top: 12, right: 14, bottom: 28, left: 40 };
 
 /** Warna titik per tingkat mood (token skala `--mood-1` sampai `--mood-5`), selaras dengan blob; garis tepi gelap agar titik jelas di atas kartu putih. */
@@ -161,7 +161,7 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
           ) : null}
         </svg>
       </div>
-      <figcaption className="mt-1 text-sm text-text-secondary">
+      <figcaption className="mt-1 text-xs text-text-secondary">
         Skala 1 ({MOOD_LABELS[1]}) sampai 5 ({MOOD_LABELS[5]}). Satu titik per hari adalah rata-rata catatanmu.
       </figcaption>
       <table className="sr-only">
@@ -236,7 +236,7 @@ export function MoodDayChart({ label, entries }: DayChartProps) {
           ))}
         </svg>
       </div>
-      <figcaption className="mt-1 text-sm text-text-secondary">
+      <figcaption className="mt-1 text-xs text-text-secondary">
         Semua catatan {label} sesuai jam (WIB). Skala 1 sampai 5.
       </figcaption>
       <table className="sr-only">

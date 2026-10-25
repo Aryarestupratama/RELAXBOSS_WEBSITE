@@ -26,18 +26,19 @@ type FormData = {
   note: string;
 };
 
-const cardClass = 'rounded-xl border border-border bg-card p-5 shadow-card';
+const cardClass = 'rounded-3xl bg-card p-5 shadow-lift';
+const pillButton = 'rounded-full! px-5 text-sm';
 
 function EntryList({ entries }: { entries: MoodEntryItem[] }) {
   return (
-    <ul className="grid gap-3">
+    <ul className="grid gap-2">
       {entries.map((entry) => (
-        <li key={entry.id} className="rounded-lg border border-border bg-background px-4 py-3">
-          <p className="font-medium">
+        <li key={entry.id} className="rounded-2xl bg-neutral-soft px-3.5 py-2.5 text-sm">
+          <p className="font-semibold">
             {entry.time} WIB <span aria-hidden="true">·</span> {entry.mood_label}
             {entry.arousal_label ? <span className="font-normal text-text-secondary"> · {entry.arousal_label}</span> : null}
           </p>
-          {entry.note ? <p className="mt-1 whitespace-pre-wrap break-words text-text-secondary">{entry.note}</p> : null}
+          {entry.note ? <p className="mt-0.5 whitespace-pre-wrap break-words text-[0.8125rem] text-text-secondary">{entry.note}</p> : null}
         </li>
       ))}
     </ul>
@@ -55,14 +56,14 @@ function WeekFaces({
   onSelectDay: (date: string) => void;
 }) {
   return (
-    <ul className="grid grid-cols-7 gap-1 rounded-xl bg-neutral-soft px-1 py-3 text-center sm:gap-2 sm:px-2">
+    <ul className="grid grid-cols-7 gap-1 rounded-2xl bg-neutral-soft px-1 py-2.5 text-center sm:gap-2 sm:px-2">
       {days.map((day) => {
         const weekday = weekdayShort(day.date);
         const level = day.average === null ? null : moodLevel(day.average);
         return (
           <li key={day.date} className="flex flex-col items-center gap-1">
             {level === null ? (
-              <span className="grid size-10 place-items-center rounded-full border-2 border-dashed border-border sm:size-12">
+              <span className="grid size-9 place-items-center rounded-full border-2 border-dashed border-border sm:size-11">
                 <span className="sr-only">
                   {day.label}: Tidak ada catatan
                 </span>
@@ -73,14 +74,14 @@ function WeekFaces({
                 onClick={() => onSelectDay(day.date)}
                 aria-pressed={selectedDate === day.date}
                 aria-label={`${day.label}: ${MOOD_LABELS[level]}, ${day.entries.length} catatan`}
-                className={`grid size-11 place-items-center rounded-full transition-transform motion-safe:hover:scale-110 sm:size-12 ${
+                className={`grid size-11 place-items-center rounded-full transition-transform motion-safe:hover:scale-110 ${
                   selectedDate === day.date ? 'ring-2 ring-brand ring-offset-2 ring-offset-neutral-soft' : ''
                 }`}
               >
-                <img src={moodImage(level)} width={48} height={48} alt="" className="size-10 object-contain sm:size-11" />
+                <img src={moodImage(level)} width={48} height={48} alt="" className="size-9 object-contain sm:size-10" />
               </button>
             )}
-            <span className={`text-xs sm:text-sm ${day.is_today ? 'font-semibold text-text' : 'text-text-secondary'}`}>
+            <span className={`text-xs ${day.is_today ? 'font-semibold text-text' : 'text-text-secondary'}`}>
               {weekday}
             </span>
           </li>
@@ -129,27 +130,27 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
 
   return (
     <AppShell title="Mood Tracker" wide staggered>
-      <div className="space-y-6">
-        <div data-load>
-          <h1>Mood Tracker</h1>
-          <p className="mt-2 text-text-secondary">Catat perasaanmu dan lihat polanya dalam seminggu.</p>
-        </div>
+      <div data-load>
+        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Mood Tracker</h1>
+        <p className="mt-1 text-sm text-text-secondary">Catat perasaanmu dan lihat polanya dalam seminggu.</p>
+      </div>
 
-        {saved ? (
-          <Alert data-load>
-            <CircleCheck className="text-success!" aria-hidden="true" />
-            <AlertDescription>Catatanmu tersimpan.</AlertDescription>
-          </Alert>
-        ) : null}
+      {saved ? (
+        <Alert data-load className="mt-3">
+          <CircleCheck className="text-success!" aria-hidden="true" />
+          <AlertDescription>Catatanmu tersimpan.</AlertDescription>
+        </Alert>
+      ) : null}
 
-        <div className="grid items-start gap-5 lg:grid-cols-12">
-          <section aria-labelledby="mood-form-title" data-load className={`${cardClass} lg:col-span-5`}>
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-12">
+        <div className="space-y-4 lg:col-span-5">
+          <section aria-labelledby="mood-form-title" data-load className={cardClass}>
             <h2 id="mood-form-title" className="text-base font-semibold">
               Catat mood
             </h2>
 
             {limitReached ? (
-              <div className="mt-4">
+              <div className="mt-3">
                 <Alert>
                   <Info aria-hidden="true" />
                   <AlertDescription>
@@ -158,8 +159,8 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                 </Alert>
               </div>
             ) : (
-              <form onSubmit={submit} noValidate className="mt-4 space-y-6">
-                <p className="text-sm text-text-secondary">
+              <form onSubmit={submit} noValidate className="mt-2 space-y-4">
+                <p className="text-[0.8125rem] text-text-secondary">
                   Kamu bisa mencatat {remaining} kali lagi hari ini. Boleh lebih dari sekali, kalau perasaanmu berubah.
                 </p>
 
@@ -192,6 +193,7 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                   label="Catatan (boleh dikosongkan)"
                   error={errors.note}
                   hint={`${form.data.note.length}/${note_max_chars}`}
+                  compact
                 >
                   {(control) => (
                     <Textarea
@@ -199,29 +201,46 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                       name="note"
                       maxLength={note_max_chars}
                       value={form.data.note}
+                      className="min-h-20! text-sm"
                       onChange={(event) => form.setData('note', event.target.value)}
                     />
                   )}
                 </FormField>
 
-                <Button type="submit" className="w-full" disabled={form.processing}>
+                <Button type="submit" className="w-full rounded-full! text-sm" disabled={form.processing}>
                   {form.processing ? 'Memproses...' : 'Catat mood'}
                 </Button>
               </form>
             )}
           </section>
 
-          <section aria-labelledby="mood-chart-title" data-load className={`${cardClass} lg:col-span-7`}>
+          <section aria-labelledby="mood-today-title" data-load className={cardClass}>
+            <h2 id="mood-today-title" className="text-base font-semibold">
+              Hari ini
+            </h2>
+            <div className="mt-3">
+              {today.length === 0 ? (
+                <p className="text-sm text-text-secondary">Belum ada catatan hari ini.</p>
+              ) : (
+                <EntryList entries={today} />
+              )}
+            </div>
+          </section>
+        </div>
+
+        <div className="space-y-4 lg:col-span-7">
+          <section aria-labelledby="mood-chart-title" data-load className={cardClass}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 id="mood-chart-title" className="text-base font-semibold">
                 Polamu
               </h2>
-              <div role="group" aria-label="Rentang grafik" className="flex gap-2">
+              <div role="group" aria-label="Rentang grafik" className="flex gap-1.5">
                 {([7, 30] as const).map((value) => (
                   <Button
                     key={value}
                     type="button"
                     variant={range === value ? 'default' : 'outline'}
+                    className={pillButton}
                     aria-pressed={range === value}
                     onClick={() => setRange(value)}
                   >
@@ -232,16 +251,16 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
             </div>
 
             {hasData ? (
-              <div className="mt-4 space-y-4">
+              <div className="mt-3 space-y-3">
                 {range === 7 ? (
                   <WeekFaces days={visibleDays} selectedDate={selectedDate} onSelectDay={setSelectedDate} />
                 ) : null}
                 <MoodRangeChart days={days} range={range} selectedDate={selectedDate} onSelectDay={setSelectedDate} />
               </div>
             ) : (
-              <div className="mt-4 flex flex-col items-center py-6 text-center">
-                <img src="/images/mood/mood-row.webp" width={240} height={40} alt="" className="h-auto w-full max-w-60" />
-                <p className="mt-4 max-w-sm text-text-secondary">
+              <div className="mt-3 flex flex-col items-center rounded-2xl bg-soft-lavender px-4 py-6 text-center">
+                <img src="/images/mood/mood-row.webp" width={240} height={40} alt="" className="h-auto w-full max-w-52" />
+                <p className="mt-3 max-w-sm text-sm text-text">
                   {range === 7
                     ? 'Belum ada catatan minggu ini. Bagaimana perasaanmu hari ini?'
                     : 'Belum ada catatan dalam 30 hari terakhir. Bagaimana perasaanmu hari ini?'}
@@ -249,24 +268,9 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
               </div>
             )}
           </section>
-        </div>
-
-        <div className="grid items-start gap-5 lg:grid-cols-12">
-          <section aria-labelledby="mood-today-title" data-load className={`${cardClass} lg:col-span-5`}>
-            <h2 id="mood-today-title" className="text-base font-semibold">
-              Hari ini
-            </h2>
-            <div className="mt-4">
-              {today.length === 0 ? (
-                <p className="text-text-secondary">Belum ada catatan hari ini.</p>
-              ) : (
-                <EntryList entries={today} />
-              )}
-            </div>
-          </section>
 
           {daysWithEntries.length > 0 ? (
-            <section aria-labelledby="mood-day-title" data-load className={`${cardClass} lg:col-span-7`}>
+            <section aria-labelledby="mood-day-title" data-load className={cardClass}>
               <h2 id="mood-day-title" className="text-base font-semibold">
                 Lihat catatan satu hari
               </h2>
@@ -275,7 +279,7 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                 aria-labelledby="mood-day-title"
                 value={selectedDate ?? ''}
                 onChange={(event) => setSelectedDate(event.target.value === '' ? null : event.target.value)}
-                className="mt-4 block min-h-11 w-full rounded-lg border-[1.5px] border-input bg-card px-3 text-base text-foreground sm:max-w-xs"
+                className="mt-3 block min-h-11 w-full rounded-xl border-[1.5px] border-input bg-card px-3 text-sm text-foreground sm:max-w-xs"
               >
                 <option value="">Pilih hari</option>
                 {daysWithEntries.map((day) => (
@@ -286,13 +290,13 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
               </select>
 
               {selectedDay ? (
-                <div className="mt-6 space-y-4 border-t border-border pt-5">
-                  <h3 ref={dayHeading} tabIndex={-1} className="text-base font-semibold">
+                <div className="mt-4 space-y-3 border-t border-border pt-4">
+                  <h3 ref={dayHeading} tabIndex={-1} className="text-[0.9375rem] font-semibold outline-none">
                     Catatan {selectedDay.label}
                   </h3>
                   <MoodDayChart label={selectedDay.label} entries={selectedDay.entries} />
                   <EntryList entries={selectedDay.entries} />
-                  <Button type="button" variant="outline" onClick={() => setSelectedDate(null)}>
+                  <Button type="button" variant="outline" className={pillButton} onClick={() => setSelectedDate(null)}>
                     Kembali ke grafik
                   </Button>
                 </div>

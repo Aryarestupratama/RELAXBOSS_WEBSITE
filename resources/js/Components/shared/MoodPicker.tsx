@@ -37,9 +37,9 @@ export default function MoodPicker({
   invalid = false,
 }: MoodPickerProps) {
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       <fieldset className="space-y-2" disabled={disabled}>
-        <legend className="text-base font-medium">Bagaimana perasaanmu sekarang?</legend>
+        <legend className="text-[0.9375rem] font-semibold">Bagaimana perasaanmu sekarang?</legend>
         <RadioGroup
           name="mood"
           aria-label="Perasaanmu sekarang"
@@ -57,10 +57,10 @@ export default function MoodPicker({
               <label
                 key={value}
                 htmlFor={id}
-                className={`group flex min-h-28 cursor-pointer flex-col items-center justify-center gap-1.5 rounded-xl px-1 py-2 text-center text-xs transition-colors sm:text-sm ${
+                className={`group flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-center text-xs transition-all duration-200 motion-safe:hover:-translate-y-0.5 ${
                   selected
-                    ? 'border-2 border-brand bg-neutral-soft font-medium'
-                    : `border-[1.5px] bg-card hover:bg-neutral-soft ${invalid ? 'border-destructive' : 'border-border'}`
+                    ? 'border-2 border-primary bg-soft-lavender font-semibold shadow-card'
+                    : `border-[1.5px] bg-card hover:bg-neutral-soft hover:shadow-card ${invalid ? 'border-destructive' : 'border-border'}`
                 }`}
               >
                 <RadioGroupItem id={id} value={String(value)} />
@@ -69,7 +69,7 @@ export default function MoodPicker({
                   width={48}
                   height={48}
                   alt=""
-                  className="size-10 object-contain transition-transform duration-200 motion-safe:group-hover:scale-110 sm:size-12"
+                  className="size-9 object-contain transition-transform duration-200 motion-safe:group-hover:scale-110 sm:size-10"
                 />
                 <span>{MOOD_LABELS[value]}</span>
               </label>
@@ -79,7 +79,7 @@ export default function MoodPicker({
       </fieldset>
 
       <fieldset className="space-y-2" disabled={disabled}>
-        <legend className="text-base font-medium">
+        <legend className="text-[0.9375rem] font-semibold">
           Tenagamu <span className="font-normal text-text-secondary">(boleh dilewati)</span>
         </legend>
         <RadioGroup
@@ -98,8 +98,8 @@ export default function MoodPicker({
               <label
                 key={value}
                 htmlFor={id}
-                className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border-[1.5px] px-4 py-2 transition-colors ${
-                  selected ? 'border-primary bg-neutral-soft' : 'border-border bg-card hover:bg-neutral-soft'
+                className={`flex min-h-11 cursor-pointer items-center gap-2.5 rounded-xl border-[1.5px] px-3.5 py-2 text-sm transition-colors ${
+                  selected ? 'border-primary bg-soft-lavender font-semibold' : 'border-border bg-card hover:bg-neutral-soft'
                 }`}
               >
                 <RadioGroupItem id={id} value={value} />
@@ -110,7 +110,7 @@ export default function MoodPicker({
           })}
         </RadioGroup>
         {arousal !== null ? (
-          <Button type="button" variant="ghost" onClick={() => onArousalChange(null)} disabled={disabled}>
+          <Button type="button" variant="ghost" className="rounded-full! text-[0.8125rem]" onClick={() => onArousalChange(null)} disabled={disabled}>
             Hapus pilihan tenaga
           </Button>
         ) : null}
