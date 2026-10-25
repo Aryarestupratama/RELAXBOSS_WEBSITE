@@ -19,9 +19,9 @@
 
     <x-legal-page title="Kebijakan privasi"
                   intro="Halaman ini menjelaskan data apa yang kami simpan dan bagaimana data itu diperlakukan. Kami berusaha menuliskannya dengan bahasa sehari-hari."
-                  image="privasi-hero.webp"
-                  image-alt="RelaxMate, robot pendamping, memegang perisai kecil berhiaskan hati."
-                  :toc="$toc">
+                  :toc="$toc"
+                  active="privasi"
+                  updated="19 Oktober 2026">
         <x-legal-section id="data" :title="$toc['data']" icon="database" tone="yellow">
             <ul class="space-y-3">
                 @foreach ([
@@ -63,7 +63,7 @@
         </x-legal-section>
 
         <x-legal-section id="pelatihan" :title="$toc['pelatihan']" icon="clipboard-check" tone="green">
-            <div role="note" class="rounded-lg border border-border border-l-4 border-l-brand-strong bg-card p-5 shadow-card">
+            <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
                 <p>
                     Kami menanyakan secara terpisah apakah percakapan dan hasil asesmenmu boleh dipakai untuk melatih model AI di masa depan.
                     Kamu harus memilih sendiri, tanpa pilihan awal. Menolak tidak memengaruhi akses ke fitur apa pun, dan pilihanmu bisa diubah kapan saja di pengaturan akun.
@@ -79,12 +79,11 @@
 
         <x-legal-section id="cadangan" :title="$toc['cadangan']" icon="archive" tone="yellow">
             <p>Kami menyimpan cadangan database selama {{ $backupDays }} hari. Data yang sudah kamu hapus bisa masih ada di cadangan sampai masa itu berakhir.</p>
-            <p class="mt-3 text-sm text-text-secondary">Terakhir diperbarui: 19 Oktober 2026.</p>
         </x-legal-section>
 
         <x-slot:after>
             <x-disclaimer>
-                RelaxBoss bukan psikolog atau layanan medis. Lihat juga <a href="{{ url('/ketentuan') }}" class="font-medium text-brand-strong underline underline-offset-2">Ketentuan penggunaan</a>.
+                RelaxBoss bukan psikolog atau layanan medis.
             </x-disclaimer>
         </x-slot:after>
     </x-legal-page>

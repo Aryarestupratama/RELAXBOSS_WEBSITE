@@ -18,15 +18,15 @@
 
     <x-legal-page title="Ketentuan penggunaan"
                   intro="Dengan memakai RelaxBoss, kamu menyetujui ketentuan berikut."
-                  image="ketentuan-hero.webp"
-                  image-alt="RelaxMate, robot pendamping, memegang selembar kertas bertanda hati kecil."
-                  :toc="$toc">
+                  :toc="$toc"
+                  active="ketentuan"
+                  updated="19 Oktober 2026">
         <x-legal-section id="layanan" :title="$toc['layanan']" icon="heart" tone="yellow">
-            <div role="note" class="rounded-lg border border-border border-l-4 border-l-brand-strong bg-card p-5 shadow-card">
+            <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
                 <p>
                     RelaxBoss adalah alat bantu mengenali dan mencatat kondisimu. RelaxBoss bukan psikolog, bukan layanan medis, dan tidak memberi diagnosis.
                     Hasil Asesmen adalah gambaran awal. Untuk penilaian yang tepat, bicarakan dengan tenaga profesional.
-                    Kalau kamu butuh bantuan sekarang, lihat halaman <a href="{{ url('/konsultasi') }}" class="font-medium text-brand-strong underline underline-offset-2">Konsultasi Profesional</a>.
+                    Kalau kamu butuh bantuan sekarang, lihat halaman <a href="{{ url('/konsultasi') }}">Konsultasi Profesional</a>.
                 </p>
             </div>
         </x-legal-section>
@@ -70,10 +70,9 @@
 
         <x-legal-section id="privasi" :title="$toc['privasi']" icon="file-text" tone="brand">
             <p>
-                Cara kami memperlakukan datamu dijelaskan di <a href="{{ url('/privasi') }}" class="font-medium text-brand-strong underline underline-offset-2">Kebijakan privasi</a>.
+                Cara kami memperlakukan datamu dijelaskan di <a href="{{ url('/privasi') }}">Kebijakan privasi</a>.
                 Ketentuan ini dapat diperbarui, dan versi terbaru selalu ada di halaman ini.
             </p>
-            <p class="mt-3 text-sm text-text-secondary">Terakhir diperbarui: 19 Oktober 2026.</p>
         </x-legal-section>
     </x-legal-page>
 @endsection
