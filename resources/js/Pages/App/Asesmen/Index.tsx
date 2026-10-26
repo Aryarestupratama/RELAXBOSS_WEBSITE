@@ -1,6 +1,10 @@
 import { Link } from '@inertiajs/react';
-import { Clock, History, ListChecks, ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Clock, History, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import { Badge } from '@/Components/ui/badge';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 
 type AssessmentCard = {
   slug: string;
@@ -16,35 +20,32 @@ type IndexProps = {
 };
 
 /** Pastel bergantian, sama dengan kartu fitur Beranda dan Dashboard (teks di atasnya `--text`, RULE-052). */
-const TONES = ['bg-soft-peach', 'bg-soft-mint', 'bg-soft-lavender', 'bg-soft-sky'] as const;
+const TONES = ['peach', 'mint', 'lavender', 'sky'] as const;
 
 /** SCR-012 */
 export default function Index({ assessments }: IndexProps) {
   return (
     <AppShell title="Asesmen" wide staggered>
-      <div data-load className="flex flex-wrap items-end justify-between gap-x-4 gap-y-1">
+      <div data-load className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
         <div>
           <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Asesmen</h1>
           <p className="mt-1 max-w-prose text-sm text-text-secondary">
             Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.
           </p>
         </div>
-        <Link
-          href="/app/riwayat"
-          data-press
-          className="group inline-flex min-h-11 items-center gap-2 rounded-full border-[1.5px] border-primary bg-card px-4 text-[0.8125rem] font-medium text-primary transition-colors duration-200 hover:bg-primary hover:text-on-primary"
-        >
-          <History className="size-4" aria-hidden="true" />
-          Lihat riwayat
-        </Link>
+        <Button asChild variant="outline" data-press className="rounded-full! px-4 text-[0.8125rem]">
+          <Link href="/app/riwayat">
+            <History className="size-4" aria-hidden="true" />
+            Lihat riwayat
+          </Link>
+        </Button>
       </div>
+
+      <Separator data-load className="mt-4" />
 
       <div className="mt-5">
         {assessments.length === 0 ? (
-          <div
-            data-load="pop"
-            className="mx-auto flex max-w-md flex-col items-center rounded-2xl border border-border bg-card p-5 text-center shadow-lift"
-          >
+          <Card data-load="pop" className="mx-auto max-w-md items-center gap-3 p-6 text-center">
             <img
               src="/images/asesmen/asesmen-kosong.webp"
               width={160}
@@ -52,10 +53,13 @@ export default function Index({ assessments }: IndexProps) {
               alt=""
               className="size-28 object-contain"
             />
-            <p className="mt-3 max-w-sm text-sm text-text-secondary">
+            <p className="max-w-sm text-sm text-text-secondary">
               Belum ada asesmen yang tersedia. Coba lagi nanti, ya.
             </p>
-          </div>
+            <Button asChild variant="outline" data-press className="rounded-full! px-5 text-sm">
+              <Link href="/dashboard">Ke Dashboard</Link>
+            </Button>
+          </Card>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {assessments.map((assessment, index) => (
@@ -64,31 +68,38 @@ export default function Index({ assessments }: IndexProps) {
                   href={`/app/asesmen/${assessment.slug}`}
                   data-lift
                   data-press
-                  className={`group relative flex h-full min-h-40 flex-col rounded-3xl p-5 pb-14 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover ${TONES[index % TONES.length]}`}
+                  className="group relative block h-full rounded-3xl transition-shadow duration-300 hover:shadow-lift-hover"
                 >
-                  <span className="block text-base leading-snug font-bold">{assessment.name}</span>
-                  <span className="mt-1 line-clamp-2 block text-[0.8125rem] leading-relaxed text-text-secondary">
-                    {assessment.description}
-                  </span>
-                  <span className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-                    <span className="inline-flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1">
-                      <Clock className="size-3.5" aria-hidden="true" />
-                      <span className="sr-only">Perkiraan durasi: </span>
-                      {assessment.estimated_minutes} menit
-                    </span>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-card/60 px-2.5 py-1">
-                      <ListChecks className="size-3.5" aria-hidden="true" />
-                      <span className="sr-only">Jumlah butir: </span>
-                      {assessment.question_count} butir
-                    </span>
-                  </span>
+                  <Card
+                    tone={TONES[index % TONES.length]}
+                    className="h-full min-h-44 gap-3 p-5 pb-16 transition-shadow duration-300 group-hover:shadow-lift-hover"
+                  >
+                    <CardHeader className="gap-1">
+                      <CardTitle className="text-base font-bold">{assessment.name}</CardTitle>
+                      <CardDescription className="line-clamp-2 text-[0.8125rem] leading-relaxed">
+                        {assessment.description}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="flex flex-wrap items-center gap-1.5">
+                      <Badge variant="outline">
+                        <Clock aria-hidden="true" />
+                        <span className="sr-only">Perkiraan durasi: </span>
+                        {assessment.estimated_minutes} menit
+                      </Badge>
+                      <Badge variant="outline">
+                        <ListChecks aria-hidden="true" />
+                        <span className="sr-only">Jumlah butir: </span>
+                        {assessment.question_count} butir
+                      </Badge>
+                    </CardContent>
+                  </Card>
                   <span
                     className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-neutral-soft text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
                     aria-hidden="true"
                   >
                     <ArrowUpRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                   </span>
-                  <span className="sr-only">Mulai</span>
+                  <span className="sr-only">Lihat detail</span>
                 </Link>
               </li>
             ))}

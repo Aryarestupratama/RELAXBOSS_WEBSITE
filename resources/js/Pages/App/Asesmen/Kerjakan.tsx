@@ -5,7 +5,19 @@ import AppShell from '@/Layouts/AppShell';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
 import LikertScale, { type LikertOption } from '@/Components/shared/LikertScale';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/Components/ui/breadcrumb';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardFooter, CardHeader } from '@/Components/ui/card';
+import { Progress } from '@/Components/ui/progress';
+import { Separator } from '@/Components/ui/separator';
 
 type Question = {
   id: number;
@@ -107,42 +119,35 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
     <AppShell title={assessment.name} wide staggered>
       <div className="mx-auto max-w-2xl">
         <div data-load>
-          <div className="flex items-center justify-between gap-3">
-            <Link
-              href={`/app/asesmen/${assessment.slug}`}
-              className="group inline-flex min-h-11 min-w-0 items-center gap-2 text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text"
-            >
-              <ArrowLeft
-                className="size-4 shrink-0 transition-transform duration-200 group-hover:-translate-x-0.5"
-                aria-hidden="true"
-              />
-              <span className="truncate">{assessment.name}</span>
-            </Link>
-            <p
-              className="shrink-0 rounded-full bg-card px-3 py-1 text-xs font-semibold shadow-card"
-              aria-live="polite"
-            >
+          <Breadcrumb>
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href="/app/asesmen">Asesmen</Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbLink asChild>
+                  <Link href={`/app/asesmen/${assessment.slug}`} className="max-w-[9rem] sm:max-w-xs">
+                    <span className="truncate">{assessment.name}</span>
+                  </Link>
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage>Mengerjakan</BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
+
+          <div className="mt-1 flex items-center justify-between gap-3">
+            <Badge variant="lavender" className="px-3 py-1 text-xs font-semibold" aria-live="polite">
               Butir {index + 1} dari {total}
-            </p>
+            </Badge>
+            <p className="text-xs text-text-secondary">{answeredCount} dari {total} terjawab</p>
           </div>
-          <div
-            role="progressbar"
-            aria-label="Kemajuan pengerjaan"
-            aria-valuemin={1}
-            aria-valuemax={total}
-            aria-valuenow={index + 1}
-            className="mt-1 grid gap-1"
-            style={{ gridTemplateColumns: `repeat(${total}, minmax(0, 1fr))` }}
-          >
-            {questions.map((item, position) => (
-              <span
-                key={item.id}
-                className={`h-1.5 rounded-full transition-colors duration-300 ${
-                  position <= index ? 'bg-brand' : 'bg-border'
-                }`}
-              />
-            ))}
-          </div>
+          <Progress value={index + 1} max={total} aria-label="Kemajuan pengerjaan" className="mt-2" />
         </div>
 
         {errors.answers ? (
@@ -151,13 +156,15 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
           </Alert>
         ) : null}
 
-        <section data-load className="mt-4 overflow-hidden rounded-3xl bg-card shadow-lift">
-          <div className="bg-soft-lavender px-5 py-5 md:px-6">
+        <Card data-load className="mt-4 gap-0 overflow-hidden">
+          <CardHeader className="gap-0 bg-soft-lavender px-5 py-5 md:px-6">
             {index === 0 && assessment.instructions ? (
-              <p className="mb-4 flex items-start gap-2 rounded-xl bg-card/70 px-3.5 py-2.5 text-[0.8125rem] leading-relaxed text-text-secondary">
-                <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-                {assessment.instructions}
-              </p>
+              <Alert role="note" className="mb-4 rounded-xl border-transparent bg-card/70 px-3.5 py-2.5">
+                <Info aria-hidden="true" className="text-primary" />
+                <AlertDescription className="text-[0.8125rem] leading-relaxed text-text-secondary">
+                  {assessment.instructions}
+                </AlertDescription>
+              </Alert>
             ) : null}
             <h1
               key={question.id}
@@ -167,9 +174,9 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
             >
               {question.text}
             </h1>
-          </div>
+          </CardHeader>
 
-          <div className="p-4 md:p-5">
+          <CardContent className="p-4 md:p-5">
             <div
               key={question.id}
               className="motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-right-2 motion-safe:duration-300"
@@ -183,43 +190,45 @@ export default function Kerjakan({ assessment }: KerjakanProps) {
                 disabled={form.processing}
               />
             </div>
+          </CardContent>
 
-            <div className="mt-4 flex items-center justify-between gap-3 border-t border-border pt-4">
-              {index > 0 ? (
-                <Button
-                  variant="outline"
-                  className="rounded-full! px-5 text-sm"
-                  onClick={() => setIndex(index - 1)}
-                  disabled={form.processing}
-                >
-                  <ArrowLeft aria-hidden="true" />
-                  Sebelumnya
-                </Button>
-              ) : (
-                <span />
-              )}
+          <Separator />
 
-              {isLast ? (
-                <Button
-                  className="rounded-full! px-5 text-sm"
-                  onClick={submit}
-                  disabled={current === null || form.processing}
-                >
-                  {form.processing ? 'Memproses...' : 'Lihat hasil'}
-                </Button>
-              ) : (
-                <Button
-                  className="rounded-full! px-5 text-sm"
-                  onClick={() => setIndex(index + 1)}
-                  disabled={current === null}
-                >
-                  Berikutnya
-                  <ArrowRight aria-hidden="true" />
-                </Button>
-              )}
-            </div>
-          </div>
-        </section>
+          <CardFooter className="justify-between gap-3 p-4 md:px-5">
+            {index > 0 ? (
+              <Button
+                variant="outline"
+                className="rounded-full! px-5 text-sm"
+                onClick={() => setIndex(index - 1)}
+                disabled={form.processing}
+              >
+                <ArrowLeft aria-hidden="true" />
+                Sebelumnya
+              </Button>
+            ) : (
+              <span />
+            )}
+
+            {isLast ? (
+              <Button
+                className="rounded-full! px-5 text-sm"
+                onClick={submit}
+                disabled={current === null || form.processing}
+              >
+                {form.processing ? 'Memproses...' : 'Lihat hasil'}
+              </Button>
+            ) : (
+              <Button
+                className="rounded-full! px-5 text-sm"
+                onClick={() => setIndex(index + 1)}
+                disabled={current === null}
+              >
+                Berikutnya
+                <ArrowRight aria-hidden="true" />
+              </Button>
+            )}
+          </CardFooter>
+        </Card>
       </div>
 
       <ConfirmLeaveDialog

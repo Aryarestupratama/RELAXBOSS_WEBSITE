@@ -1,6 +1,19 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, Clock, ClipboardCheck, Info, ListChecks } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, Clock, Info, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
+import {
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from '@/Components/ui/breadcrumb';
+import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 
 type ShowProps = {
   assessment: {
@@ -19,9 +32,7 @@ type ShowProps = {
 };
 
 /** Pastel yang sama dengan halaman info Asesmen Publik (teks di atasnya `--text`, RULE-052). */
-const TONES = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'] as const;
-
-const cardClass = 'rounded-3xl bg-card shadow-lift';
+const TONES = ['lavender', 'sky', 'mint', 'peach'] as const;
 
 /** Detail Asesmen sebelum mengerjakan (setara SCR-002 untuk pengguna yang sudah masuk). */
 export default function Show({ assessment }: ShowProps) {
@@ -29,157 +40,182 @@ export default function Show({ assessment }: ShowProps) {
 
   return (
     <AppShell title={assessment.name} wide staggered>
-      <div data-load>
-        <Link
-          href="/app/asesmen"
-          className="group inline-flex min-h-11 items-center gap-2 text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text"
-        >
-          <ArrowLeft
-            className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5"
-            aria-hidden="true"
-          />
-          Semua asesmen
-        </Link>
-      </div>
+      <Breadcrumb data-load>
+        <BreadcrumbList>
+          <BreadcrumbItem>
+            <BreadcrumbLink asChild>
+              <Link href="/app/asesmen">Asesmen</Link>
+            </BreadcrumbLink>
+          </BreadcrumbItem>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem>
+            <BreadcrumbPage className="max-w-[14rem] sm:max-w-sm">{assessment.name}</BreadcrumbPage>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
 
       <div className="mt-1 grid items-start gap-4 lg:grid-cols-12">
         <div className="space-y-4 lg:col-span-8">
-          <section data-load className={`${cardClass} p-5 md:p-6`}>
-            <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">{assessment.name}</h1>
-            {assessment.is_demo ? (
-              <p className="mt-2 w-fit rounded-full bg-soft-peach px-3 py-1 text-xs font-medium text-text">
-                Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.
-              </p>
-            ) : null}
-            <p className="mt-3 max-w-prose text-sm leading-relaxed text-text-secondary">{assessment.description}</p>
-            <div className="mt-5">
-              <Link
-                href={`/app/asesmen/${assessment.slug}/kerjakan`}
-                data-press
-                className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-[1.5px] border-primary bg-primary px-6 text-sm font-medium text-on-primary transition duration-200 hover:border-nav-hover hover:bg-nav-hover hover:shadow-card"
-              >
-                Mulai asesmen
-                <ArrowRight
-                  className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
-                  aria-hidden="true"
-                />
-              </Link>
-            </div>
-          </section>
+          <Card data-load className="gap-4 p-5 md:p-6">
+            <CardHeader className="gap-2">
+              <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">{assessment.name}</h1>
+              {assessment.is_demo ? (
+                <Badge variant="peach" className="h-auto py-1 whitespace-normal">
+                  Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.
+                </Badge>
+              ) : null}
+              <CardDescription className="mt-1 max-w-prose leading-relaxed">{assessment.description}</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button asChild data-press className="group rounded-full! px-6 text-sm">
+                <Link href={`/app/asesmen/${assessment.slug}/kerjakan`}>
+                  Mulai asesmen
+                  <ArrowRight
+                    className="size-4 transition-transform duration-200 group-hover:translate-x-0.5"
+                    aria-hidden="true"
+                  />
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
 
           {assessment.sub_scales.length > 0 ? (
-            <section data-load aria-labelledby="judul-aspek">
-              <h2 id="judul-aspek" className="text-base font-semibold">
-                Yang dilihat
-              </h2>
-              <p className="mt-0.5 text-[0.8125rem] text-text-secondary">
-                Hasilmu ditampilkan terpisah untuk tiap aspek berikut.
-              </p>
-              <ul className="mt-2 flex flex-wrap gap-2">
-                {assessment.sub_scales.map((name, position) => (
-                  <li key={name}>
-                    <span
-                      className={`inline-block rounded-2xl px-4 py-2 text-sm font-semibold text-text shadow-lift ${TONES[position % TONES.length]}`}
-                    >
-                      {name}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          ) : null}
-
-          <section data-load aria-labelledby="judul-cara" className={`${cardClass} p-5 md:p-6`}>
-            <h2 id="judul-cara" className="text-base font-semibold">
-              Cara mengerjakan
-            </h2>
-            {assessment.instructions ? (
-              <p className="mt-2 max-w-prose text-sm leading-relaxed text-text-secondary">{assessment.instructions}</p>
-            ) : null}
-            <p className="mt-2 max-w-prose text-sm leading-relaxed text-text-secondary">
-              Satu pertanyaan tampil pada satu waktu. Tidak ada jawaban benar atau salah, jawab sesuai keadaanmu.
-            </p>
-            {assessment.options.length > 0 ? (
-              <>
-                <h3 className="mt-4 text-[0.8125rem] font-semibold">Pilihan jawaban</h3>
-                <ul className="mt-2 flex flex-wrap gap-1.5">
-                  {assessment.options.map((option) => (
-                    <li key={option} className="rounded-full bg-soft-sky px-3 py-1 text-xs font-medium text-text">
-                      {option}
+            <Card data-load role="region" aria-labelledby="judul-aspek" className="gap-3 p-5 md:p-6">
+              <CardHeader className="gap-0.5">
+                <CardTitle id="judul-aspek" role="heading" aria-level={2} className="text-base font-semibold">
+                  Yang dilihat
+                </CardTitle>
+                <CardDescription className="text-[0.8125rem]">
+                  Hasilmu ditampilkan terpisah untuk tiap aspek berikut.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <ul className="flex flex-wrap gap-2">
+                  {assessment.sub_scales.map((name, position) => (
+                    <li key={name}>
+                      <Badge variant={TONES[position % TONES.length]} className="px-3.5 py-1.5 text-sm font-semibold">
+                        {name}
+                      </Badge>
                     </li>
                   ))}
                 </ul>
-              </>
-            ) : null}
-          </section>
+              </CardContent>
+            </Card>
+          ) : null}
+
+          <Card data-load role="region" aria-labelledby="judul-cara" className="gap-3 p-5 md:p-6">
+            <CardHeader className="gap-0">
+              <CardTitle id="judul-cara" role="heading" aria-level={2} className="text-base font-semibold">
+                Cara mengerjakan
+              </CardTitle>
+            </CardHeader>
+            <Separator />
+            <CardContent className="space-y-2">
+              {assessment.instructions ? (
+                <p className="max-w-prose text-sm leading-relaxed text-text-secondary">{assessment.instructions}</p>
+              ) : null}
+              <p className="max-w-prose text-sm leading-relaxed text-text-secondary">
+                Satu pertanyaan tampil pada satu waktu. Tidak ada jawaban benar atau salah, jawab sesuai keadaanmu.
+              </p>
+              {assessment.options.length > 0 ? (
+                <>
+                  <h3 className="pt-2 text-[0.8125rem] font-semibold">Pilihan jawaban</h3>
+                  <ul className="flex flex-wrap gap-1.5">
+                    {assessment.options.map((option) => (
+                      <li key={option}>
+                        <Badge variant="sky" className="px-3 py-1">
+                          {option}
+                        </Badge>
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : null}
+            </CardContent>
+          </Card>
         </div>
 
         <div className="space-y-4 lg:col-span-4">
-          <section data-load="pop" aria-labelledby="judul-sekilas" className="rounded-3xl bg-soft-mint p-5 text-text shadow-lift">
-            <span className="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
-              <ClipboardCheck className="size-5" />
-            </span>
-            <h2 id="judul-sekilas" className="mt-3 text-base font-bold">
-              Sekilas
-            </h2>
-            <dl className="mt-3 space-y-3 text-sm">
-              <div className="flex items-center gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
-                  <Clock className="size-4" />
-                </span>
-                <div>
-                  <dt className="text-xs text-text-secondary">Waktu pengerjaan</dt>
-                  <dd className="font-semibold">Sekitar {assessment.estimated_minutes} menit</dd>
+          <Card data-load="pop" tone="mint" role="region" aria-labelledby="judul-sekilas" className="gap-3 p-5">
+            <CardHeader className="gap-3">
+              <span className="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+                <ClipboardCheck className="size-5" />
+              </span>
+              <CardTitle id="judul-sekilas" role="heading" aria-level={2} className="text-base font-bold">
+                Sekilas
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <dl className="text-sm">
+                <div className="flex items-center gap-3">
+                  <span
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary"
+                    aria-hidden="true"
+                  >
+                    <Clock className="size-4" />
+                  </span>
+                  <div>
+                    <dt className="text-xs text-text-secondary">Waktu pengerjaan</dt>
+                    <dd className="font-semibold">Sekitar {assessment.estimated_minutes} menit</dd>
+                  </div>
                 </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <span className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
-                  <ListChecks className="size-4" />
-                </span>
-                <div>
-                  <dt className="text-xs text-text-secondary">Jumlah pertanyaan</dt>
-                  <dd className="font-semibold">{assessment.question_count} pertanyaan</dd>
+                <Separator className="my-3 bg-text/10" />
+                <div className="flex items-center gap-3">
+                  <span
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary"
+                    aria-hidden="true"
+                  >
+                    <ListChecks className="size-4" />
+                  </span>
+                  <div>
+                    <dt className="text-xs text-text-secondary">Jumlah pertanyaan</dt>
+                    <dd className="font-semibold">{assessment.question_count} pertanyaan</dd>
+                  </div>
                 </div>
-              </div>
-            </dl>
-          </section>
+              </dl>
+            </CardContent>
+          </Card>
 
           {hasSource ? (
-            <section data-load aria-labelledby="judul-sumber" className={`${cardClass} p-5`}>
-              <h2 id="judul-sumber" className="text-base font-semibold">
-                Tentang instrumen
-              </h2>
-              <dl className="mt-2 space-y-2 text-sm">
-                {assessment.source ? (
-                  <div>
-                    <dt className="text-xs text-text-secondary">Sumber</dt>
-                    <dd>{assessment.source}</dd>
-                  </div>
-                ) : null}
-                {assessment.validated_by ? (
-                  <div>
-                    <dt className="text-xs text-text-secondary">Divalidasi oleh</dt>
-                    <dd>{assessment.validated_by}</dd>
-                  </div>
-                ) : null}
-              </dl>
-            </section>
+            <Card data-load role="region" aria-labelledby="judul-sumber" className="gap-3 p-5">
+              <CardHeader className="gap-0">
+                <CardTitle id="judul-sumber" role="heading" aria-level={2} className="text-base font-semibold">
+                  Tentang instrumen
+                </CardTitle>
+              </CardHeader>
+              <Separator />
+              <CardContent>
+                <dl className="space-y-2 text-sm">
+                  {assessment.source ? (
+                    <div>
+                      <dt className="text-xs text-text-secondary">Sumber</dt>
+                      <dd>{assessment.source}</dd>
+                    </div>
+                  ) : null}
+                  {assessment.validated_by ? (
+                    <div>
+                      <dt className="text-xs text-text-secondary">Divalidasi oleh</dt>
+                      <dd>{assessment.validated_by}</dd>
+                    </div>
+                  ) : null}
+                </dl>
+              </CardContent>
+            </Card>
           ) : null}
 
-          <p
-            data-load
-            role="note"
-            className="flex items-start gap-2 px-1 text-[0.8125rem] leading-relaxed text-text-secondary"
-          >
-            <Info className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
-            <span>
+          <Alert data-load role="note" className="rounded-2xl border-border/60 shadow-card">
+            <Info aria-hidden="true" className="text-primary" />
+            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text-secondary">
               Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang
               tepat, bicarakan dengan psikolog atau tenaga profesional.{' '}
-              <a href="/konsultasi" className="font-semibold text-primary underline underline-offset-4">
+              <a
+                href="/konsultasi"
+                className="font-semibold text-brand-strong underline underline-offset-4 hover:text-nav-hover"
+              >
                 Bicara dengan profesional
               </a>
-            </span>
-          </p>
+            </AlertDescription>
+          </Alert>
         </div>
       </div>
     </AppShell>
