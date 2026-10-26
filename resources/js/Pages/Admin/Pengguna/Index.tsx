@@ -1,13 +1,33 @@
 import { useState, type FormEvent } from 'react';
 import { Link, router, usePage } from '@inertiajs/react';
-import { Search, Users } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  CircleAlert,
+  CircleCheck,
+  CircleOff,
+  Info,
+  LoaderCircle,
+  MailCheck,
+  MailQuestion,
+  Search,
+  ShieldCheck,
+  UserCheck,
+  UserX,
+  Users,
+  X,
+} from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
-import EmptyState from '@/Components/shared/EmptyState';
+import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
 import { Label } from '@/Components/ui/label';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 
 type UserRow = {
   id: number;
@@ -27,18 +47,74 @@ type IndexProps = {
   status: string | null;
 };
 
-const badgeBase = 'inline-flex items-center rounded-md px-2 py-1 text-sm font-medium';
-
 const STATUS_TEXT: Record<string, string> = {
   'user-activated': 'Akun diaktifkan kembali.',
   'user-deactivated': 'Akun dinonaktifkan. Sesinya langsung diakhiri.',
 };
+
+const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
+const PILL_BUTTON = 'rounded-full! px-5 text-sm';
 
 /** Tanggal WIB (Y-m-d) dari server menjadi "5 Okt 2026". Hanya tanggal, tanpa jam. */
 function formatDate(value: string): string {
   const [year, month, day] = value.split('-').map(Number);
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
   return `${day} ${months[month - 1] ?? ''} ${year}`;
+}
+
+function EmailCell({ user }: { user: UserRow }) {
+  return (
+    <span className="flex items-center gap-3">
+      <span
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender text-sm font-bold text-text uppercase"
+        aria-hidden="true"
+      >
+        {user.email.charAt(0)}
+      </span>
+      <span className="min-w-0">
+        <span className="block font-semibold break-all">{user.email}</span>
+        {user.is_admin || user.is_self ? (
+          <span className="mt-1 flex flex-wrap gap-1.5">
+            {user.is_admin ? (
+              <Badge variant="lavender">
+                <ShieldCheck aria-hidden="true" />
+                Admin
+              </Badge>
+            ) : null}
+            {user.is_self ? <Badge variant="outline">Akun kamu</Badge> : null}
+          </span>
+        ) : null}
+      </span>
+    </span>
+  );
+}
+
+function VerifiedBadge({ user }: { user: UserRow }) {
+  return user.is_verified ? (
+    <Badge variant="sky">
+      <MailCheck aria-hidden="true" />
+      Terverifikasi
+    </Badge>
+  ) : (
+    <Badge variant="peach">
+      <MailQuestion aria-hidden="true" />
+      Belum
+    </Badge>
+  );
+}
+
+function ActiveBadge({ user }: { user: UserRow }) {
+  return user.is_active ? (
+    <Badge variant="mint">
+      <CircleCheck aria-hidden="true" />
+      Aktif
+    </Badge>
+  ) : (
+    <Badge variant="secondary">
+      <CircleOff aria-hidden="true" />
+      Nonaktif
+    </Badge>
+  );
 }
 
 /** SCR-021: daftar Pengguna terbatas (email, tanggal daftar, verifikasi, aktif) dan nonaktifkan akun. */
@@ -70,146 +146,214 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
 
   const statusText = status ? STATUS_TEXT[status] : undefined;
 
+  const renderAction = (user: UserRow) => {
+    if (user.is_self) {
+      return <span className="text-sm text-text-secondary">Tidak bisa diubah</span>;
+    }
+
+    if (user.is_active) {
+      return (
+        <Button
+          variant="destructive"
+          className={PILL_BUTTON}
+          disabled={busyId !== null}
+          onClick={() => setTarget(user)}
+          aria-label={`Nonaktifkan ${user.email}`}
+        >
+          <UserX className="size-4!" aria-hidden="true" />
+          Nonaktifkan
+        </Button>
+      );
+    }
+
+    return (
+      <Button
+        variant="outline"
+        className={PILL_BUTTON}
+        disabled={busyId !== null}
+        onClick={() => setActive(user, true)}
+        aria-label={`Aktifkan ${user.email}`}
+      >
+        {busyId === user.id ? (
+          <LoaderCircle className="size-4! animate-spin motion-reduce:animate-none" aria-hidden="true" />
+        ) : (
+          <UserCheck className="size-4!" aria-hidden="true" />
+        )}
+        {busyId === user.id ? 'Memproses...' : 'Aktifkan'}
+      </Button>
+    );
+  };
+
   return (
-    <AdminShell title="Pengguna">
-      <h1>Pengguna</h1>
-      <p className="mt-2 max-w-prose text-text-secondary">
-        Daftar terbatas: email, tanggal daftar, status verifikasi, dan status aktif. Data pribadi lain tidak
-        ditampilkan. Akun yang dinonaktifkan tidak bisa masuk dan sesinya langsung diakhiri; datanya tidak dihapus.
-      </p>
+    <AdminShell title="Pengguna" staggered>
+      <PageHeader
+        title="Pengguna"
+        description="Daftar terbatas: email, tanggal daftar, status verifikasi, dan status aktif."
+      />
 
-      <div className="mt-6 space-y-4">
+      <div className="flex flex-col gap-6">
         {statusText ? (
-          <Alert>
-            <AlertDescription>{statusText}</AlertDescription>
-          </Alert>
-        ) : null}
-        {errors.user_status ? (
-          <Alert variant="destructive">
-            <AlertDescription>{errors.user_status}</AlertDescription>
-          </Alert>
+          <div data-load>
+            <Alert className="rounded-2xl border-transparent border-l-4 border-l-success px-4 py-3 shadow-card">
+              <CheckCircle className="text-success!" aria-hidden="true" />
+              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">{statusText}</AlertDescription>
+            </Alert>
+          </div>
         ) : null}
 
-        <form onSubmit={submitSearch} role="search" className="flex flex-wrap items-end gap-3">
-          <div className="min-w-0 flex-1 basis-64">
-            <Label htmlFor="cari-email">Cari email</Label>
-            <Input
-              id="cari-email"
-              type="search"
-              name="q"
-              maxLength={100}
-              autoComplete="off"
-              value={query}
-              onChange={(event) => setQuery(event.target.value)}
-              className="mt-1.5"
-            />
+        {errors.user_status ? (
+          <div data-load>
+            <Alert
+              variant="destructive"
+              className="rounded-2xl border-transparent border-l-4 border-l-destructive px-4 py-3 shadow-card"
+            >
+              <CircleAlert aria-hidden="true" />
+              <AlertDescription>{errors.user_status}</AlertDescription>
+            </Alert>
           </div>
-          <Button type="submit" variant="outline">
-            <Search aria-hidden="true" />
-            Cari
-          </Button>
-          {search !== '' ? (
-            <Button asChild variant="ghost">
-              <Link href="/admin/pengguna">Hapus pencarian</Link>
+        ) : null}
+
+        <div data-load>
+          <Alert
+            role="note"
+            className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
+          >
+            <Info className="text-brand-strong!" aria-hidden="true" />
+            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
+              Data pribadi lain tidak ditampilkan. Akun yang dinonaktifkan tidak bisa masuk dan sesinya langsung
+              diakhiri; datanya tidak dihapus.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        <Card data-load className="p-4 md:p-5">
+          <form onSubmit={submitSearch} role="search" className="flex flex-wrap items-end gap-3">
+            <div className="min-w-0 flex-1 basis-64">
+              <Label htmlFor="cari-email">Cari email</Label>
+              <div className="relative mt-1.5">
+                <Search
+                  className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-text-secondary"
+                  aria-hidden="true"
+                />
+                <Input
+                  id="cari-email"
+                  type="search"
+                  name="q"
+                  maxLength={100}
+                  autoComplete="off"
+                  value={query}
+                  onChange={(event) => setQuery(event.target.value)}
+                  className="rounded-full pl-10"
+                />
+              </div>
+            </div>
+            <Button type="submit" className={PILL_BUTTON}>
+              <Search aria-hidden="true" />
+              Cari
             </Button>
-          ) : null}
-        </form>
+            {search !== '' ? (
+              <Button asChild variant="ghost" className={PILL_BUTTON}>
+                <Link href="/admin/pengguna">
+                  <X aria-hidden="true" />
+                  Hapus pencarian
+                </Link>
+              </Button>
+            ) : null}
+          </form>
+        </Card>
 
         {users.length === 0 ? (
-          <EmptyState
-            icon={Users}
-            message={search !== '' ? 'Tidak ada akun dengan email itu.' : 'Belum ada akun terdaftar.'}
-          />
+          <Card tone="lavender" data-load className="items-center gap-3 px-6 py-10 text-center">
+            <span className="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+              <Users className="size-6" />
+            </span>
+            <p className="max-w-sm text-sm text-text">
+              {search !== '' ? 'Tidak ada akun dengan email itu.' : 'Belum ada akun terdaftar.'}
+            </p>
+          </Card>
         ) : (
-          <div className="overflow-x-auto rounded-xl bg-card shadow-card">
-            <table className="w-full min-w-[40rem] text-left">
-              <caption className="sr-only">Daftar akun pengguna</caption>
-              <thead className="bg-neutral-soft text-sm text-text-secondary">
-                <tr>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Email
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Terdaftar
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Verifikasi
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Status
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    <span className="sr-only">Aksi</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                {users.map((user) => (
-                  <tr key={user.id} className="border-b border-border last:border-b-0">
-                    <th scope="row" className="px-4 py-3 font-normal">
-                      <span className="block break-all font-medium">{user.email}</span>
-                      <span className="flex flex-wrap gap-1">
-                        {user.is_admin ? (
-                          <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Admin</span>
-                        ) : null}
-                        {user.is_self ? (
-                          <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>Akun kamu</span>
-                        ) : null}
-                      </span>
-                    </th>
-                    <td className="px-4 py-3">{formatDate(user.registered_on)}</td>
-                    <td className="px-4 py-3">{user.is_verified ? 'Terverifikasi' : 'Belum'}</td>
-                    <td className="px-4 py-3">
-                      <span
-                        className={`${badgeBase} ${
-                          user.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
-                        }`}
-                      >
-                        {user.is_active ? 'Aktif' : 'Nonaktif'}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      {user.is_self ? (
-                        <span className="text-sm text-text-secondary">Tidak bisa diubah</span>
-                      ) : user.is_active ? (
-                        <Button
-                          variant="destructive"
-                          disabled={busyId !== null}
-                          onClick={() => setTarget(user)}
-                          aria-label={`Nonaktifkan ${user.email}`}
-                        >
-                          Nonaktifkan
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          disabled={busyId !== null}
-                          onClick={() => setActive(user, true)}
-                          aria-label={`Aktifkan ${user.email}`}
-                        >
-                          {busyId === user.id ? 'Memproses...' : 'Aktifkan'}
-                        </Button>
-                      )}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <section aria-labelledby="daftar-akun" data-load className="flex flex-col gap-3">
+            <div className="flex items-center justify-between gap-3">
+              <h2 id="daftar-akun" className="text-lg leading-snug font-bold tracking-tight">
+                Daftar akun
+              </h2>
+              <Badge variant="outline">{users.length} di halaman ini</Badge>
+            </div>
+
+            {/* >= 768px: tabel */}
+            <Card className="hidden gap-0 p-3 md:flex">
+              <Table className="min-w-[40rem]">
+                <TableCaption className="sr-only">Daftar akun pengguna</TableCaption>
+                <TableHeader>
+                  <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                    <TableHead>Email</TableHead>
+                    <TableHead>Terdaftar</TableHead>
+                    <TableHead>Verifikasi</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>
+                      <span className="sr-only">Aksi</span>
+                    </TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {users.map((user) => (
+                    <TableRow key={user.id}>
+                      <TableHead scope="row" className={ROW_HEAD}>
+                        <EmailCell user={user} />
+                      </TableHead>
+                      <TableCell className="whitespace-nowrap text-text-secondary">
+                        {formatDate(user.registered_on)}
+                      </TableCell>
+                      <TableCell>
+                        <VerifiedBadge user={user} />
+                      </TableCell>
+                      <TableCell>
+                        <ActiveBadge user={user} />
+                      </TableCell>
+                      <TableCell className="text-right">{renderAction(user)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </Card>
+
+            {/* < 768px: kartu */}
+            <ul className="grid gap-3 md:hidden">
+              {users.map((user) => (
+                <li key={user.id}>
+                  <Card className="gap-3 p-4">
+                    <EmailCell user={user} />
+                    <span className="flex flex-wrap gap-1.5">
+                      <VerifiedBadge user={user} />
+                      <ActiveBadge user={user} />
+                    </span>
+                    <p className="text-sm text-text-secondary">Terdaftar: {formatDate(user.registered_on)}</p>
+                    <div>{renderAction(user)}</div>
+                  </Card>
+                </li>
+              ))}
+            </ul>
+          </section>
         )}
 
         {prev_page_url || next_page_url ? (
-          <nav aria-label="Halaman pengguna" className="flex justify-between gap-3">
+          <nav aria-label="Halaman pengguna" data-load className="flex justify-between gap-3">
             {prev_page_url ? (
-              <Button asChild variant="outline">
-                <Link href={prev_page_url}>Sebelumnya</Link>
+              <Button asChild variant="outline" className={PILL_BUTTON}>
+                <Link href={prev_page_url}>
+                  <ChevronLeft aria-hidden="true" />
+                  Sebelumnya
+                </Link>
               </Button>
             ) : (
               <span />
             )}
             {next_page_url ? (
-              <Button asChild variant="outline">
-                <Link href={next_page_url}>Berikutnya</Link>
+              <Button asChild variant="outline" className={PILL_BUTTON}>
+                <Link href={next_page_url}>
+                  Berikutnya
+                  <ChevronRight aria-hidden="true" />
+                </Link>
               </Button>
             ) : null}
           </nav>
