@@ -4,24 +4,24 @@
     $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
 @endphp
 <li data-item>
-    <article data-lift class="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-border/60 bg-card text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring">
+    <x-ui.card tag="article" :interactive="true" class="h-full overflow-hidden" :flush="true">
         <div class="flex items-center justify-between gap-3 px-5 py-4 {{ $tones[$index % 4] }}">
             <span class="grid size-11 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
                 <x-icon name="file-text" class="size-5" />
             </span>
-            <span class="rounded-full bg-card/70 px-2.5 py-0.5 text-xs font-medium text-text">{{ $item['category_label'] }}</span>
+            <x-ui.badge variant="outline">{{ $item['category_label'] }}</x-ui.badge>
         </div>
 
-        <div class="flex flex-1 flex-col p-5">
-            <h2 class="text-lg leading-snug font-bold">
+        <div class="flex flex-1 flex-col gap-2 px-5 pb-5 md:px-6 md:pb-6">
+            <x-ui.card.title tag="h2" class="px-0">
                 {{-- Satu tautan; after:inset-0 membuat seluruh kartu bisa diklik --}}
                 <a href="{{ url('/artikel/'.$item['slug']) }}" class="text-text after:absolute after:inset-0 focus-visible:outline-none">{{ $item['title'] }}</a>
-            </h2>
+            </x-ui.card.title>
+            <x-ui.card.description>{{ $item['excerpt'] }}</x-ui.card.description>
 
-            <p class="mt-2 text-sm leading-relaxed text-text-secondary">{{ $item['excerpt'] }}</p>
-
-            <div class="mt-auto pt-5">
-                <p class="flex items-center justify-between border-t border-border/60 pt-4 text-xs text-text-secondary">
+            <div class="mt-auto flex flex-col gap-4 pt-4">
+                <x-ui.separator />
+                <p class="flex items-center justify-between text-xs text-text-secondary">
                     <time datetime="{{ $item['published_iso'] }}">{{ $item['published_label'] }}</time>
                     <span class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary" aria-hidden="true">
                         Baca
@@ -30,5 +30,5 @@
                 </p>
             </div>
         </div>
-    </article>
+    </x-ui.card>
 </li>

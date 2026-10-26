@@ -52,14 +52,22 @@
             <h2 id="kapan" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Kapan sebaiknya mencari bantuan</h2>
             <ul data-stagger class="mt-6 grid gap-4 md:grid-cols-2">
                 @foreach ($signs as $sign)
-                    <li data-item class="flex items-center gap-4 rounded-2xl border border-border/60 bg-card p-5 shadow-lift">
-                        <span class="grid size-11 shrink-0 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true"><x-icon name="{{ $sign['icon'] }}" class="size-5" /></span>
-                        <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign['text'] }}</p>
+                    <li data-item>
+                        <x-ui.card class="h-full">
+                            <x-ui.card.content class="flex items-center gap-4">
+                                <span class="grid size-11 shrink-0 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true"><x-icon name="{{ $sign['icon'] }}" class="size-5" /></span>
+                                <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign['text'] }}</p>
+                            </x-ui.card.content>
+                        </x-ui.card>
                     </li>
                 @endforeach
-                <li data-item class="flex items-center gap-4 rounded-2xl border border-l-4 border-border/60 border-l-crisis-text bg-card p-5 shadow-lift md:col-span-2">
-                    <span class="grid size-11 shrink-0 place-items-center rounded-full bg-crisis-bg text-crisis-text" aria-hidden="true"><x-icon name="heart" class="size-5" /></span>
-                    <p class="text-sm font-semibold text-text md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
+                <li data-item class="md:col-span-2">
+                    <x-ui.card class="border-l-4 border-l-crisis-text">
+                        <x-ui.card.content class="flex items-center gap-4">
+                            <span class="grid size-11 shrink-0 place-items-center rounded-full bg-crisis-bg text-crisis-text" aria-hidden="true"><x-icon name="heart" class="size-5" /></span>
+                            <p class="text-sm font-semibold text-text md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
+                        </x-ui.card.content>
+                    </x-ui.card>
                 </li>
             </ul>
         </div>
@@ -83,39 +91,44 @@
                             $link = $contact['url'] ?? null;
                             $isDummy = (bool) ($contact['dummy'] ?? false);
                         @endphp
-                        <li data-item data-lift class="flex flex-col rounded-2xl border border-border/60 bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-6">
-                            <span class="grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
-                                <x-icon name="phone" class="size-5" />
-                            </span>
-                            {{-- Tiga zona tetap agar semua kartu sejajar: nama (tinggi dua baris), kontak, catatan di dasar --}}
-                            <h3 class="mt-4 text-lg leading-snug font-bold sm:min-h-[3.2rem]">{{ $contact['name'] ?? '' }}</h3>
+                        <li data-item>
+                            <x-ui.card class="h-full transition-shadow duration-300 hover:shadow-lift-hover" data-lift>
+                                <x-ui.card.header>
+                                    <span class="mb-1 grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
+                                        <x-icon name="phone" class="size-5" />
+                                    </span>
+                                    {{-- Tiga zona tetap agar semua kartu sejajar: nama (tinggi dua baris), kontak, catatan di dasar --}}
+                                    <x-ui.card.title class="sm:min-h-[3.2rem]">{{ $contact['name'] ?? '' }}</x-ui.card.title>
+                                </x-ui.card.header>
 
-                            <div class="mt-2 flex flex-col">
-                                @if (filled($phone))
-                                    <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-semibold text-brand-strong underline underline-offset-4">{{ $phone }}</a>
-                                @endif
-                                @if (is_string($link) && str_starts_with($link, 'https://'))
-                                    <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm font-medium break-all text-brand-strong underline underline-offset-4">{{ $link }}</a>
-                                @endif
-                            </div>
+                                <x-ui.card.content class="flex flex-col">
+                                    @if (filled($phone))
+                                        <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-semibold text-brand-strong underline underline-offset-4">{{ $phone }}</a>
+                                    @endif
+                                    @if (is_string($link) && str_starts_with($link, 'https://'))
+                                        <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm font-medium break-all text-brand-strong underline underline-offset-4">{{ $link }}</a>
+                                    @endif
+                                </x-ui.card.content>
 
-                            @if ($isDummy || filled($contact['note'] ?? null))
-                                <div class="mt-auto pt-4">
-                                    <p class="border-t border-border/60 pt-4 text-sm {{ $isDummy ? 'font-medium text-warning' : 'text-text-secondary' }}">
-                                        {{ $isDummy ? 'Contoh sementara, bukan kontak yang sebenarnya.' : $contact['note'] }}
-                                    </p>
-                                </div>
-                            @endif
+                                @if ($isDummy || filled($contact['note'] ?? null))
+                                    <x-ui.card.footer class="flex-col gap-4">
+                                        <x-ui.separator />
+                                        @if ($isDummy)
+                                            <p><x-ui.badge variant="soft" tone="peach">Contoh sementara, bukan kontak yang sebenarnya.</x-ui.badge></p>
+                                        @else
+                                            <p class="text-sm text-text-secondary">{{ $contact['note'] }}</p>
+                                        @endif
+                                    </x-ui.card.footer>
+                                @endif
+                            </x-ui.card>
                         </li>
                     @endforeach
                 </ul>
             @endif
 
-            {{-- Catatan sebaris (pola Asesmen, Artikel, Tentang) --}}
-            <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                <p>RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.</p>
-            </div>
+            <x-ui.alert data-reveal icon="info" class="mx-auto mt-8 max-w-2xl">
+                RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.
+            </x-ui.alert>
         </div>
     </section>
 @endsection

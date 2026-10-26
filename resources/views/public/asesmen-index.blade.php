@@ -33,49 +33,52 @@
                 <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($assessments as $item)
                         <li data-item>
-                            <article data-lift class="group relative flex h-full flex-col rounded-2xl border border-border/60 bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring md:p-6">
-                                <span class="grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
-                                    <x-icon name="clipboard-check" class="size-5" />
-                                </span>
-
-                                <h2 class="mt-4 text-lg leading-snug font-bold">
-                                    {{-- Satu tautan; after:inset-0 membuat seluruh kartu bisa diklik --}}
-                                    <a href="{{ url('/asesmen/'.$item['slug']) }}" class="text-text after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">{{ $item['name'] }}</a>
-                                </h2>
-
-                                <p class="mt-2 text-sm leading-relaxed text-text-secondary">{{ $item['summary'] }}</p>
-
-                                <p class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <x-icon name="clock" class="size-4 text-primary" />
-                                        Sekitar {{ $item['estimated_minutes'] }} menit
+                            <x-ui.card tag="article" :interactive="true" class="h-full">
+                                <x-ui.card.header>
+                                    <span class="mb-1 grid size-11 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true">
+                                        <x-icon name="clipboard-check" class="size-5" />
                                     </span>
-                                    <span class="inline-flex items-center gap-1.5">
-                                        <x-icon name="list-checks" class="size-4 text-primary" />
-                                        {{ $item['question_count'] }} pertanyaan
-                                    </span>
-                                </p>
+                                    <x-ui.card.title tag="h2">
+                                        {{-- Satu tautan; after:inset-0 membuat seluruh kartu bisa diklik --}}
+                                        <a href="{{ url('/asesmen/'.$item['slug']) }}" class="text-text after:absolute after:inset-0 after:rounded-2xl focus-visible:outline-none">{{ $item['name'] }}</a>
+                                    </x-ui.card.title>
+                                    <x-ui.card.description>{{ $item['summary'] }}</x-ui.card.description>
+                                </x-ui.card.header>
 
-                                @if (count($item['sub_scales']) > 0)
-                                    <ul class="mt-3 flex flex-wrap gap-1.5" aria-label="Aspek yang diukur">
-                                        @foreach ($item['sub_scales'] as $subScale)
-                                            <li class="rounded-full bg-surface-alt px-2.5 py-0.5 text-xs text-text">{{ $subScale }}</li>
-                                        @endforeach
-                                    </ul>
-                                @endif
+                                <x-ui.card.content class="space-y-3">
+                                    <p class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-text-secondary">
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <x-icon name="clock" class="size-4 text-primary" />
+                                            Sekitar {{ $item['estimated_minutes'] }} menit
+                                        </span>
+                                        <span class="inline-flex items-center gap-1.5">
+                                            <x-icon name="list-checks" class="size-4 text-primary" />
+                                            {{ $item['question_count'] }} pertanyaan
+                                        </span>
+                                    </p>
 
-                                @if ($item['is_demo'])
-                                    <p class="mt-4 rounded-lg bg-soft-peach px-3 py-2 text-xs leading-snug text-text">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</p>
-                                @endif
+                                    @if (count($item['sub_scales']) > 0)
+                                        <ul class="flex flex-wrap gap-1.5" aria-label="Aspek yang diukur">
+                                            @foreach ($item['sub_scales'] as $subScale)
+                                                <li><x-ui.badge>{{ $subScale }}</x-ui.badge></li>
+                                            @endforeach
+                                        </ul>
+                                    @endif
+
+                                    @if ($item['is_demo'])
+                                        <x-ui.alert variant="info" :compact="true">Instrumen contoh untuk pengembangan, bukan asesmen yang sebenarnya.</x-ui.alert>
+                                    @endif
+                                </x-ui.card.content>
 
                                 {{-- Ajakan di dasar kartu: hiasan, tautan ada di judul --}}
-                                <div class="mt-auto pt-5">
-                                    <span class="flex items-center justify-between border-t border-border/60 pt-4 text-sm font-semibold text-primary" aria-hidden="true">
+                                <x-ui.card.footer class="flex-col gap-4">
+                                    <x-ui.separator />
+                                    <span class="flex items-center justify-between text-sm font-semibold text-primary" aria-hidden="true">
                                         Lihat detail
                                         <x-icon name="arrow-right" class="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                                     </span>
-                                </div>
-                            </article>
+                                </x-ui.card.footer>
+                            </x-ui.card>
                         </li>
                     @endforeach
                 </ul>
@@ -85,23 +88,26 @@
             @if (count($validation) > 0)
                 <ul data-reveal class="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2" aria-label="Validasi asesmen">
                     @foreach ($validation as $item)
-                        <li class="flex items-start gap-3 rounded-2xl p-4 text-text {{ $tones[$loop->index % 4] }}">
-                            <span class="grid size-10 shrink-0 place-items-center rounded-full bg-card text-primary" aria-hidden="true">
-                                <x-icon :name="$item['icon']" class="size-5" />
-                            </span>
-                            <div>
-                                <p class="text-sm font-semibold">{{ $item['title'] }}</p>
-                                <p class="mt-1 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
-                            </div>
+                        <li>
+                            <x-ui.card :tone="['lavender', 'sky', 'mint', 'peach'][$loop->index % 4]" class="h-full">
+                                <x-ui.card.content class="flex items-start gap-3">
+                                    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-card text-primary" aria-hidden="true">
+                                        <x-icon :name="$item['icon']" class="size-5" />
+                                    </span>
+                                    <div>
+                                        <p class="text-sm font-semibold">{{ $item['title'] }}</p>
+                                        <p class="mt-1 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
+                                    </div>
+                                </x-ui.card.content>
+                            </x-ui.card>
                         </li>
                     @endforeach
                 </ul>
             @endif
 
-            {{-- 3. Catatan: teks biasa dengan ikon "i", bukan kartu --}}
-            <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                <div class="space-y-1.5">
+            {{-- 3. Catatan --}}
+            <x-ui.alert data-reveal icon="info" class="mx-auto mt-8 max-w-2xl">
+                <div class="space-y-1.5 text-text-secondary">
                     @guest
                         <p>Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.</p>
                     @endguest
@@ -110,7 +116,7 @@
                         <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
                     </p>
                 </div>
-            </div>
+            </x-ui.alert>
         </div>
     </section>
 @endsection

@@ -3,7 +3,7 @@ import { Link, useForm } from '@inertiajs/react';
 import { CircleAlert } from 'lucide-react';
 import GuestLayout from '@/Layouts/GuestLayout';
 import AuthSubmitButton from '@/Components/shared/AuthSubmitButton';
-import CheckboxField from '@/Components/shared/CheckboxField';
+import AuthCheckbox from '@/Components/shared/AuthCheckbox';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import RequiredMark from '@/Components/shared/RequiredMark';
@@ -146,10 +146,9 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
           </FormField>
         </div>
 
-        <CheckboxField
+        <AuthCheckbox
           id="terms"
           required
-          compact
           checked={form.data.terms}
           onChange={(checked) => form.setData('terms', checked)}
           error={errors.terms}

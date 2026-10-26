@@ -1,8 +1,3 @@
 @props(['href', 'variant' => 'primary'])
-@php
-    $base = 'inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium transition duration-200 hover:shadow-card';
-    $classes = $variant === 'outline'
-        ? $base.' text-primary hover:border-nav-hover hover:bg-nav-hover hover:text-on-primary'
-        : $base.' bg-primary text-on-primary hover:border-nav-hover hover:bg-nav-hover';
-@endphp
-<a href="{{ $href }}" data-press {{ $attributes->merge(['class' => $classes]) }}>{{ $slot }}</a>
+{{-- Pembungkus lama: semua tombol-tautan kini memakai x-ui.button (gaya shadcn). --}}
+<x-ui.button :href="$href" :variant="$variant === 'outline' ? 'outline' : 'default'" {{ $attributes }}>{{ $slot }}</x-ui.button>
