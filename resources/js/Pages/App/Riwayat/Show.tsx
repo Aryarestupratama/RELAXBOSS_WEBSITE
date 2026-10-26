@@ -1,15 +1,19 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { ArrowLeft, History, Loader2 } from 'lucide-react';
+import { History, Loader2 } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import AiRecommendationCard from '@/Components/shared/AiRecommendationCard';
+import PageHeader from '@/Components/shared/PageHeader';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
 import CrisisBanner from '@/Components/shared/CrisisBanner';
 import DisclaimerNote from '@/Components/shared/DisclaimerNote';
 import FormField from '@/Components/shared/FormField';
 import ResultMeter from '@/Components/shared/ResultMeter';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 import { Textarea } from '@/Components/ui/textarea';
 import {
   AI_REC_ENABLE,
@@ -54,15 +58,14 @@ type ShowProps = {
 
 const linkClass = 'font-medium text-brand-strong underline underline-offset-4';
 
-/** Pastel chip tingkat hasil (teks di atasnya `--text`, RULE-052). Teks tingkat selalu ikut tampil, bukan hanya warna. */
-const SEVERITY_TONE: Record<SeverityLevel, string> = {
-  normal: 'bg-soft-mint',
-  mild: 'bg-soft-sky',
-  moderate: 'bg-soft-lavender',
-  severe: 'bg-soft-peach',
+/** Tingkat hasil ke varian Badge (teks di atas pastel selalu `--text`, RULE-052). Teks tingkat selalu ikut tampil, bukan hanya warna. */
+const SEVERITY_BADGE: Record<SeverityLevel, 'mint' | 'sky' | 'lavender' | 'peach'> = {
+  normal: 'mint',
+  mild: 'sky',
+  moderate: 'lavender',
+  severe: 'peach',
 };
 
-const cardClass = 'rounded-3xl bg-card shadow-lift';
 const pillButton = 'rounded-full! px-5 text-sm';
 
 /** SCR-014. `key` memastikan state Rekomendasi AI tidak terbawa antar hasil. */
@@ -120,52 +123,45 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
 
   return (
     <AppShell title="Hasil asesmen" wide staggered>
-      <div data-load>
-        <Link
-          href="/app/riwayat"
-          className="group inline-flex min-h-11 items-center gap-2 text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text"
-        >
-          <ArrowLeft
-            className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5"
-            aria-hidden="true"
-          />
-          Riwayat
-        </Link>
-        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">
-          Hasil: {attempt.assessment_name}
-        </h1>
-        <p className="mt-1 text-sm text-text-secondary">Diselesaikan {attempt.completed_at}</p>
-      </div>
+      <PageHeader
+        back={{ href: '/app/riwayat', label: 'Riwayat' }}
+        title={`Hasil: ${attempt.assessment_name}`}
+        description={`Diselesaikan ${attempt.completed_at}`}
+      />
 
       {attempt.crisis ? (
-        <div data-load className="mt-4">
+        <div data-load className="mb-4">
           <CrisisBanner />
         </div>
       ) : null}
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-12">
+      <div className="grid items-start gap-4 lg:grid-cols-12">
         <div className="space-y-4 lg:col-span-8">
           <ul className="grid gap-3 sm:grid-cols-2">
             {attempt.sub_scales.map((item) => (
-              <li key={item.name} data-load className={`${cardClass} p-4`}>
-                <p className="text-[0.8125rem] text-text-secondary">{item.name}</p>
-                <h2
-                  className={`mt-1 inline-block rounded-full px-3 py-1 text-sm font-bold text-text ${SEVERITY_TONE[severityOf(item.severity_level)]}`}
-                >
-                  {item.interpretation}
-                </h2>
-                <div className="mt-3">
-                  <ResultMeter
-                    subScale={item.name}
-                    score={item.score}
-                    maxScore={item.max_score}
-                    interpretation={item.interpretation}
-                    severity={item.severity_level}
-                  />
-                </div>
-                <p className="mt-2 text-[0.8125rem] leading-relaxed text-text-secondary">
-                  {SEVERITY_EXPLANATION[severityOf(item.severity_level)]}
-                </p>
+              <li key={item.name} data-load>
+                <Card className="h-full gap-3 p-4">
+                  <CardHeader className="gap-1.5">
+                    <CardDescription className="text-[0.8125rem]">{item.name}</CardDescription>
+                    <h2>
+                      <Badge variant={SEVERITY_BADGE[severityOf(item.severity_level)]} className="px-3 py-1 text-sm font-bold">
+                        {item.interpretation}
+                      </Badge>
+                    </h2>
+                  </CardHeader>
+                  <CardContent>
+                    <ResultMeter
+                      subScale={item.name}
+                      score={item.score}
+                      maxScore={item.max_score}
+                      interpretation={item.interpretation}
+                      severity={item.severity_level}
+                    />
+                  </CardContent>
+                  <p className="text-[0.8125rem] leading-relaxed text-text-secondary">
+                    {SEVERITY_EXPLANATION[severityOf(item.severity_level)]}
+                  </p>
+                </Card>
               </li>
             ))}
           </ul>
@@ -175,65 +171,64 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
           </div>
 
           {showForm ? (
-            <section data-load aria-labelledby="pfa-title" className={`${cardClass} p-5`}>
-              <h2 id="pfa-title" className="text-base font-semibold">
-                Mau cerita sedikit tentang konteksnya?
-              </h2>
-              <p className="mt-1 text-[0.8125rem] text-text-secondary">
-                Boleh dijawab, boleh dilewati. Jawabanmu membantu rekomendasi terasa lebih sesuai.
-              </p>
+            <Card data-load role="region" aria-labelledby="pfa-title" className="gap-4 p-5">
+              <CardHeader>
+                <CardTitle id="pfa-title" role="heading" aria-level={2} className="text-base">
+                  Mau cerita sedikit tentang konteksnya?
+                </CardTitle>
+                <CardDescription className="text-[0.8125rem]">
+                  Boleh dijawab, boleh dilewati. Jawabanmu membantu rekomendasi terasa lebih sesuai.
+                </CardDescription>
+              </CardHeader>
+              <Separator />
 
-              <form onSubmit={submit} noValidate className="mt-4 space-y-4">
+              <form onSubmit={submit} noValidate className="flex flex-col gap-4">
                 {errors.answers ? (
                   <Alert variant="destructive">
                     <AlertDescription>{errors.answers}</AlertDescription>
                   </Alert>
                 ) : null}
 
-                {pfaItems.map((item, index) => {
-                  const key = `answers.${item.name}`;
-                  const value = form.data.answers[item.name] ?? '';
-                  return (
-                    <FormField
-                      key={item.name}
-                      id={`pfa-${index}`}
-                      label={`${item.name}: ${item.pfa_question}`}
-                      error={errors[key]}
-                      hint={`${value.length}/${max_answer_chars} karakter`}
-                      compact
-                    >
-                      {(control) => (
-                        <Textarea
-                          {...control}
-                          name={key}
-                          maxLength={max_answer_chars}
-                          value={value}
-                          className="min-h-20! text-sm"
-                          onChange={(event) =>
-                            form.setData('answers', { ...form.data.answers, [item.name]: event.target.value })
-                          }
-                        />
-                      )}
-                    </FormField>
-                  );
-                })}
+                <CardContent className="space-y-4">
+                  {pfaItems.map((item, index) => {
+                    const key = `answers.${item.name}`;
+                    const value = form.data.answers[item.name] ?? '';
+                    return (
+                      <FormField
+                        key={item.name}
+                        id={`pfa-${index}`}
+                        label={`${item.name}: ${item.pfa_question}`}
+                        error={errors[key]}
+                        hint={`${value.length}/${max_answer_chars} karakter`}
+                        compact
+                      >
+                        {(control) => (
+                          <Textarea
+                            {...control}
+                            name={key}
+                            maxLength={max_answer_chars}
+                            value={value}
+                            className="min-h-20! rounded-xl! text-sm"
+                            onChange={(event) =>
+                              form.setData('answers', { ...form.data.answers, [item.name]: event.target.value })
+                            }
+                          />
+                        )}
+                      </FormField>
+                    );
+                  })}
+                </CardContent>
 
-                <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    className={pillButton}
-                    onClick={skip}
-                    disabled={form.processing}
-                  >
+                <CardFooter className="flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+                  <Button type="button" variant="outline" className={pillButton} onClick={skip} disabled={form.processing}>
                     Lewati
                   </Button>
                   <Button type="submit" className={pillButton} disabled={form.processing}>
                     {form.processing ? 'Memproses...' : 'Simpan jawaban'}
                   </Button>
-                </div>
+                </CardFooter>
               </form>
-            </section>
+            </Card>
           ) : null}
 
           {savedAnswers.length > 0 ? (
@@ -243,10 +238,10 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
               </h2>
               <dl className="mt-2 space-y-2">
                 {savedAnswers.map(([name, text]) => (
-                  <div key={name} className="rounded-2xl bg-card p-4 shadow-card">
+                  <Card key={name} className="gap-0.5 rounded-2xl p-4 shadow-card">
                     <dt className="text-[0.8125rem] text-text-secondary">{name}</dt>
-                    <dd className="mt-0.5 text-sm whitespace-pre-wrap">{text}</dd>
-                  </div>
+                    <dd className="text-sm whitespace-pre-wrap">{text}</dd>
+                  </Card>
                 ))}
               </dl>
             </section>
@@ -287,12 +282,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
                   <AlertDescription>
                     <p>{ai.message}</p>
                     {ai.retryable ? (
-                      <Button
-                        type="button"
-                        variant="outline"
-                        className={`mt-2 ${pillButton}`}
-                        onClick={() => void retry()}
-                      >
+                      <Button type="button" variant="outline" className={`mt-2 ${pillButton}`} onClick={() => void retry()}>
                         {AI_REC_RETRY}
                       </Button>
                     ) : null}
@@ -303,9 +293,11 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
               {recommendations.length > 0 ? (
                 <ul className="mt-2 grid gap-2 sm:grid-cols-2">
                   {recommendations.map((item) => (
-                    <li key={item.name} className="rounded-2xl bg-card p-4 shadow-card">
-                      <p className="text-[0.8125rem] text-text-secondary">{item.name}</p>
-                      <p className="mt-0.5 text-sm leading-relaxed">{item.recommendation}</p>
+                    <li key={item.name}>
+                      <Card className="h-full gap-0.5 rounded-2xl p-4 shadow-card">
+                        <p className="text-[0.8125rem] text-text-secondary">{item.name}</p>
+                        <p className="text-sm leading-relaxed">{item.recommendation}</p>
+                      </Card>
                     </li>
                   ))}
                 </ul>
@@ -314,16 +306,27 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
           )}
         </div>
 
-        <aside data-load aria-label="Langkah berikutnya" className="rounded-3xl bg-soft-mint p-5 text-text shadow-lift lg:col-span-4">
-          <h2 className="text-base font-bold">Langkah berikutnya</h2>
-          <p className="mt-1 text-[0.8125rem] text-text-secondary">
-            Hasil ini gambaran awal. Bila terasa berat, kamu tidak harus menghadapinya sendirian.
-          </p>
+        <Card
+          tone="mint"
+          data-load
+          role="complementary"
+          aria-label="Langkah berikutnya"
+          className="gap-3 p-5 lg:col-span-4"
+        >
+          <CardHeader className="gap-1">
+            <CardTitle role="heading" aria-level={2} className="text-base font-bold">
+              Langkah berikutnya
+            </CardTitle>
+            <CardDescription className="text-[0.8125rem]">
+              Hasil ini gambaran awal. Bila terasa berat, kamu tidak harus menghadapinya sendirian.
+            </CardDescription>
+          </CardHeader>
           {/* <a> biasa: Konsultasi adalah halaman Blade */}
-          <a href="/konsultasi" className={`${linkClass} mt-1 inline-flex min-h-11 items-center text-[0.8125rem]`}>
+          <a href="/konsultasi" className={`${linkClass} inline-flex min-h-11 items-center text-[0.8125rem]`}>
             Bicara dengan profesional
           </a>
-          <div className="mt-2 flex flex-col gap-2">
+          <Separator />
+          <CardFooter className="flex-col items-stretch gap-2">
             <Button asChild className={pillButton}>
               <Link href="/app/asesmen">Kembali ke asesmen</Link>
             </Button>
@@ -333,8 +336,8 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
                 Lihat riwayat
               </Link>
             </Button>
-          </div>
-        </aside>
+          </CardFooter>
+        </Card>
       </div>
 
       <ConsentDialog

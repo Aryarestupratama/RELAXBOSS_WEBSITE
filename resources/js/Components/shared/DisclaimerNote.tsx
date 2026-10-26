@@ -1,13 +1,13 @@
 import type { ReactNode } from 'react';
+import { Info } from 'lucide-react';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
 
-/** CMP-009. Garis kiri `--brand-strong`; teks "bukan diagnosis" (RULE-046). */
+/** CMP-009. `Alert` varian default sebagai catatan (`role="note"`), garis kiri `--brand-strong`; teks "bukan diagnosis" (RULE-046). */
 export default function DisclaimerNote({ children }: { children: ReactNode }) {
   return (
-    <div
-      role="note"
-      className="rounded-2xl border-l-4 border-l-brand-strong bg-card px-4 py-3 text-[0.8125rem] leading-relaxed text-text shadow-card"
-    >
-      {children}
-    </div>
+    <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
+      <Info className="text-brand-strong!" aria-hidden="true" />
+      <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">{children}</AlertDescription>
+    </Alert>
   );
 }

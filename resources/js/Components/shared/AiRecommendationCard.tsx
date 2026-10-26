@@ -1,4 +1,7 @@
 import { Sparkles } from 'lucide-react';
+import { Badge } from '@/Components/ui/badge';
+import { Card, CardContent, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 import { AI_REC_LABEL, AI_REC_SUMMARY_TITLE, AI_REC_TITLE } from '@/lib/assessment';
 
 type AiRecommendationCardProps = {
@@ -7,28 +10,35 @@ type AiRecommendationCardProps = {
 };
 
 /**
- * Rekomendasi AI di hasil Asesmen (SCR-014, FR-010). Selalu berlabel "Disusun oleh AI".
+ * Rekomendasi AI di hasil Asesmen (SCR-014, FR-010). Selalu berlabel "Disusun oleh AI" (`Badge`).
  * Teks dirender sebagai teks biasa (bukan HTML), jeda baris dipertahankan.
  */
 export default function AiRecommendationCard({ recommendation, summary }: AiRecommendationCardProps) {
   return (
-    <section aria-labelledby="ai-rec-title" className="rounded-3xl bg-soft-lavender p-5 text-text shadow-lift">
-      <p className="flex w-fit items-center gap-1.5 rounded-full bg-card/60 px-3 py-1 text-xs font-medium text-text">
-        <Sparkles className="size-4 text-brand-strong" aria-hidden="true" />
-        {AI_REC_LABEL}
-      </p>
-      <h2 id="ai-rec-title" className="mt-2 text-base font-bold">
-        {AI_REC_TITLE}
-      </h2>
+    <Card tone="lavender" role="region" aria-labelledby="ai-rec-title" className="gap-3 p-5">
+      <CardHeader className="items-start gap-2">
+        <Badge variant="outline">
+          <Sparkles className="text-brand-strong" aria-hidden="true" />
+          {AI_REC_LABEL}
+        </Badge>
+        <CardTitle id="ai-rec-title" role="heading" aria-level={2} className="text-base font-bold">
+          {AI_REC_TITLE}
+        </CardTitle>
+      </CardHeader>
 
       {summary ? (
-        <div className="mt-3">
-          <h3 className="text-[0.8125rem] font-semibold text-text-secondary">{AI_REC_SUMMARY_TITLE}</h3>
-          <p className="mt-0.5 text-sm leading-relaxed whitespace-pre-line">{summary}</p>
-        </div>
+        <>
+          <CardContent>
+            <h3 className="text-[0.8125rem] font-semibold text-text-secondary">{AI_REC_SUMMARY_TITLE}</h3>
+            <p className="mt-0.5 text-sm leading-relaxed whitespace-pre-line">{summary}</p>
+          </CardContent>
+          <Separator className="bg-text/10" />
+        </>
       ) : null}
 
-      <p className="mt-3 text-sm leading-relaxed whitespace-pre-line">{recommendation}</p>
-    </section>
+      <CardContent>
+        <p className="text-sm leading-relaxed whitespace-pre-line">{recommendation}</p>
+      </CardContent>
+    </Card>
   );
 }

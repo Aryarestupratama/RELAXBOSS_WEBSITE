@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight, ArrowUpRight, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile, type LucideIcon } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
@@ -81,12 +82,9 @@ function moodImage(mood: number): string {
 export default function Dashboard({ first_name, last_mood, last_attempt }: DashboardProps) {
   return (
     <AppShell title="Dashboard" wide staggered>
-      <div data-load>
-        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Halo, {first_name}.</h1>
-        <p className="mt-1 text-sm text-text-secondary">Apa yang ingin kamu lakukan hari ini?</p>
-      </div>
+      <PageHeader title={`Halo, ${first_name}.`} description="Apa yang ingin kamu lakukan hari ini?" />
 
-      <div className="mt-5 grid items-start gap-4 lg:grid-cols-12">
+      <div className="grid items-start gap-4 lg:grid-cols-12">
         <div className="space-y-5 lg:col-span-8">
           <div className="grid gap-3 sm:grid-cols-2">
             <ActionTile

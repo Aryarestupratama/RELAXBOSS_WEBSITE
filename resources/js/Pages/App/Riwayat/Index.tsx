@@ -1,7 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { ArrowLeft, ArrowRight, ClipboardCheck } from 'lucide-react';
+import { ArrowRight, ClipboardCheck } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import { severityOf, type SeverityLevel } from '@/lib/assessment';
 
 type SummaryItem = {
   id: number;
@@ -17,7 +21,15 @@ type IndexProps = {
 };
 
 /** Pastel bergantian untuk kotak ikon (teks di atasnya `--text`, RULE-052). */
-const TONES = ['bg-soft-peach', 'bg-soft-mint', 'bg-soft-lavender', 'bg-soft-sky'] as const;
+const ICON_TONES = ['bg-soft-peach', 'bg-soft-mint', 'bg-soft-lavender', 'bg-soft-sky'] as const;
+
+/** Tingkat hasil ke varian Badge. Teks tingkat selalu ikut tampil, jadi makna tidak hanya warna. */
+const SEVERITY_BADGE: Record<SeverityLevel, 'mint' | 'sky' | 'lavender' | 'peach'> = {
+  normal: 'mint',
+  mild: 'sky',
+  moderate: 'lavender',
+  severe: 'peach',
+};
 
 const pillButton = 'rounded-full! px-5 text-sm';
 
@@ -25,41 +37,23 @@ const pillButton = 'rounded-full! px-5 text-sm';
 export default function Index({ attempts, prev_page_url, next_page_url }: IndexProps) {
   return (
     <AppShell title="Riwayat asesmen" wide staggered>
-      <div data-load>
-        <Link
-          href="/app/asesmen"
-          className="group inline-flex min-h-11 items-center gap-2 text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text"
-        >
-          <ArrowLeft
-            className="size-4 transition-transform duration-200 group-hover:-translate-x-0.5"
-            aria-hidden="true"
-          />
-          Asesmen
-        </Link>
-        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Riwayat asesmen</h1>
-        <p className="mt-1 text-sm text-text-secondary">Hasil asesmenmu, dari yang terbaru.</p>
-      </div>
+      <PageHeader
+        back={{ href: '/app/asesmen', label: 'Asesmen' }}
+        title="Riwayat asesmen"
+        description="Hasil asesmenmu, dari yang terbaru."
+      />
 
-      <div className="mt-4">
+      <div>
         {attempts.length === 0 ? (
-          <div
-            data-load="pop"
-            className="mx-auto flex max-w-md flex-col items-center rounded-3xl bg-card p-5 text-center shadow-lift"
-          >
-            <img
-              src="/images/asesmen/asesmen-kosong.webp"
-              width={160}
-              height={160}
-              alt=""
-              className="size-28 object-contain"
-            />
-            <p className="mt-3 max-w-sm text-sm text-text-secondary">
+          <Card data-load="pop" className="mx-auto max-w-md items-center gap-3 p-6 text-center">
+            <img src="/images/asesmen/asesmen-kosong.webp" width={160} height={160} alt="" className="size-28 object-contain" />
+            <p className="max-w-sm text-sm text-text-secondary">
               Belum ada hasil. Mulai Asesmen pertamamu untuk mengenali kondisimu.
             </p>
-            <Button asChild className={`mt-4 ${pillButton}`}>
+            <Button asChild className={pillButton}>
               <Link href="/app/asesmen">Mulai asesmen</Link>
             </Button>
-          </div>
+          </Card>
         ) : (
           <>
             <ul className="grid gap-3 lg:grid-cols-2">
@@ -69,33 +63,40 @@ export default function Index({ attempts, prev_page_url, next_page_url }: IndexP
                     href={`/app/riwayat/${attempt.id}`}
                     data-lift
                     data-press
-                    className="group flex h-full items-center gap-3 rounded-3xl bg-card p-4 shadow-lift transition-shadow duration-300 hover:shadow-lift-hover"
+                    className="group block h-full rounded-3xl transition-shadow duration-300 hover:shadow-lift-hover"
                   >
-                    <span
-                      className={`grid size-12 shrink-0 place-items-center rounded-full text-primary ${TONES[index % TONES.length]}`}
-                      aria-hidden="true"
-                    >
-                      <ClipboardCheck className="size-5" />
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[0.9375rem] leading-snug font-semibold">
-                        {attempt.assessment_name}
+                    <Card className="h-full flex-row items-center gap-3 p-4 transition-shadow duration-300 group-hover:shadow-lift-hover">
+                      <span
+                        className={`grid size-12 shrink-0 place-items-center rounded-full text-primary ${ICON_TONES[index % ICON_TONES.length]}`}
+                        aria-hidden="true"
+                      >
+                        <ClipboardCheck className="size-5" />
                       </span>
-                      <span className="block text-[0.8125rem] text-text-secondary">{attempt.completed_at}</span>
-                      <span className="mt-1.5 flex flex-wrap gap-1.5">
-                        {attempt.sub_scales.map((item) => (
-                          <span key={item.name} className="rounded-full bg-neutral-soft px-2.5 py-0.5 text-xs text-text">
-                            {item.name}: {item.interpretation}
-                          </span>
-                        ))}
+                      <div className="flex min-w-0 flex-1 flex-col gap-2">
+                        <CardHeader className="gap-0.5">
+                          <CardTitle className="text-[0.9375rem]">{attempt.assessment_name}</CardTitle>
+                          <CardDescription className="text-[0.8125rem]">{attempt.completed_at}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex flex-wrap gap-1.5">
+                          {attempt.sub_scales.map((item) => (
+                            <Badge
+                              key={item.name}
+                              variant={SEVERITY_BADGE[severityOf(item.severity_level)]}
+                              className="whitespace-normal"
+                            >
+                              {item.name}: {item.interpretation}
+                            </Badge>
+                          ))}
+                        </CardContent>
+                      </div>
+                      <span
+                        className="grid size-9 shrink-0 place-items-center rounded-full border-[1.5px] border-primary text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary"
+                        aria-hidden="true"
+                      >
+                        <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
                       </span>
-                    </span>
-                    <span
-                      className="grid size-9 shrink-0 place-items-center rounded-full border-[1.5px] border-primary text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary"
-                      aria-hidden="true"
-                    >
-                      <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />
-                    </span>
+                    </Card>
+                    <span className="sr-only">Lihat hasil {attempt.assessment_name}</span>
                   </Link>
                 </li>
               ))}

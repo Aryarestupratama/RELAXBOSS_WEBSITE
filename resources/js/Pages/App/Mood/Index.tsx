@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
 import { BatteryLow, CircleAlert, CircleCheck, Info, Zap, type LucideIcon } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
 import FormField from '@/Components/shared/FormField';
 import MoodPicker from '@/Components/shared/MoodPicker';
 import { MoodDayChart, MoodRangeChart } from '@/Components/shared/MoodChart';
@@ -176,19 +177,16 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
 
   return (
     <AppShell title="Mood Tracker" wide staggered>
-      <div data-load>
-        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Mood Tracker</h1>
-        <p className="mt-1 text-sm text-text-secondary">Catat perasaanmu dan lihat polanya dalam seminggu.</p>
-      </div>
+      <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu." />
 
       {saved ? (
-        <Alert data-load className="mt-3">
+        <Alert data-load className="mb-4">
           <CircleCheck className="text-success!" aria-hidden="true" />
           <AlertDescription>Catatanmu tersimpan.</AlertDescription>
         </Alert>
       ) : null}
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-12">
+      <div className="grid items-start gap-4 lg:grid-cols-12">
         <div className="flex flex-col gap-4 lg:col-span-5">
           <Card data-load role="region" aria-labelledby="mood-form-title" className={cardPadding}>
             <CardHeader>

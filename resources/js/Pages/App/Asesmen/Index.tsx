@@ -1,10 +1,10 @@
 import { Link } from '@inertiajs/react';
 import { ArrowUpRight, Clock, History, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
-import { Separator } from '@/Components/ui/separator';
 
 type AssessmentCard = {
   slug: string;
@@ -26,24 +26,20 @@ const TONES = ['peach', 'mint', 'lavender', 'sky'] as const;
 export default function Index({ assessments }: IndexProps) {
   return (
     <AppShell title="Asesmen" wide staggered>
-      <div data-load className="flex flex-wrap items-end justify-between gap-x-4 gap-y-3">
-        <div>
-          <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Asesmen</h1>
-          <p className="mt-1 max-w-prose text-sm text-text-secondary">
-            Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.
-          </p>
-        </div>
-        <Button asChild variant="outline" data-press className="rounded-full! px-4 text-[0.8125rem]">
-          <Link href="/app/riwayat">
-            <History className="size-4" aria-hidden="true" />
-            Lihat riwayat
-          </Link>
-        </Button>
-      </div>
+      <PageHeader
+        title="Asesmen"
+        description="Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis."
+        actions={
+          <Button asChild variant="outline" data-press className="rounded-full! px-4 text-[0.8125rem]">
+            <Link href="/app/riwayat">
+              <History className="size-4" aria-hidden="true" />
+              Lihat riwayat
+            </Link>
+          </Button>
+        }
+      />
 
-      <Separator data-load className="mt-4" />
-
-      <div className="mt-5">
+      <div>
         {assessments.length === 0 ? (
           <Card data-load="pop" className="mx-auto max-w-md items-center gap-3 p-6 text-center">
             <img
