@@ -295,7 +295,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
               <Table className="min-w-[40rem]">
                 <TableCaption className="sr-only">Daftar akun pengguna</TableCaption>
                 <TableHeader>
-                  <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                  <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
                     <TableHead>Email</TableHead>
                     <TableHead>Terdaftar</TableHead>
                     <TableHead>Verifikasi</TableHead>

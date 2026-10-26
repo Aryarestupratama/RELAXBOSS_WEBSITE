@@ -102,7 +102,7 @@ export default function ConversationPanel({
                     onClick={(event) => open(event, `/app/relaxmate/${conversation.id}`)}
                     aria-current={active ? 'page' : undefined}
                     className={`group flex min-h-14 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-text transition-colors duration-200 ${
-                      active ? 'bg-soft-lavender' : 'hover:bg-neutral-soft'
+                      active ? 'bg-soft-lavender' : 'hover:bg-soft-lavender/50'
                     }`}
                   >
                     <span className="min-w-0">

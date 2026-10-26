@@ -72,7 +72,7 @@ export default function AssessmentRulesEditor({
   return (
     <div>
       {subScales.length === 0 ? (
-        <p className="mb-4 rounded-2xl bg-neutral-soft px-4 py-3 text-sm text-text-secondary">
+        <p className="mb-4 rounded-2xl border border-border/60 bg-card px-4 py-3 text-sm text-text-secondary">
           Isi subskala pada butir lebih dulu. Subskala yang kamu tulis di sana muncul di sini.
         </p>
       ) : (
@@ -105,7 +105,7 @@ export default function AssessmentRulesEditor({
           const choices = rule.sub_scale !== '' && !subScales.includes(rule.sub_scale) ? [...subScales, rule.sub_scale] : subScales;
 
           return (
-            <li key={index} className="rounded-2xl border border-border bg-neutral-soft/50 p-4 md:p-5">
+            <li key={index} className="rounded-2xl border border-border bg-card p-4 md:p-5">
               <div className="flex items-center gap-3">
                 <span
                   className="grid size-8 shrink-0 place-items-center rounded-full bg-soft-peach text-sm font-bold text-text tabular-nums"

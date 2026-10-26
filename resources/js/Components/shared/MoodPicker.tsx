@@ -78,7 +78,7 @@ export default function MoodPicker({
                   selected
                     ? 'border-2 border-primary bg-soft-lavender font-semibold shadow-card'
                     : cn(
-                        'border-[1.5px] bg-card hover:bg-neutral-soft hover:shadow-card',
+                        'border-[1.5px] bg-card hover:bg-soft-lavender/50 hover:shadow-card',
                         invalid ? 'border-destructive' : 'border-border',
                       ),
                 )}
@@ -123,7 +123,7 @@ export default function MoodPicker({
                   'relative flex min-h-12 cursor-pointer items-center gap-2.5 rounded-2xl px-3.5 py-2 text-sm text-text transition-all duration-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring',
                   selected
                     ? 'border-2 border-primary bg-soft-lavender font-semibold'
-                    : 'border-[1.5px] border-border bg-card hover:bg-neutral-soft',
+                    : 'border-[1.5px] border-border bg-card hover:bg-soft-lavender/50',
                 )}
               >
                 <RadioGroupItem id={id} value={value} className="sr-only" />

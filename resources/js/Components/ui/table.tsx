@@ -26,7 +26,7 @@ function TableFooter({ className, ...props }: ComponentProps<'tfoot'>) {
   return (
     <tfoot
       data-slot="table-footer"
-      className={cn('border-t bg-neutral-soft/60 font-medium [&>tr]:last:border-b-0', className)}
+      className={cn('border-t bg-card font-medium [&>tr]:last:border-b-0', className)}
       {...props}
     />
   );
@@ -36,7 +36,7 @@ function TableRow({ className, ...props }: ComponentProps<'tr'>) {
   return (
     <tr
       data-slot="table-row"
-      className={cn('border-b border-border/70 transition-colors hover:bg-neutral-soft/70', className)}
+      className={cn('border-b border-border/70 transition-colors hover:bg-soft-lavender/40', className)}
       {...props}
     />
   );

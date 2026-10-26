@@ -63,7 +63,7 @@ function ActionTile({ icon: Icon, title, description, href, tone }: ActionTilePr
         </CardContent>
       </Card>
       <span
-        className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-neutral-soft text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
+        className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
         aria-hidden="true"
       >
         <ArrowUpRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
@@ -139,7 +139,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
                     href={`/app/riwayat/${last_attempt.id}`}
                     data-lift
                     data-press
-                    className="group flex items-center gap-3 rounded-xl bg-surface-alt px-4 py-3 transition-shadow duration-300 hover:shadow-lift-hover"
+                    className="group flex items-center gap-3 rounded-xl border border-border/60 bg-card px-4 py-3 transition-shadow duration-300 hover:shadow-lift-hover"
                   >
                     <span className="min-w-0 flex-1">
                       <span className="block text-[0.9375rem] leading-snug font-semibold">{last_attempt.assessment_name}</span>
@@ -161,7 +161,7 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
                   </Link>
                 </CardContent>
               ) : (
-                <CardContent className="flex flex-col items-center gap-3 rounded-xl bg-surface-alt p-4 sm:flex-row">
+                <CardContent className="flex flex-col items-center gap-3 rounded-xl border border-border/60 bg-card p-4 sm:flex-row">
                   <img
                     src="/images/asesmen/asesmen-kosong.webp"
                     width={96}

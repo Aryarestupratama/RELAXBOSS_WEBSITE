@@ -62,7 +62,7 @@
             @else
                 <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($articles as $item)
-                        <x-article-card :item="$item" :index="$loop->index" />
+                        <x-article-card :item="$item" />
                     @endforeach
                 </ul>
 

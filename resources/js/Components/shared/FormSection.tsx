@@ -67,7 +67,7 @@ export function FormSectionNav({ links }: { links: SectionLink[] }) {
             <li key={id}>
               <a
                 href={`#${id}`}
-                className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-neutral-soft"
+                className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-soft-lavender/50"
               >
                 <Icon className="size-4 text-text-secondary" aria-hidden="true" />
                 {label}

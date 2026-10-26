@@ -228,7 +228,7 @@ export default function Index({ profile, avatar_url, is_only_admin, status }: In
               </FormField>
               <div className="min-w-0">
                 <p className="mb-1.5 text-sm font-medium">Email</p>
-                <p className="min-h-11 rounded-lg bg-neutral-soft px-3.5 py-2.5 text-sm break-all">{profile.email}</p>
+                <p className="min-h-11 rounded-lg border border-border/60 bg-card px-3.5 py-2.5 text-sm break-all">{profile.email}</p>
                 <p className="mt-1.5 text-xs text-text-secondary">Email belum bisa diubah.</p>
               </div>
               <FormField id="akun-jurusan" label="Jurusan" error={profileErrors.major}>

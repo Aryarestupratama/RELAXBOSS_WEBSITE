@@ -69,7 +69,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
   return (
     <>
       <Head title={`${title} | Admin RelaxBoss`} />
-      <div className="min-h-screen bg-neutral-soft pb-16 md:pb-0 md:pl-28">
+      <div className="min-h-screen bg-background pb-16 md:pb-0 md:pl-28">
         <a
           href="#konten"
           className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-card focus:px-4 focus:py-2 focus:shadow-popover"

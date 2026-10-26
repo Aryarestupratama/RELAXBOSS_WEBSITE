@@ -91,7 +91,7 @@ export default function AppShell({
     <>
       <Head title={`${title} | RelaxBoss`} />
       <div
-        className={`bg-neutral-soft pb-16 md:pb-0 md:pl-28 ${
+        className={`bg-background pb-16 md:pb-0 md:pl-28 ${
           fill ? 'relative flex h-dvh min-h-144 flex-col overflow-hidden' : 'min-h-screen'
         }`}
       >

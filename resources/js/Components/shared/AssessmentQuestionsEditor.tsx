@@ -73,7 +73,7 @@ export default function AssessmentQuestionsEditor({
 
       <ol className="space-y-4">
         {questions.map((question, index) => (
-          <li key={index} className="rounded-2xl border border-border bg-neutral-soft/50 p-4 md:p-5">
+          <li key={index} className="rounded-2xl border border-border bg-card p-4 md:p-5">
             <div className="flex items-center gap-3">
               <span
                 className="grid size-8 shrink-0 place-items-center rounded-full bg-soft-lavender text-sm font-bold text-text tabular-nums"

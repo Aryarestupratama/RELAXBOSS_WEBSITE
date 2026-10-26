@@ -38,10 +38,10 @@
                     Anda yang mengendalikan stres, bukan sebaliknya.
                 </h1>
                 <p data-load class="mt-4 max-w-lg text-base text-text-secondary">
-                    RelaxBoss membantu Anda mencatat suasana hati, berbicara dengan teman AI yang mendengarkan, dan mengenali diri lewat asesmen singkat, satu langkah kecil setiap hari.
+                    Catat suasana hati, bercerita pada RelaxMate, dan kenali dirimu lewat asesmen, mulai dari satu langkah kecil hari ini.
                 </p>
                 <div data-load class="mt-6">
-                    <x-account-cta label="Mulai Mengendalikan Stres Anda" class="rounded-full! px-6 text-sm" />
+                    <x-account-cta label="Mulai Tenang" class="rounded-full! px-6 text-sm" />
                 </div>
             </div>
         </div>
@@ -81,12 +81,12 @@
                 <div data-reveal>
                     <h2 id="judul-tentang" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Apa itu RelaxBoss?</h2>
                     <p class="mt-3 max-w-prose text-base text-text-secondary">
-                        RelaxBoss adalah ruang aman untuk mahasiswa dan pekerja mengelola stres sehari-hari. Di sini Anda bisa mencatat suasana hati, berbicara dengan RelaxMate, dan mengenali kondisi diri lewat asesmen.
-                        RelaxBoss bukan layanan darurat dan bukan pengganti tenaga profesional.
+                        RelaxBoss adalah ruang aman bagi mahasiswa dan pekerja untuk mengelola stres sehari-hari.
+                        Bukan layanan darurat dan bukan pengganti tenaga profesional.
                     </p>
                     <div class="mt-5">
                         <x-button-link href="{{ url('/tentang') }}" variant="outline" class="group gap-2 rounded-full! border-2! bg-card px-5 text-sm">
-                            Kenali kami lebih dekat
+                            Kenali Kami
                             <x-icon name="arrow-right" class="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                         </x-button-link>
                     </div>
@@ -141,7 +141,7 @@
                     <h2 id="judul-panduan" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Empat langkah menuju perasaan lebih baik</h2>
                     <p class="mt-3 text-base text-text-secondary">Tidak perlu terburu-buru. Ikuti satu per satu, sesuai kecepatan Anda.</p>
                     <div class="mt-5">
-                        <x-account-cta label="Siap Merasa Lebih Baik" class="rounded-full! px-6 text-sm" />
+                        <x-account-cta label="Langkah Pertama" class="rounded-full! px-6 text-sm" />
                     </div>
                 </div>
                 <ol data-stagger class="relative space-y-6">
@@ -163,7 +163,6 @@
     {{-- 6. Ajakan akhir --}}
     <section class="bg-background" aria-labelledby="judul-penutup">
         <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
-            <x-help-box data-reveal class="mb-8" />
             {{-- Ilustrasi menyusul: tambahkan sebagai kolom kedua (ubah wadah menjadi lg:grid-cols-2) --}}
             <div data-reveal class="rounded-3xl bg-surface-alt px-5 py-8 md:px-10 md:py-10">
                 <div class="max-w-xl">

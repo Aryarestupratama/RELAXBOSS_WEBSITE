@@ -33,7 +33,7 @@ export default function AssessmentOptionsEditor({ options, maxOptions, errors, o
         {options.map((option, index) => (
           <li
             key={index}
-            className="grid gap-3 rounded-2xl bg-neutral-soft p-3 sm:grid-cols-[7rem_1fr_auto] sm:items-start md:p-4"
+            className="grid gap-3 rounded-2xl border border-border/60 bg-card p-3 sm:grid-cols-[7rem_1fr_auto] sm:items-start md:p-4"
           >
             <FormField id={`option-value-${index}`} label={`Nilai pilihan ${index + 1}`} error={errors[`options.${index}.value`]}>
               {(control) => (

@@ -11,7 +11,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        secondary: 'bg-neutral-soft text-text',
+        secondary: 'bg-soft-lavender text-text',
         outline: 'border border-border bg-card text-text',
         lavender: 'bg-soft-lavender text-text',
         sky: 'bg-soft-sky text-text',

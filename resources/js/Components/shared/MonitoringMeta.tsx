@@ -23,7 +23,7 @@ export default function MonitoringMeta({ title, items, note }: MonitoringMetaPro
       <CardContent>
         <dl className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {items.map(({ icon: Icon, label, value }) => (
-            <div key={label} className="flex items-center gap-3 rounded-2xl bg-neutral-soft px-4 py-3">
+            <div key={label} className="flex items-center gap-3 rounded-2xl border border-border/60 bg-card px-4 py-3">
               <span
                 className="grid size-9 shrink-0 place-items-center rounded-full bg-soft-lavender text-text"
                 aria-hidden="true"

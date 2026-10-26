@@ -7,12 +7,12 @@
     @php
         // Pastel yang sama dengan Beranda dan Asesmen (Design 2); teks di atasnya --text.
         $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
-        // Butir ini bukan urutan langkah, jadi tanpa nomor.
+        // Butir ini bukan urutan langkah, jadi tanpa nomor dan tanpa ikon.
         $signs = [
-            ['icon' => 'moon', 'text' => 'Rasa tertekan berlangsung berminggu-minggu dan mengganggu kuliah, tidur, atau makanmu.'],
-            ['icon' => 'smile', 'text' => 'Kamu sulit menikmati hal yang dulu kamu sukai.'],
-            ['icon' => 'wind', 'text' => 'Kamu merasa kewalahan terus-menerus dan sulit mengatasinya sendiri.'],
-            ['icon' => 'users', 'text' => 'Orang terdekat mulai mengkhawatirkan keadaanmu.'],
+            'Rasa tertekan berlangsung berminggu-minggu dan mengganggu kuliah, tidur, atau makanmu.',
+            'Kamu sulit menikmati hal yang dulu kamu sukai.',
+            'Kamu merasa kewalahan terus-menerus dan sulit mengatasinya sendiri.',
+            'Orang terdekat mulai mengkhawatirkan keadaanmu.',
         ];
     @endphp
 
@@ -21,8 +21,8 @@
         <div class="mx-auto max-w-6xl px-4 pt-10 pb-6 text-center md:pt-14 md:pb-8">
             <h1 id="judul-konsultasi" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">Konsultasi profesional</h1>
             <p data-load class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
-                RelaxBoss membantu mengenali kondisimu, tetapi tidak menggantikan psikolog atau tenaga kesehatan jiwa.
-                Bicara dengan profesional adalah langkah yang wajar dan tidak perlu menunggu sampai keadaan parah.
+                RelaxBoss tidak menggantikan psikolog atau tenaga kesehatan jiwa.
+                Bicara dengan profesional itu wajar, tanpa perlu menunggu keadaan parah.
             </p>
         </div>
     </section>
@@ -54,17 +54,15 @@
                 @foreach ($signs as $sign)
                     <li data-item>
                         <x-ui.card class="h-full">
-                            <x-ui.card.content class="flex items-center gap-4">
-                                <span class="grid size-11 shrink-0 place-items-center rounded-full text-primary {{ $tones[$loop->index % 4] }}" aria-hidden="true"><x-icon name="{{ $sign['icon'] }}" class="size-5" /></span>
-                                <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign['text'] }}</p>
+                            <x-ui.card.content>
+                                <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign }}</p>
                             </x-ui.card.content>
                         </x-ui.card>
                     </li>
                 @endforeach
                 <li data-item class="md:col-span-2">
                     <x-ui.card class="border-l-4 border-l-crisis-text">
-                        <x-ui.card.content class="flex items-center gap-4">
-                            <span class="grid size-11 shrink-0 place-items-center rounded-full bg-crisis-bg text-crisis-text" aria-hidden="true"><x-icon name="heart" class="size-5" /></span>
+                        <x-ui.card.content>
                             <p class="text-sm font-semibold text-text md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
                         </x-ui.card.content>
                     </x-ui.card>

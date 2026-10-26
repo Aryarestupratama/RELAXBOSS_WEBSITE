@@ -86,7 +86,7 @@ export default function AsesmenIndex({ filter, rows, prev_page_url, next_page_ur
               <Table className="min-w-[36rem]">
                 <TableCaption className="sr-only">Daftar hasil Asesmen untuk ditinjau</TableCaption>
                 <TableHeader>
-                  <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                  <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
                     <TableHead>ID semu</TableHead>
                     <TableHead>Tanggal</TableHead>
                     <TableHead>Asesmen</TableHead>

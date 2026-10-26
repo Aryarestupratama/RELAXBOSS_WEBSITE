@@ -282,7 +282,7 @@ export default function Show({
               ref={scrollRef}
               tabIndex={0}
               aria-label="Riwayat pesan"
-              className="flex flex-1 flex-col overflow-y-auto bg-neutral-soft/40 p-3 md:p-4"
+              className="flex flex-1 flex-col overflow-y-auto bg-background p-3 md:p-4"
             >
               {messages.length === 0 && !sending ? (
                 <div className="m-auto flex flex-col items-center text-center">

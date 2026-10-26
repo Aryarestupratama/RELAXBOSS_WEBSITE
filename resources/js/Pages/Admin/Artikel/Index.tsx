@@ -183,7 +183,7 @@ export default function Index({ articles, prev_page_url, next_page_url, status }
               <Table className="min-w-[44rem]">
                 <TableCaption className="sr-only">Daftar artikel</TableCaption>
                 <TableHeader>
-                  <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                  <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
                     <TableHead>Artikel</TableHead>
                     <TableHead>Status</TableHead>
                     <TableHead>Terbit (WIB)</TableHead>

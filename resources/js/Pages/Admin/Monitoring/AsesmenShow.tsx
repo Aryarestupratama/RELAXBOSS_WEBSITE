@@ -68,7 +68,7 @@ export default function AsesmenShow({ attempt }: AsesmenShowProps) {
             <Table className="min-w-[32rem]">
               <TableCaption className="sr-only">Hasil per subskala</TableCaption>
               <TableHeader>
-                <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
                   <TableHead>Subskala</TableHead>
                   <TableHead>Skor</TableHead>
                   <TableHead>Tingkat</TableHead>

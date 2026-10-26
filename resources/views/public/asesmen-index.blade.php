@@ -13,16 +13,39 @@
     <section class="bg-background" aria-labelledby="judul-asesmen">
         <div class="mx-auto max-w-6xl px-4 pt-10 pb-8 text-center md:pt-14 md:pb-10">
             <h1 id="judul-asesmen" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">Asesmen</h1>
-            <p data-load class="mx-auto mt-4 max-w-xl text-base text-text-secondary">
-                Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Pilih asesmen yang ingin kamu coba,
-                lalu masuk atau daftar gratis untuk mengerjakannya.
+            <p data-load class="mx-auto mt-4 max-w-3xl text-base text-text-secondary">
+                <span class="block">Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu.</span>
+                <span class="block">Pilih yang ingin kamu coba, lalu masuk atau daftar gratis untuk mengerjakannya.</span>
             </p>
+
+            {{-- Validasi: tepat di bawah deskripsi; hanya tampil bila config terisi (RULE-049) --}}
+            @if (count($validation) > 0)
+                <ul data-load class="mx-auto mt-8 grid max-w-3xl gap-4 text-left sm:grid-cols-2" aria-label="Validasi asesmen">
+                    @foreach ($validation as $item)
+                        <li>
+                            <x-ui.card :tone="['lavender', 'sky', 'mint', 'peach'][$loop->index % 4]" class="h-full">
+                                <x-ui.card.content class="flex items-start gap-3">
+                                    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
+                                        <x-icon :name="$item['icon']" class="size-5" />
+                                    </span>
+                                    <div>
+                                        <p class="text-sm font-semibold">{{ $item['title'] }}</p>
+                                        <p class="mt-1 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
+                                    </div>
+                                </x-ui.card.content>
+                            </x-ui.card>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
         </div>
     </section>
 
     {{-- 2. Kartu asesmen (putih, menonjol lewat bayangan) dan catatan di bawahnya --}}
-    <section class="bg-background" aria-label="Daftar asesmen">
+    <section class="bg-background" aria-labelledby="judul-daftar-asesmen">
         <div class="mx-auto max-w-6xl px-4 pb-14 md:pb-20">
+            <h2 id="judul-daftar-asesmen" data-reveal class="mb-6 text-center text-2xl leading-tight font-bold tracking-tight md:mb-8 md:text-[2rem]">Daftar asesmen kami</h2>
+
             @if ($assessments->isEmpty())
                 <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-10 text-center">
                     <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-7" /></span>
@@ -78,27 +101,6 @@
                                         <x-icon name="arrow-right" class="size-4 transition-transform duration-200 group-hover:translate-x-1" />
                                     </span>
                                 </x-ui.card.footer>
-                            </x-ui.card>
-                        </li>
-                    @endforeach
-                </ul>
-            @endif
-
-            {{-- Validasi: hanya tampil bila config terisi (RULE-049) --}}
-            @if (count($validation) > 0)
-                <ul data-reveal class="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2" aria-label="Validasi asesmen">
-                    @foreach ($validation as $item)
-                        <li>
-                            <x-ui.card :tone="['lavender', 'sky', 'mint', 'peach'][$loop->index % 4]" class="h-full">
-                                <x-ui.card.content class="flex items-start gap-3">
-                                    <span class="grid size-10 shrink-0 place-items-center rounded-full bg-card text-primary" aria-hidden="true">
-                                        <x-icon :name="$item['icon']" class="size-5" />
-                                    </span>
-                                    <div>
-                                        <p class="text-sm font-semibold">{{ $item['title'] }}</p>
-                                        <p class="mt-1 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
-                                    </div>
-                                </x-ui.card.content>
                             </x-ui.card>
                         </li>
                     @endforeach

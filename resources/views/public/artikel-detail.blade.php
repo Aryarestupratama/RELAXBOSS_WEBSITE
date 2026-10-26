@@ -89,7 +89,7 @@
                 <h2 id="artikel-lain" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Artikel lainnya</h2>
                 <ul data-stagger class="mt-6 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($related as $item)
-                        <x-article-card :item="$item" :index="$loop->index" />
+                        <x-article-card :item="$item" />
                     @endforeach
                 </ul>
             </div>

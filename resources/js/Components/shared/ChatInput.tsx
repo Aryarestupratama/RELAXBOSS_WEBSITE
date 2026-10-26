@@ -55,7 +55,7 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
         Pesanmu
       </label>
       <div
-        className={`flex items-end gap-2 rounded-3xl border-[1.5px] bg-neutral-soft py-1 pl-4 pr-1 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-ring ${
+        className={`flex items-end gap-2 rounded-3xl border-[1.5px] bg-card py-1 pl-4 pr-1 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-ring ${
           tooLong ? 'border-destructive' : 'border-input'
         } ${disabled ? 'opacity-60' : ''}`}
       >

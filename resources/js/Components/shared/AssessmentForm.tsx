@@ -138,7 +138,7 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
                 {(control) => <Input {...control} maxLength={80} value={data.slug} onChange={text('slug')} />}
               </FormField>
             ) : (
-              <div className="rounded-2xl bg-neutral-soft px-4 py-3">
+              <div className="rounded-2xl border border-border/60 bg-card px-4 py-3">
                 <p className="text-[0.8125rem] text-text-secondary">Slug (tidak bisa diubah)</p>
                 <p className="mt-0.5 font-semibold">{data.slug}</p>
               </div>

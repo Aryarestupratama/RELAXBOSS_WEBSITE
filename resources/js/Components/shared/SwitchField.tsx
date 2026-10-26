@@ -12,7 +12,7 @@ type SwitchFieldProps = {
 };
 
 /**
- * Pengganti `CheckboxField` untuk pilihan ya atau tidak di formulir Admin: baris `--neutral-soft` berisi label,
+ * Pengganti `CheckboxField` untuk pilihan ya atau tidak di formulir Admin: baris putih berbingkai berisi label,
  * bantuan, dan `Switch`. Label menekan switch. Galat ada di luar kotak (di atas `--card`) agar kontrasnya cukup.
  */
 export default function SwitchField({ id, label, checked, onChange, hint, error, className }: SwitchFieldProps) {
@@ -22,7 +22,7 @@ export default function SwitchField({ id, label, checked, onChange, hint, error,
 
   return (
     <div className={cn('space-y-1.5', className)}>
-      <div className="flex min-h-14 items-center justify-between gap-4 rounded-2xl bg-neutral-soft px-4 py-3">
+      <div className="flex min-h-14 items-center justify-between gap-4 rounded-2xl border border-border/60 bg-card px-4 py-3">
         <div className="min-w-0">
           <label htmlFor={id} className="block cursor-pointer text-sm leading-snug font-medium">
             {label}

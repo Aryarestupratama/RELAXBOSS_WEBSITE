@@ -172,7 +172,7 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
               </CardHeader>
               <CardContent>
                 {usage.assessments_by_type.length === 0 ? (
-                  <div className="flex flex-col items-center gap-2 rounded-2xl bg-neutral-soft px-6 py-8 text-center">
+                  <div className="flex flex-col items-center gap-2 rounded-2xl border border-border/60 bg-card px-6 py-8 text-center">
                     <ClipboardList className="size-8 text-text-muted" aria-hidden="true" />
                     <p className="text-sm text-text-secondary">Belum ada Asesmen yang selesai.</p>
                   </div>
@@ -228,7 +228,7 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
                       </div>
                     )}
                   </CardContent>
-                  <p className="mt-auto rounded-2xl bg-neutral-soft p-3 text-[0.8125rem] leading-relaxed text-text-secondary">
+                  <p className="mt-auto rounded-2xl border border-border/60 bg-card p-3 text-[0.8125rem] leading-relaxed text-text-secondary">
                     {item.description}
                   </p>
                 </Card>

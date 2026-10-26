@@ -90,7 +90,7 @@ export default function Index({ assessments }: IndexProps) {
                     </CardContent>
                   </Card>
                   <span
-                    className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-neutral-soft text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
+                    className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
                     aria-hidden="true"
                   >
                     <ArrowUpRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />

@@ -50,7 +50,7 @@ function EntryList({ entries }: { entries: MoodEntryItem[] }) {
       {entries.map((entry) => {
         const ArousalIcon = entry.arousal ? AROUSAL_ICONS[entry.arousal] : undefined;
         return (
-          <li key={entry.id} className="rounded-2xl bg-neutral-soft px-3.5 py-3 text-sm">
+          <li key={entry.id} className="rounded-2xl border border-border/60 bg-card px-3.5 py-3 text-sm">
             <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5">
               <img src={moodImage(entry.mood)} width={32} height={32} alt="" className="size-8 shrink-0 object-contain" />
               <span className="font-semibold">{entry.mood_label}</span>
@@ -83,7 +83,7 @@ function WeekFaces({
   onSelectDay: (date: string) => void;
 }) {
   return (
-    <ul className="grid grid-cols-7 gap-1 rounded-2xl bg-neutral-soft px-1 py-2.5 text-center sm:gap-2 sm:px-2">
+    <ul className="grid grid-cols-7 gap-1 rounded-2xl border border-border/60 bg-card px-1 py-2.5 text-center sm:gap-2 sm:px-2">
       {days.map((day) => {
         const weekday = weekdayShort(day.date);
         const level = day.average === null ? null : moodLevel(day.average);
