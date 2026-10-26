@@ -91,7 +91,7 @@ export default function Index({ attempts, prev_page_url, next_page_url }: IndexP
                       </span>
                     </span>
                     <span
-                      className="grid size-9 shrink-0 place-items-center rounded-full border-[1.5px] border-primary text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
+                      className="grid size-9 shrink-0 place-items-center rounded-full border-[1.5px] border-primary text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary"
                       aria-hidden="true"
                     >
                       <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5" />

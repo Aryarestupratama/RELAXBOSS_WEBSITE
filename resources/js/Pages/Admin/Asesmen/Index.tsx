@@ -91,13 +91,13 @@ export default function Index({ assessments }: IndexProps) {
                       <span className="flex flex-wrap gap-1">
                         <span
                           className={`${badgeBase} ${
-                            assessment.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-muted text-text-secondary'
+                            assessment.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
                           }`}
                         >
                           {assessment.is_active ? 'Aktif' : 'Nonaktif'}
                         </span>
                         {assessment.is_demo ? (
-                          <span className={`${badgeBase} bg-muted text-text-secondary`}>Contoh</span>
+                          <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>Contoh</span>
                         ) : null}
                         {assessment.is_validated ? (
                           <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Tervalidasi</span>

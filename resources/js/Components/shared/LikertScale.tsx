@@ -39,7 +39,7 @@ export default function LikertScale({ name, legend, options, value, onChange, di
             htmlFor={id}
             className={`flex min-h-12 cursor-pointer items-center gap-3 rounded-xl border-[1.5px] px-4 py-2.5 text-sm transition-all duration-200 motion-safe:hover:translate-x-0.5 ${
               selected
-                ? 'border-primary bg-mood-yellow font-semibold'
+                ? 'border-primary bg-soft-lavender font-semibold'
                 : 'border-border bg-card hover:border-primary/40 hover:bg-neutral-soft'
             } ${disabled ? 'cursor-not-allowed opacity-60' : ''}`}
           >

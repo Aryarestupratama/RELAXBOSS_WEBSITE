@@ -102,12 +102,12 @@ export default function Index({ articles, prev_page_url, next_page_url, status }
                       <span className="flex flex-wrap gap-1">
                         <span
                           className={`${badgeBase} ${
-                            article.state === 'live' ? 'bg-neutral-soft text-brand-strong' : 'bg-muted text-text-secondary'
+                            article.state === 'live' ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
                           }`}
                         >
                           {STATE_LABEL[article.state]}
                         </span>
-                        {article.is_demo ? <span className={`${badgeBase} bg-muted text-text-secondary`}>Contoh</span> : null}
+                        {article.is_demo ? <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>Contoh</span> : null}
                       </span>
                     </td>
                     <td className="px-4 py-3 text-text-secondary">{article.published_label ?? '-'}</td>

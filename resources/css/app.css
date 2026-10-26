@@ -87,10 +87,11 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 
     /* Bayangan */
-    --shadow-card: 0 1px 2px rgba(31, 29, 46, 0.06);
-    --shadow-popover: 0 8px 24px rgba(31, 29, 46, 0.12);
-    --shadow-lift: 0 1px 2px rgba(25, 35, 56, 0.06), 0 8px 22px rgba(25, 35, 56, 0.08);
-    --shadow-lift-hover: 0 2px 4px rgba(25, 35, 56, 0.08), 0 18px 40px rgba(25, 35, 56, 0.16);
+    /* Bayangan diturunkan dari --primary (navy), bukan angka rgba terpisah, supaya ikut bila --primary berubah. */
+    --shadow-card: 0 1px 2px color-mix(in srgb, var(--primary) 6%, transparent);
+    --shadow-popover: 0 8px 24px color-mix(in srgb, var(--primary) 12%, transparent);
+    --shadow-lift: 0 1px 2px color-mix(in srgb, var(--primary) 6%, transparent), 0 8px 22px color-mix(in srgb, var(--primary) 8%, transparent);
+    --shadow-lift-hover: 0 2px 4px color-mix(in srgb, var(--primary) 8%, transparent), 0 18px 40px color-mix(in srgb, var(--primary) 16%, transparent);
 }
 
 :root {
@@ -106,9 +107,10 @@
     --on-primary: #FFFFFF;
     --brand: #7948FC;
     --brand-strong: #6A38EE;
-    /* Ungu muda untuk kartu dan lingkaran hias: teks di atasnya --text (bukan putih) */
+    /* Ungu muda untuk lencana di atas permukaan gelap (mis. "Admin" di rail navy) dan tint transparan (penanda aktif navigasi).
+       Untuk kartu dan lingkaran hias pakai --soft-lavender. Teks di atasnya --text (bukan putih) */
     --brand-soft: #C3B1FF;
-    /* Warna pastel (kartu dan hiasan); teks di atasnya selalu --text */
+    /* Pastel jenuh khusus skala mood, titik emosi, dan grafik; BUKAN untuk latar kartu (pakai --soft-*). Teks di atasnya --text */
     --mood-blue: #9CCBF2;
     --mood-green: #ABEAA2;
     --mood-red: #FC6663;
@@ -128,10 +130,11 @@
     --crisis-bg: #FEF2F2;
     --crisis-text: #991B1B;
     --neutral-soft: #F5F3EE;
-    /* TASK-028Q: latar bagian selang-seling dan empat pastel kartu Beranda (turunan lebih terang dari
-       --brand-soft, --mood-blue, --mood-green, --mood-peach). Teks di atasnya --text. */
+    /* TASK-028Q: latar bagian selang-seling dan empat pastel kartu (turunan lebih terang dari
+       --brand-soft, --mood-blue, --mood-green, --mood-peach). Dipakai di semua halaman: kartu, kotak ikon, penanda terpilih
+       (--soft-lavender). Teks di atasnya --text. */
     --surface-alt: #F7F9FC;
-    /* Navbar publik: warna hover tautan dan tombol (navy sedikit lebih biru dari --primary). Teks putih di atasnya 16,6:1. */
+    /* Warna hover semua tombol dan tautan bernavy, publik maupun aplikasi (navy sedikit lebih biru dari --primary; --primary tetap untuk keadaan diam dan terpilih). Teks putih di atasnya 16,6:1. */
     --nav-hover: #0A2244;
     --soft-lavender: #DED4FF;
     --soft-sky: #C9E2F8;

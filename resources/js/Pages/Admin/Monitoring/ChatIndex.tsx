@@ -91,7 +91,7 @@ export default function ChatIndex({ filter, rows, prev_page_url, next_page_url }
                           <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Krisis</span>
                         ) : null}
                         {row.low_confidence && row.lowest_confidence !== null ? (
-                          <span className={`${badgeBase} bg-muted text-text-secondary`}>
+                          <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>
                             Keyakinan terendah {row.lowest_confidence}%
                           </span>
                         ) : null}

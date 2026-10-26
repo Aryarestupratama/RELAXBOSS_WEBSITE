@@ -63,15 +63,15 @@ export default function ChatShow({ conversation, messages }: ChatShowProps) {
                     <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Krisis</span>
                   ) : null}
                   {message.intent ? (
-                    <span className={`${badgeBase} bg-muted text-text-secondary`}>{message.intent}</span>
+                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>{message.intent}</span>
                   ) : null}
                   {message.confidence !== null ? (
-                    <span className={`${badgeBase} bg-muted text-text-secondary`}>
+                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>
                       Keyakinan {message.confidence}%{message.low_confidence ? ' (rendah)' : ''}
                     </span>
                   ) : null}
                   {message.suggestion ? (
-                    <span className={`${badgeBase} bg-muted text-text-secondary`}>{message.suggestion}</span>
+                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>{message.suggestion}</span>
                   ) : null}
                 </>
               }

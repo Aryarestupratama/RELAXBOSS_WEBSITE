@@ -153,7 +153,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
                           <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Admin</span>
                         ) : null}
                         {user.is_self ? (
-                          <span className={`${badgeBase} bg-muted text-text-secondary`}>Akun kamu</span>
+                          <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>Akun kamu</span>
                         ) : null}
                       </span>
                     </th>
@@ -162,7 +162,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
                     <td className="px-4 py-3">
                       <span
                         className={`${badgeBase} ${
-                          user.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-muted text-text-secondary'
+                          user.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
                         }`}
                       >
                         {user.is_active ? 'Aktif' : 'Nonaktif'}

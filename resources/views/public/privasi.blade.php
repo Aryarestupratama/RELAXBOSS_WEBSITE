@@ -22,7 +22,7 @@
                   :toc="$toc"
                   active="privasi"
                   updated="19 Oktober 2026">
-        <x-legal-section id="data" :title="$toc['data']" icon="database" tone="yellow">
+        <x-legal-section id="data" :title="$toc['data']" icon="database" tone="peach">
             <ul class="space-y-3">
                 @foreach ([
                     'Akun: nama, email, kata sandi (disimpan dalam bentuk hash), serta jurusan dan kampus bila kamu mengisinya.',
@@ -35,7 +35,7 @@
             </ul>
         </x-legal-section>
 
-        <x-legal-section id="enkripsi" :title="$toc['enkripsi']" icon="shield" tone="green">
+        <x-legal-section id="enkripsi" :title="$toc['enkripsi']" icon="shield" tone="mint">
             <p>
                 Isi yang sensitif (catatan mood, jawaban Asesmen, percakapan, dan rekomendasi AI) disimpan terenkripsi di level aplikasi.
                 Angka skor, kategori hasil, dan skala mood disimpan tanpa enkripsi agar bisa dihitung dan ditampilkan sebagai grafik.
@@ -43,7 +43,7 @@
             </p>
         </x-legal-section>
 
-        <x-legal-section id="ai" :title="$toc['ai']" icon="message-circle" tone="brand">
+        <x-legal-section id="ai" :title="$toc['ai']" icon="message-circle" tone="lavender">
             <p>
                 RelaxMate dan Rekomendasi AI memakai Groq, penyedia AI pihak ketiga yang servernya berada di luar Indonesia.
                 Hanya setelah kamu menyetujuinya, isi percakapanmu (atau hasil Asesmenmu)
@@ -53,7 +53,7 @@
             </p>
         </x-legal-section>
 
-        <x-legal-section id="tinjauan" :title="$toc['tinjauan']" icon="eye" tone="yellow">
+        <x-legal-section id="tinjauan" :title="$toc['tinjauan']" icon="eye" tone="peach">
             <p>
                 Pengelola RelaxBoss dapat membaca isi percakapan dan rekomendasi AI untuk menjaga kualitas dan keselamatan, tanpa identitasmu:
                 tanpa nama, email, jurusan, dan kampus, dengan tanggal tanpa jam. Tinjauan ini hanya baca dan setiap pembukaannya tercatat.
@@ -62,7 +62,7 @@
             </p>
         </x-legal-section>
 
-        <x-legal-section id="pelatihan" :title="$toc['pelatihan']" icon="clipboard-check" tone="green">
+        <x-legal-section id="pelatihan" :title="$toc['pelatihan']" icon="clipboard-check" tone="mint">
             <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
                 <p>
                     Kami menanyakan secara terpisah apakah percakapan dan hasil asesmenmu boleh dipakai untuk melatih model AI di masa depan.
@@ -73,11 +73,11 @@
             </div>
         </x-legal-section>
 
-        <x-legal-section id="hapus" :title="$toc['hapus']" icon="trash-2" tone="brand">
+        <x-legal-section id="hapus" :title="$toc['hapus']" icon="trash-2" tone="lavender">
             <p>Kamu bisa menghapus akunmu kapan saja di halaman Akun. Seluruh datamu dihapus permanen dan tidak bisa dikembalikan.</p>
         </x-legal-section>
 
-        <x-legal-section id="cadangan" :title="$toc['cadangan']" icon="archive" tone="yellow">
+        <x-legal-section id="cadangan" :title="$toc['cadangan']" icon="archive" tone="peach">
             <p>Kami menyimpan cadangan database selama {{ $backupDays }} hari. Data yang sudah kamu hapus bisa masih ada di cadangan sampai masa itu berakhir.</p>
         </x-legal-section>
 

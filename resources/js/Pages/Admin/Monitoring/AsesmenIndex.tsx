@@ -78,7 +78,7 @@ export default function AsesmenIndex({ filter, rows, prev_page_url, next_page_ur
                     <td className="px-4 py-3">
                       <span
                         className={`${badgeBase} ${
-                          row.has_ai_recommendation ? 'bg-neutral-soft text-brand-strong' : 'bg-muted text-text-secondary'
+                          row.has_ai_recommendation ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
                         }`}
                       >
                         {row.has_ai_recommendation ? 'Ada' : 'Belum ada'}

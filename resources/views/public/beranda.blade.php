@@ -117,7 +117,7 @@
                             <h3 class="mt-1 text-xl font-bold">{{ $feature['name'] }}</h3>
                             <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $feature['text'] }}</p>
                             <a href="{{ $feature['href'] }}" aria-label="Coba {{ $feature['name'] }}"
-                               class="absolute right-0 bottom-0 grid h-12 w-14 place-items-center rounded-tl-[20px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary">
+                               class="absolute right-0 bottom-0 grid h-12 w-14 place-items-center rounded-tl-[20px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary">
                                 <x-icon name="arrow-up-right" class="size-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </a>
                         </article>

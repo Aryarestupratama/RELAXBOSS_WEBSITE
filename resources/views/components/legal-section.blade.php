@@ -1,10 +1,10 @@
-@props(['id', 'title', 'icon', 'tone' => 'yellow'])
+@props(['id', 'title', 'icon', 'tone' => 'peach'])
 @php
-    // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
+    // Pastel yang sama dengan kartu fitur Beranda (token --soft-*). Teks dan ikon di atasnya --text.
     $circle = match ($tone) {
-        'green' => 'bg-mood-green text-text',
-        'brand' => 'bg-brand-soft text-text',
-        default => 'bg-mood-yellow text-text',
+        'mint' => 'bg-soft-mint text-text',
+        'lavender' => 'bg-soft-lavender text-text',
+        default => 'bg-soft-peach text-text',
     };
 @endphp
 <section id="{{ $id }}" aria-labelledby="{{ $id }}-judul" data-reveal

@@ -2,7 +2,7 @@
 @php
     $base = 'inline-flex min-h-11 items-center justify-center rounded-lg border-[1.5px] border-primary px-6 py-2.5 font-medium transition duration-200 hover:shadow-card';
     $classes = $variant === 'outline'
-        ? $base.' text-primary hover:bg-primary hover:text-on-primary'
-        : $base.' bg-primary text-on-primary hover:brightness-130';
+        ? $base.' text-primary hover:border-nav-hover hover:bg-nav-hover hover:text-on-primary'
+        : $base.' bg-primary text-on-primary hover:border-nav-hover hover:bg-nav-hover';
 @endphp
 <a href="{{ $href }}" data-press {{ $attributes->merge(['class' => $classes]) }}>{{ $slot }}</a>

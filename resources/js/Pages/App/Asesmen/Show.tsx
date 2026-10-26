@@ -56,7 +56,7 @@ export default function Show({ assessment }: ShowProps) {
               <Link
                 href={`/app/asesmen/${assessment.slug}/kerjakan`}
                 data-press
-                className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-[1.5px] border-primary bg-primary px-6 text-sm font-medium text-on-primary transition duration-200 hover:brightness-130 hover:shadow-card"
+                className="group inline-flex min-h-11 items-center justify-center gap-2 rounded-full border-[1.5px] border-primary bg-primary px-6 text-sm font-medium text-on-primary transition duration-200 hover:border-nav-hover hover:bg-nav-hover hover:shadow-card"
               >
                 Mulai asesmen
                 <ArrowRight

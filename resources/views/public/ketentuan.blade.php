@@ -21,7 +21,7 @@
                   :toc="$toc"
                   active="ketentuan"
                   updated="19 Oktober 2026">
-        <x-legal-section id="layanan" :title="$toc['layanan']" icon="heart" tone="yellow">
+        <x-legal-section id="layanan" :title="$toc['layanan']" icon="heart" tone="peach">
             <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
                 <p>
                     RelaxBoss adalah alat bantu mengenali dan mencatat kondisimu. RelaxBoss bukan psikolog, bukan layanan medis, dan tidak memberi diagnosis.
@@ -31,14 +31,14 @@
             </div>
         </x-legal-section>
 
-        <x-legal-section id="relaxmate" :title="$toc['relaxmate']" icon="message-circle" tone="green">
+        <x-legal-section id="relaxmate" :title="$toc['relaxmate']" icon="message-circle" tone="mint">
             <p>
                 RelaxMate adalah teman bicara berbasis AI. Balasannya bisa keliru atau kurang tepat, dan tidak menggantikan nasihat profesional.
                 Dalam keadaan darurat, jangan mengandalkan RelaxMate; hubungi bantuan atau orang yang kamu percaya.
             </p>
         </x-legal-section>
 
-        <x-legal-section id="akun" :title="$toc['akun']" icon="user" tone="brand">
+        <x-legal-section id="akun" :title="$toc['akun']" icon="user" tone="lavender">
             <ul class="space-y-3">
                 @foreach ([
                     'Isi data akun dengan benar dan jaga kerahasiaan kata sandimu.',
@@ -50,7 +50,7 @@
             </ul>
         </x-legal-section>
 
-        <x-legal-section id="wajar" :title="$toc['wajar']" icon="shield-check" tone="yellow">
+        <x-legal-section id="wajar" :title="$toc['wajar']" icon="shield-check" tone="peach">
             <ul class="space-y-3">
                 @foreach ([
                     'Jangan mencoba mengganggu, membobol, atau membebani layanan secara berlebihan.',
@@ -62,13 +62,13 @@
             </ul>
         </x-legal-section>
 
-        <x-legal-section id="ketersediaan" :title="$toc['ketersediaan']" icon="refresh-cw" tone="green">
+        <x-legal-section id="ketersediaan" :title="$toc['ketersediaan']" icon="refresh-cw" tone="mint">
             <p>
                 Layanan dapat berubah, terhenti sementara, atau berhenti sewaktu-waktu. Kami berusaha menjaganya tetap berjalan, tetapi tidak menjanjikan layanan tanpa gangguan.
             </p>
         </x-legal-section>
 
-        <x-legal-section id="privasi" :title="$toc['privasi']" icon="file-text" tone="brand">
+        <x-legal-section id="privasi" :title="$toc['privasi']" icon="file-text" tone="lavender">
             <p>
                 Cara kami memperlakukan datamu dijelaskan di <a href="{{ url('/privasi') }}">Kebijakan privasi</a>.
                 Ketentuan ini dapat diperbarui, dan versi terbaru selalu ada di halaman ini.

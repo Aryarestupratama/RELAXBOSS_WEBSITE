@@ -44,7 +44,7 @@ export default function GuestLayout({ title, illustration = 'masuk', tab, wide =
         >
           <aside className="relative hidden flex-col overflow-hidden rounded-2xl bg-soft-lavender p-6 lg:flex" aria-label="RelaxBoss">
             <span className="pointer-events-none absolute -top-16 -right-14 size-52 rounded-full bg-soft-sky" aria-hidden="true" />
-            <span className="pointer-events-none absolute top-1/2 -left-20 size-48 rounded-full bg-brand-soft/50" aria-hidden="true" />
+            <span className="pointer-events-none absolute top-1/2 -left-20 size-48 rounded-full bg-soft-lavender" aria-hidden="true" />
             <span className="pointer-events-none absolute right-6 bottom-36 size-16 rounded-full bg-soft-mint" aria-hidden="true" />
 
             <div className="relative">
