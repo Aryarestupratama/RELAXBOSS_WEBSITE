@@ -1,6 +1,8 @@
-import { BatteryLow, Zap, type LucideIcon } from 'lucide-react';
+import { BatteryLow, Check, Zap, type LucideIcon } from 'lucide-react';
 import { RadioGroup, RadioGroupItem } from '@/Components/ui/radio-group';
 import { Button } from '@/Components/ui/button';
+import { FieldLegend, FieldSet } from '@/Components/ui/field';
+import { cn } from '@/lib/utils';
 import { AROUSAL_LABELS, MOOD_LABELS, moodImage, type ArousalValue, type MoodValue } from '@/lib/mood';
 
 const MOOD_VALUES: MoodValue[] = [1, 2, 3, 4, 5];
@@ -23,9 +25,23 @@ type MoodPickerProps = {
   invalid?: boolean;
 };
 
+/** Penanda terpilih berupa ikon centang (bukan hanya warna), di atas `--primary` sehingga teksnya putih (RULE-052). */
+function SelectedMark({ className }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={cn('absolute grid size-5 place-items-center rounded-full bg-primary text-on-primary shadow-card', className)}
+    >
+      <Check className="size-3" strokeWidth={3} />
+    </span>
+  );
+}
+
 /**
  * CMP-005. Lima pilihan mood (blob berwajah + teks, tidak bergantung pada warna) dan pilihan tenaga opsional.
- * Keyboard lewat tombol panah (radio group). Pilihan terpilih ditandai garis `--brand` dan latar `--neutral-soft`.
+ * Gaya shadcn: `FieldSet` + `FieldLegend` di atas `RadioGroup`; kartu pilihan memakai label yang membungkus radio
+ * (radio disembunyikan secara visual tetapi tetap fokus dan terbaca pembaca layar). Keyboard lewat tombol panah.
+ * Terpilih = garis `--primary` 2px, latar `--soft-lavender`, teks tebal, dan ikon centang.
  */
 export default function MoodPicker({
   mood,
@@ -37,9 +53,9 @@ export default function MoodPicker({
   invalid = false,
 }: MoodPickerProps) {
   return (
-    <div className="space-y-4">
-      <fieldset className="space-y-2" disabled={disabled}>
-        <legend className="text-[0.9375rem] font-semibold">Bagaimana perasaanmu sekarang?</legend>
+    <div className="space-y-5">
+      <FieldSet disabled={disabled}>
+        <FieldLegend>Bagaimana perasaanmu sekarang?</FieldLegend>
         <RadioGroup
           name="mood"
           aria-label="Perasaanmu sekarang"
@@ -57,13 +73,18 @@ export default function MoodPicker({
               <label
                 key={value}
                 htmlFor={id}
-                className={`group flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-center text-xs transition-all duration-200 motion-safe:hover:-translate-y-0.5 ${
+                className={cn(
+                  'group relative flex min-h-24 cursor-pointer flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2.5 text-center text-xs text-text transition-all duration-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring motion-safe:hover:-translate-y-0.5',
                   selected
                     ? 'border-2 border-primary bg-soft-lavender font-semibold shadow-card'
-                    : `border-[1.5px] bg-card hover:bg-neutral-soft hover:shadow-card ${invalid ? 'border-destructive' : 'border-border'}`
-                }`}
+                    : cn(
+                        'border-[1.5px] bg-card hover:bg-neutral-soft hover:shadow-card',
+                        invalid ? 'border-destructive' : 'border-border',
+                      ),
+                )}
               >
-                <RadioGroupItem id={id} value={String(value)} />
+                <RadioGroupItem id={id} value={String(value)} className="sr-only" />
+                {selected ? <SelectedMark className="top-1 right-1" /> : null}
                 <img
                   src={moodImage(value)}
                   width={48}
@@ -76,12 +97,12 @@ export default function MoodPicker({
             );
           })}
         </RadioGroup>
-      </fieldset>
+      </FieldSet>
 
-      <fieldset className="space-y-2" disabled={disabled}>
-        <legend className="text-[0.9375rem] font-semibold">
+      <FieldSet disabled={disabled}>
+        <FieldLegend className="mb-0">
           Tenagamu <span className="font-normal text-text-secondary">(boleh dilewati)</span>
-        </legend>
+        </FieldLegend>
         <RadioGroup
           name="arousal_input"
           aria-label="Tenagamu"
@@ -98,23 +119,33 @@ export default function MoodPicker({
               <label
                 key={value}
                 htmlFor={id}
-                className={`flex min-h-11 cursor-pointer items-center gap-2.5 rounded-xl border-[1.5px] px-3.5 py-2 text-sm transition-colors ${
-                  selected ? 'border-primary bg-soft-lavender font-semibold' : 'border-border bg-card hover:bg-neutral-soft'
-                }`}
+                className={cn(
+                  'relative flex min-h-12 cursor-pointer items-center gap-2.5 rounded-2xl px-3.5 py-2 text-sm text-text transition-all duration-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring',
+                  selected
+                    ? 'border-2 border-primary bg-soft-lavender font-semibold'
+                    : 'border-[1.5px] border-border bg-card hover:bg-neutral-soft',
+                )}
               >
-                <RadioGroupItem id={id} value={value} />
-                <Icon className="size-5 text-brand-strong" aria-hidden="true" />
+                <RadioGroupItem id={id} value={value} className="sr-only" />
+                <Icon className="size-5 shrink-0 text-brand-strong" aria-hidden="true" />
                 <span>{AROUSAL_LABELS[value]}</span>
+                {selected ? <SelectedMark className="top-1/2 right-3 -translate-y-1/2" /> : null}
               </label>
             );
           })}
         </RadioGroup>
         {arousal !== null ? (
-          <Button type="button" variant="ghost" className="rounded-full! text-[0.8125rem]" onClick={() => onArousalChange(null)} disabled={disabled}>
+          <Button
+            type="button"
+            variant="ghost"
+            className="w-fit rounded-full! text-[0.8125rem]"
+            onClick={() => onArousalChange(null)}
+            disabled={disabled}
+          >
             Hapus pilihan tenaga
           </Button>
         ) : null}
-      </fieldset>
+      </FieldSet>
     </div>
   );
 }

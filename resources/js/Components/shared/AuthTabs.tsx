@@ -1,6 +1,6 @@
 import { Link } from '@inertiajs/react';
 import { LogIn, UserPlus } from 'lucide-react';
-import { TabsList, TabsTrigger } from '@/Components/ui/tabs';
+import { NavTabsList, NavTabsTrigger } from '@/Components/ui/tabs';
 
 type AuthTabsProps = {
   active: 'masuk' | 'daftar';
@@ -18,18 +18,18 @@ const TABS = [
 export default function AuthTabs({ active }: AuthTabsProps) {
   return (
     <nav aria-label="Masuk atau daftar" className="flex justify-center">
-      <TabsList>
+      <NavTabsList>
         {TABS.map(({ key, label, href, Icon }) => (
           <li key={key}>
-            <TabsTrigger asChild active={key === active}>
+            <NavTabsTrigger asChild active={key === active}>
               <Link href={href}>
                 <Icon className="size-3.5" aria-hidden="true" />
                 {label}
               </Link>
-            </TabsTrigger>
+            </NavTabsTrigger>
           </li>
         ))}
-      </TabsList>
+      </NavTabsList>
     </nav>
   );
 }
