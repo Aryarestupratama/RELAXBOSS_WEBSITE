@@ -212,15 +212,15 @@ export default function Show({
     <AppShell title="RelaxMate" wide staggered fill>
       <Link
         href="/app/relaxmate"
-        className="mb-2 inline-flex min-h-11 shrink-0 items-center gap-2 self-start font-medium text-brand-strong lg:hidden"
+        className="mb-1 inline-flex min-h-11 shrink-0 items-center gap-2 self-start text-[0.8125rem] font-medium text-text-secondary transition-colors hover:text-text lg:hidden"
       >
         <ArrowLeft className="size-4" aria-hidden="true" />
         Semua percakapan
       </Link>
 
       {/* Tinggi dari AppShell `fill`: baris ini mengisi sisa layar, tidak ada tinggi tetap. Yang digulir hanya daftar dan riwayat pesan. */}
-      <div className="flex min-h-0 flex-1 flex-col gap-5 lg:flex-row">
-        <div data-load className="hidden min-h-0 lg:flex lg:w-85 lg:shrink-0">
+      <div className="flex min-h-0 flex-1 flex-col gap-4 lg:flex-row">
+        <div data-load className="hidden min-h-0 lg:flex lg:w-80 lg:shrink-0">
           <ConversationPanel
             conversations={conversations}
             activeId={conversation.id}
@@ -237,37 +237,37 @@ export default function Show({
         <section
           data-load
           aria-label="Percakapan dengan RelaxMate"
-          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-card"
+          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl bg-card shadow-lift"
         >
           {/* Satu kepala untuk maskot dan obrolan */}
-          <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-6 md:py-4">
+          <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-5">
             <span
               aria-hidden="true"
-              className="relative size-14 shrink-0 overflow-hidden rounded-full bg-brand-soft xl:hidden"
+              className="relative size-12 shrink-0 overflow-hidden rounded-full bg-soft-lavender xl:hidden"
             >
-              <Mascot state={mascot} className="absolute -left-2 -top-1 [--s:0.22]" />
+              <Mascot state={mascot} className="absolute -left-2 -top-1 [--s:0.19]" />
             </span>
             <div className="min-w-0">
-              <h1 className="text-lg leading-tight md:text-xl">RelaxMate</h1>
-              <p className="text-sm text-text-secondary">{conversation.label}</p>
+              <h1 className="text-base leading-tight font-bold md:text-lg">RelaxMate</h1>
+              <p className="text-[0.8125rem] text-text-secondary">{conversation.label}</p>
             </div>
           </header>
 
           <div className="flex min-h-0 flex-1 flex-col xl:flex-row">
             <div
               data-mascot-stage
-              className="hidden w-88 shrink-0 items-center justify-center overflow-hidden border-r border-border px-6 xl:flex"
+              className="hidden w-80 shrink-0 items-center justify-center overflow-hidden bg-soft-lavender px-5 xl:flex"
             >
-              <div aria-hidden="true" className="relative h-73 w-75 max-w-full">
-                <div className="absolute inset-x-2 bottom-0 h-52.5 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-brand-soft/50" />
+              <div aria-hidden="true" className="relative h-64 w-64 max-w-full">
+                <div className="absolute inset-x-2 bottom-0 h-45 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-card/50" />
                 <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
-                <Mascot state={mascot} seated entrance={entrance} className="absolute bottom-0 left-1/2 -translate-x-1/2 [--s:0.72]" />
+                <Mascot state={mascot} seated entrance={entrance} className="absolute bottom-0 left-1/2 -translate-x-1/2 [--s:0.62]" />
               </div>
             </div>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {hasCrisis ? (
-              <div id="bantuan" tabIndex={-1} className="max-h-[45%] shrink-0 overflow-y-auto p-4 outline-none md:px-6">
+              <div id="bantuan" tabIndex={-1} className="max-h-[45%] shrink-0 overflow-y-auto p-3 outline-none md:px-5">
                 <CrisisBanner />
               </div>
             ) : null}
@@ -276,16 +276,16 @@ export default function Show({
               ref={scrollRef}
               tabIndex={0}
               aria-label="Riwayat pesan"
-              className="flex flex-1 flex-col overflow-y-auto bg-neutral-soft/40 p-4 md:p-5"
+              className="flex flex-1 flex-col overflow-y-auto bg-neutral-soft/40 p-3 md:p-4"
             >
               {messages.length === 0 && !sending ? (
                 <div className="m-auto flex flex-col items-center text-center">
-                  <Mascot state={mascot} className="[--s:0.45] xl:hidden" />
-                  <p className="mt-3 max-w-xs text-lg text-text-secondary">{RELAXMATE_NEW}</p>
+                  <Mascot state={mascot} className="[--s:0.4] xl:hidden" />
+                  <p className="mt-2 max-w-xs text-sm text-text-secondary">{RELAXMATE_NEW}</p>
                 </div>
               ) : null}
 
-              <ol role="log" aria-live="polite" aria-label="Percakapan" className="flex flex-col gap-4">
+              <ol role="log" aria-live="polite" aria-label="Percakapan" className="flex flex-col gap-3">
                 {messages.map((message, index) => {
                   const suggestion = message.suggestion;
                   const speaking = message.id === speakingId;
@@ -318,7 +318,7 @@ export default function Show({
                   <li className="flex items-start motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
                     <p
                       role="status"
-                      className="flex items-center gap-3 rounded-2xl rounded-bl-md border border-border bg-card px-4 py-3 text-text-secondary shadow-card"
+                      className="flex items-center gap-3 rounded-2xl rounded-bl-md bg-card px-3.5 py-2.5 text-sm text-text-secondary shadow-card"
                     >
                       <span className="flex items-center gap-1.5" aria-hidden="true">
                         <span className="size-2 rounded-full bg-brand motion-safe:animate-pulse" />
@@ -332,14 +332,14 @@ export default function Show({
               </ol>
             </div>
 
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-3 border-t border-border p-4 md:px-6 md:py-5">
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 border-t border-border p-3 md:px-5 md:py-4">
               {(error || unanswered) && !sending ? (
                 <Alert variant="destructive">
                   <AlertDescription>
                     <p>{error ?? RELAXMATE_UNANSWERED}</p>
                     {unanswered ? (
                       <div className="mt-2">
-                        <Button variant="outline" onClick={() => send(true)}>
+                        <Button variant="outline" className="rounded-full! px-5 text-sm" onClick={() => send(true)}>
                           Coba kirim ulang
                         </Button>
                       </div>
@@ -353,7 +353,9 @@ export default function Show({
                   <AlertDescription>
                     <p>{RELAXMATE_CONSENT_NEEDED}</p>
                     <div className="mt-2">
-                      <Button onClick={() => setConsentOpen(true)}>Buka persetujuan</Button>
+                      <Button className="rounded-full! px-5 text-sm" onClick={() => setConsentOpen(true)}>
+                        Buka persetujuan
+                      </Button>
                     </div>
                   </AlertDescription>
                 </Alert>

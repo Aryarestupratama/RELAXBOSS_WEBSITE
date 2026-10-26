@@ -55,7 +55,7 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
         Pesanmu
       </label>
       <div
-        className={`flex items-end gap-2 rounded-3xl border-[1.5px] bg-neutral-soft py-1.5 pl-5 pr-1.5 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-ring ${
+        className={`flex items-end gap-2 rounded-3xl border-[1.5px] bg-neutral-soft py-1 pl-4 pr-1 transition-colors focus-within:bg-card focus-within:ring-2 focus-within:ring-ring ${
           tooLong ? 'border-destructive' : 'border-input'
         } ${disabled ? 'opacity-60' : ''}`}
       >
@@ -70,13 +70,13 @@ export default function ChatInput({ value, onChange, onSend, maxChars, disabled 
           placeholder="Tulis ceritamu di sini..."
           onChange={(event) => onChange(event.target.value)}
           onKeyDown={onKeyDown}
-          className="min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-base text-foreground outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
+          className="min-h-11 min-w-0 flex-1 resize-none bg-transparent py-2.5 text-sm text-foreground md:text-[0.9375rem] outline-none placeholder:text-text-muted disabled:cursor-not-allowed"
         />
         <Button
           onClick={onSend}
           disabled={disabled || tooLong || value.trim() === ''}
           aria-label="Kirim pesan"
-          className="rounded-full"
+          className="rounded-full! px-4 text-sm"
         >
           <Send aria-hidden="true" />
           <span className="hidden sm:inline">Kirim</span>

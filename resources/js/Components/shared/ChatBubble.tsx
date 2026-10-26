@@ -35,10 +35,10 @@ export default function ChatBubble({
       }`}
     >
       <div
-        className={`max-w-[88%] rounded-2xl px-4 py-3 md:max-w-[75%] ${
+        className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed md:max-w-[75%] md:text-[0.9375rem] ${
           mine
-            ? 'rounded-br-md bg-brand-soft text-text'
-            : 'rounded-bl-md border border-border bg-card text-card-foreground shadow-card'
+            ? 'rounded-br-md bg-soft-lavender text-text'
+            : 'rounded-bl-md bg-card text-card-foreground shadow-card'
         } ${message.pending ? 'opacity-70' : ''}`}
       >
         <span className="sr-only">{mine ? 'Kamu' : 'RelaxMate'}: </span>
@@ -49,7 +49,7 @@ export default function ChatBubble({
             message.content
           )}
         </p>
-        {message.time ? <p className={`mt-1 text-xs ${mine ? 'text-text' : 'text-text-muted'}`}>{message.time}</p> : null}
+        {message.time ? <p className={`mt-0.5 text-[0.6875rem] ${mine ? 'text-text' : 'text-text-muted'}`}>{message.time}</p> : null}
       </div>
       {children ? <div className="w-full max-w-[88%] md:max-w-[75%]">{children}</div> : null}
     </li>

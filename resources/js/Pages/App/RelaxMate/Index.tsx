@@ -68,8 +68,8 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
 
   return (
     <AppShell title="RelaxMate" wide staggered>
-      <div className="flex flex-col gap-5 lg:flex-row">
-        <div data-load className="order-2 lg:order-1 lg:w-85 lg:shrink-0">
+      <div className="flex flex-col gap-4 lg:flex-row">
+        <div data-load className="order-2 lg:order-1 lg:w-80 lg:shrink-0">
           <ConversationPanel
             conversations={conversations}
             prevUrl={prev_page_url}
@@ -78,26 +78,26 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
             onStart={start}
             startProps={startProps}
             onOpen={(href) => leaveThen(() => router.visit(href))}
-            className="lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)]"
+            className="lg:h-[clamp(28rem,calc(100dvh_-_9rem),36rem)]"
           />
         </div>
 
         <section
           data-load
-          className="order-1 flex min-w-0 flex-1 flex-col items-center justify-center rounded-xl border border-border bg-card px-6 py-10 text-center shadow-card lg:order-2 lg:h-[clamp(30rem,calc(100dvh_-_10rem),40rem)] lg:px-8"
+          className="order-1 flex min-w-0 flex-1 flex-col items-center justify-center rounded-3xl bg-card px-6 py-8 text-center shadow-lift lg:order-2 lg:h-[clamp(28rem,calc(100dvh_-_9rem),36rem)] lg:px-8"
         >
-          <div aria-hidden="true" className="relative mb-2 h-52.5 w-55 overflow-hidden md:h-73 md:w-75">
-            <div className="absolute inset-x-2 bottom-0 h-37.5 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-brand-soft/50 md:h-52.5" />
+          <div aria-hidden="true" className="relative mb-1 h-45 w-47 overflow-hidden md:h-64 md:w-64">
+            <div className="absolute inset-x-2 bottom-0 h-32 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-soft-lavender md:h-45" />
             <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
             <Mascot
               state={mascot}
               walkOutMs={MASCOT_LEAVE_MS}
-              className="absolute bottom-3 left-1/2 -translate-x-1/2 [--s:0.42] md:bottom-3.5 md:[--s:0.6]"
+              className="absolute bottom-3 left-1/2 -translate-x-1/2 [--s:0.36] md:bottom-3.5 md:[--s:0.52]"
             />
           </div>
-          <h1 className="mt-2">RelaxMate</h1>
-          <p className="mt-3 max-w-130 text-lg text-text-secondary">{RELAXMATE_INTRO}</p>
-          <StartConversationButton starting={starting} onClick={start} className="mt-6" {...startProps} />
+          <h1 className="mt-2 text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">RelaxMate</h1>
+          <p className="mt-2 max-w-md text-sm leading-relaxed text-text-secondary md:text-base">{RELAXMATE_INTRO}</p>
+          <StartConversationButton starting={starting} onClick={start} className="mt-5" {...startProps} />
         </section>
       </div>
 
