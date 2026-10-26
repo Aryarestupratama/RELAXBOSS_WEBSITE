@@ -1,30 +1,16 @@
-import { useEffect, type FormEvent, type ReactNode } from 'react';
-import { Link, useForm } from '@inertiajs/react';
-import {
-  CheckCircle,
-  CircleAlert,
-  Gauge,
-  Info,
-  ListChecks,
-  LoaderCircle,
-  Save,
-  ShieldCheck,
-  SlidersHorizontal,
-  FileText,
-  type LucideIcon,
-} from 'lucide-react';
+import { useEffect, type FormEvent } from 'react';
+import { useForm } from '@inertiajs/react';
+import { CheckCircle, CircleAlert, FileText, Gauge, Info, ListChecks, ShieldCheck, SlidersHorizontal } from 'lucide-react';
 import AssessmentOptionsEditor from '@/Components/shared/AssessmentOptionsEditor';
 import AssessmentQuestionsEditor from '@/Components/shared/AssessmentQuestionsEditor';
 import AssessmentRulesEditor from '@/Components/shared/AssessmentRulesEditor';
 import FormField from '@/Components/shared/FormField';
+import FormSection, { FormSaveBar, FormSectionNav } from '@/Components/shared/FormSection';
 import PageHeader from '@/Components/shared/PageHeader';
 import SwitchField from '@/Components/shared/SwitchField';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
-import { Button } from '@/Components/ui/button';
-import { Card, CardContent, CardDescription, CardHeader } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
-import { Separator } from '@/Components/ui/separator';
 import { Textarea } from '@/Components/ui/textarea';
 import {
   STATUS_TEXT,
@@ -42,54 +28,7 @@ type AssessmentFormProps = {
   status: string | null;
 };
 
-type SectionTone = 'lavender' | 'sky' | 'mint' | 'peach';
-
-const ICON_TONE: Record<SectionTone, string> = {
-  lavender: 'bg-soft-lavender',
-  sky: 'bg-soft-sky',
-  mint: 'bg-soft-mint',
-  peach: 'bg-soft-peach',
-};
-
-type SectionProps = {
-  id: string;
-  title: string;
-  intro?: string;
-  icon: LucideIcon;
-  tone: SectionTone;
-  /** Penanda kecil di kanan judul (mis. jumlah butir). */
-  aside?: ReactNode;
-  children: ReactNode;
-};
-
-/** Satu bagian formulir = satu `Card`: kepala berikon, `Separator`, lalu isi. */
-function Section({ id, title, intro, icon: Icon, tone, aside, children }: SectionProps) {
-  return (
-    <section id={id} aria-labelledby={`${id}-title`} className="scroll-mt-6">
-      <Card className="gap-0">
-        <CardHeader className="flex-row items-start gap-3 p-5 md:p-6">
-          <span
-            className={cn('grid size-11 shrink-0 place-items-center rounded-full text-text', ICON_TONE[tone])}
-            aria-hidden="true"
-          >
-            <Icon className="size-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h2 id={`${id}-title`} className="text-lg leading-snug font-bold tracking-tight">
-              {title}
-            </h2>
-            {intro ? <CardDescription className="mt-0.5">{intro}</CardDescription> : null}
-          </div>
-          {aside}
-        </CardHeader>
-        <Separator />
-        <CardContent className="space-y-5 p-5 md:p-6">{children}</CardContent>
-      </Card>
-    </section>
-  );
-}
-
-const SECTION_LINKS: { id: string; label: string; icon: LucideIcon }[] = [
+const SECTION_LINKS = [
   { id: 'sec-info', label: 'Info Asesmen', icon: FileText },
   { id: 'sec-options', label: 'Skala jawaban', icon: SlidersHorizontal },
   { id: 'sec-questions', label: 'Butir', icon: ListChecks },
@@ -185,27 +124,10 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
       ) : null}
 
       <div data-load className="grid gap-6 lg:grid-cols-[13rem_minmax(0,1fr)] lg:items-start">
-        <nav aria-label="Bagian formulir" className="hidden lg:sticky lg:top-6 lg:block">
-          <Card className="gap-1 p-2">
-            <p className="px-3 pt-2 pb-1 text-xs font-semibold tracking-wide text-text-secondary">Di halaman ini</p>
-            <ul>
-              {SECTION_LINKS.map(({ id, label, icon: Icon }) => (
-                <li key={id}>
-                  <a
-                    href={`#${id}`}
-                    className="flex min-h-11 items-center gap-2.5 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-neutral-soft"
-                  >
-                    <Icon className="size-4 text-text-secondary" aria-hidden="true" />
-                    {label}
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </Card>
-        </nav>
+        <FormSectionNav links={SECTION_LINKS} />
 
         <form onSubmit={submit} noValidate className="min-w-0 space-y-6">
-          <Section id="sec-info" title="Info Asesmen" icon={FileText} tone="lavender">
+          <FormSection id="sec-info" title="Info Asesmen" icon={FileText} tone="lavender">
             {isCreate ? (
               <FormField
                 id="slug"
@@ -290,9 +212,9 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
               onChange={(checked) => form.setData('is_active', checked)}
               error={errors.is_active}
             />
-          </Section>
+          </FormSection>
 
-          <Section
+          <FormSection
             id="sec-options"
             title="Skala jawaban"
             intro="Satu skala dipakai untuk semua butir. Nilai terendah dan tertinggi dipakai untuk membalik butir terbalik."
@@ -326,9 +248,9 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
                 />
               )}
             </FormField>
-          </Section>
+          </FormSection>
 
-          <Section
+          <FormSection
             id="sec-questions"
             title="Butir"
             intro="Setiap butir masuk ke satu subskala. Subskala yang sama ditulis persis sama."
@@ -347,9 +269,9 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
               errors={errors}
               onChange={(questions) => form.setData('questions', questions)}
             />
-          </Section>
+          </FormSection>
 
-          <Section
+          <FormSection
             id="sec-rules"
             title="Aturan skor"
             intro="Rentang skor per subskala bersifat inklusif, tidak boleh tumpang tindih, dan harus menutup seluruh kemungkinan skor."
@@ -370,9 +292,9 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
               errors={errors}
               onChange={(rules) => form.setData('rules', rules)}
             />
-          </Section>
+          </FormSection>
 
-          <Section
+          <FormSection
             id="sec-source"
             title="Sumber dan validasi"
             intro="Isi hanya yang sudah terkonfirmasi. Status tervalidasi tampil untuk pengguna bila tanggal validasi terisi."
@@ -428,32 +350,15 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
             <FormField id="validated_at" label="Tanggal validasi (opsional)" error={errors.validated_at}>
               {(control) => <Input {...control} type="date" value={data.validated_at} onChange={text('validated_at')} />}
             </FormField>
-          </Section>
+          </FormSection>
 
-          {/* Bar simpan menempel di bawah; di HP naik di atas bar tab AdminShell. */}
-          <div className="sticky bottom-20 z-30 md:bottom-4">
-            <Card className="flex-row flex-wrap items-center justify-between gap-3 rounded-2xl bg-card/90 px-4 py-3 shadow-popover backdrop-blur">
-              <p
-                aria-live="polite"
-                className={cn('text-sm font-medium', errorCount > 0 ? 'text-destructive' : 'text-text-secondary')}
-              >
-                {statusText}
-              </p>
-              <div className="flex items-center gap-2">
-                <Button type="button" variant="ghost" className="rounded-full! px-5 text-sm" asChild>
-                  <Link href="/admin/asesmen">Batal</Link>
-                </Button>
-                <Button type="submit" disabled={form.processing} className="rounded-full! px-6 text-sm">
-                  {form.processing ? (
-                    <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
-                  ) : (
-                    <Save aria-hidden="true" />
-                  )}
-                  {form.processing ? 'Menyimpan...' : isCreate ? 'Buat Asesmen' : 'Simpan perubahan'}
-                </Button>
-              </div>
-            </Card>
-          </div>
+          <FormSaveBar
+            statusText={statusText}
+            hasErrors={errorCount > 0}
+            processing={form.processing}
+            cancelHref="/admin/asesmen"
+            submitLabel={isCreate ? 'Buat Asesmen' : 'Simpan perubahan'}
+          />
         </form>
       </div>
     </>
