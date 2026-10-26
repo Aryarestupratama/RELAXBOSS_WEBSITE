@@ -1,8 +1,12 @@
-import { Link } from '@inertiajs/react';
+import { CalendarDays, ClipboardList, Info, Lock } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
 import MonitoringHeader from '@/Components/shared/MonitoringHeader';
 import MonitoringItem from '@/Components/shared/MonitoringItem';
-import { Button } from '@/Components/ui/button';
+import MonitoringMeta from '@/Components/shared/MonitoringMeta';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
+import { Card } from '@/Components/ui/card';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { formatDate, type SubScaleResult } from '@/lib/adminMonitoring';
 
 type AsesmenShowProps = {
@@ -15,76 +19,96 @@ type AsesmenShowProps = {
   };
 };
 
+const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-semibold tracking-normal whitespace-normal text-text';
+
 /**
  * SCR-022, detail hasil Asesmen: hasil per subskala dan Rekomendasi AI. Tanpa jawaban per butir dan tanpa
  * jawaban PFA (RULE-042). Membuka halaman ini sudah tercatat di server.
  */
 export default function AsesmenShow({ attempt }: AsesmenShowProps) {
   return (
-    <AdminShell title={`Hasil ${attempt.pseudo_id}`}>
-      <MonitoringHeader current="asesmen" />
+    <AdminShell title={`Hasil ${attempt.pseudo_id}`} staggered>
+      <MonitoringHeader current="asesmen" back={{ href: '/admin/monitoring/asesmen', label: 'Kembali ke daftar' }} />
 
-      <div className="mt-6 space-y-4">
-        <Button asChild variant="ghost">
-          <Link href="/admin/monitoring/asesmen">Kembali ke daftar</Link>
-        </Button>
+      <div className="flex flex-col gap-6">
+        <MonitoringMeta
+          title={
+            <>
+              Hasil <span className="font-mono">{attempt.pseudo_id}</span>
+            </>
+          }
+          note="Pembukaan ini sudah dicatat."
+          items={[
+            { icon: ClipboardList, label: 'Asesmen', value: attempt.assessment },
+            { icon: CalendarDays, label: 'Tanggal', value: formatDate(attempt.date) },
+          ]}
+        />
 
-        <h2>
-          Hasil <span className="font-mono">{attempt.pseudo_id}</span>
-        </h2>
-        <dl className="grid gap-x-6 gap-y-1 text-text-secondary sm:grid-cols-2">
-          <div className="flex gap-2">
-            <dt className="font-medium">Asesmen:</dt>
-            <dd>{attempt.assessment}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="font-medium">Tanggal:</dt>
-            <dd>{formatDate(attempt.date)}</dd>
-          </div>
-        </dl>
-        <p className="text-sm text-text-secondary">
-          Pembukaan ini sudah dicatat. Jawaban per butir dan jawaban PFA tidak ditampilkan untuk admin.
-        </p>
-
-        <div className="overflow-x-auto rounded-xl bg-card shadow-card">
-          <table className="w-full min-w-[32rem] text-left">
-            <caption className="sr-only">Hasil per subskala</caption>
-            <thead className="bg-neutral-soft text-sm text-text-secondary">
-              <tr>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Subskala
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Skor
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Tingkat
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Interpretasi
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {attempt.sub_scales.map((scale) => (
-                <tr key={scale.name} className="border-b border-border last:border-b-0">
-                  <th scope="row" className="px-4 py-3 font-medium">
-                    {scale.name}
-                  </th>
-                  <td className="px-4 py-3">{scale.score}</td>
-                  <td className="px-4 py-3">{scale.severity}</td>
-                  <td className="px-4 py-3">{scale.interpretation}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+        <div data-load>
+          <Alert
+            role="note"
+            className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
+          >
+            <Info className="text-brand-strong!" aria-hidden="true" />
+            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
+              Jawaban per butir dan jawaban PFA tidak ditampilkan untuk admin.
+            </AlertDescription>
+          </Alert>
         </div>
 
-        <ul>
-          <MonitoringItem title="Rekomendasi AI">
-            {attempt.recommendation ?? 'Belum ada Rekomendasi AI untuk hasil ini.'}
-          </MonitoringItem>
-        </ul>
+        <section aria-labelledby="hasil-subskala" data-load className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="hasil-subskala" className="text-lg leading-snug font-bold tracking-tight">
+              Hasil per subskala
+            </h2>
+            <Badge variant="outline">{attempt.sub_scales.length} subskala</Badge>
+          </div>
+
+          <Card className="gap-0 p-3">
+            <Table className="min-w-[32rem]">
+              <TableCaption className="sr-only">Hasil per subskala</TableCaption>
+              <TableHeader>
+                <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                  <TableHead>Subskala</TableHead>
+                  <TableHead>Skor</TableHead>
+                  <TableHead>Tingkat</TableHead>
+                  <TableHead>Interpretasi</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {attempt.sub_scales.map((scale) => (
+                  <TableRow key={scale.name}>
+                    <TableHead scope="row" className={ROW_HEAD}>
+                      {scale.name}
+                    </TableHead>
+                    <TableCell className="font-semibold tabular-nums">{scale.score}</TableCell>
+                    <TableCell>
+                      <Badge variant="sky">{scale.severity}</Badge>
+                    </TableCell>
+                    <TableCell className="min-w-48 text-text-secondary">{scale.interpretation}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </Card>
+        </section>
+
+        <section aria-labelledby="rekomendasi-ai" data-load className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="rekomendasi-ai" className="text-lg leading-snug font-bold tracking-tight">
+              Rekomendasi AI
+            </h2>
+            <Badge variant="outline">
+              <Lock aria-hidden="true" />
+              Hanya baca
+            </Badge>
+          </div>
+          <ul>
+            <MonitoringItem title="Rekomendasi AI" kind="ai">
+              {attempt.recommendation ?? 'Belum ada Rekomendasi AI untuk hasil ini.'}
+            </MonitoringItem>
+          </ul>
+        </section>
       </div>
     </AdminShell>
   );

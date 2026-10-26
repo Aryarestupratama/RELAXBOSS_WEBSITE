@@ -1,8 +1,9 @@
-import { Link } from '@inertiajs/react';
+import { CalendarDays, Lock, MessagesSquare, ShieldAlert, Sparkles, Tag, TriangleAlert } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
 import MonitoringHeader from '@/Components/shared/MonitoringHeader';
 import MonitoringItem from '@/Components/shared/MonitoringItem';
-import { Button } from '@/Components/ui/button';
+import MonitoringMeta from '@/Components/shared/MonitoringMeta';
+import { Badge } from '@/Components/ui/badge';
 import { formatDate, type MonitoringMessage } from '@/lib/adminMonitoring';
 
 type ChatShowProps = {
@@ -16,70 +17,74 @@ type ChatShowProps = {
   messages: MonitoringMessage[];
 };
 
-const badgeBase = 'inline-flex items-center rounded-md px-2 py-1 text-sm font-medium';
-
 /** SCR-022, detail Percakapan: isi tanpa identitas, tanpa jam. Membuka halaman ini sudah tercatat di server. */
 export default function ChatShow({ conversation, messages }: ChatShowProps) {
   return (
-    <AdminShell title={`Percakapan ${conversation.pseudo_id}`}>
-      <MonitoringHeader current="chat" />
+    <AdminShell title={`Percakapan ${conversation.pseudo_id}`} staggered>
+      <MonitoringHeader current="chat" back={{ href: '/admin/monitoring/chat', label: 'Kembali ke daftar' }} />
 
-      <div className="mt-6 space-y-4">
-        <Button asChild variant="ghost">
-          <Link href="/admin/monitoring/chat">Kembali ke daftar</Link>
-        </Button>
+      <div className="flex flex-col gap-6">
+        <MonitoringMeta
+          title={
+            <>
+              Percakapan <span className="font-mono">{conversation.pseudo_id}</span>
+            </>
+          }
+          note="Pembukaan ini sudah dicatat."
+          items={[
+            { icon: CalendarDays, label: 'Tanggal', value: formatDate(conversation.date) },
+            { icon: MessagesSquare, label: 'Giliran', value: conversation.total_turns },
+            { icon: Tag, label: 'Intent awal', value: conversation.initial_intent ?? '-' },
+            { icon: ShieldAlert, label: 'Krisis', value: conversation.has_crisis ? 'Ya' : 'Tidak' },
+          ]}
+        />
 
-        <h2>
-          Percakapan <span className="font-mono">{conversation.pseudo_id}</span>
-        </h2>
-        <dl className="grid gap-x-6 gap-y-1 text-text-secondary sm:grid-cols-2">
-          <div className="flex gap-2">
-            <dt className="font-medium">Tanggal:</dt>
-            <dd>{formatDate(conversation.date)}</dd>
+        <section aria-labelledby="isi-percakapan" data-load className="flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 id="isi-percakapan" className="text-lg leading-snug font-bold tracking-tight">
+              Isi Percakapan
+            </h2>
+            <Badge variant="outline">
+              <Lock aria-hidden="true" />
+              Hanya baca
+            </Badge>
           </div>
-          <div className="flex gap-2">
-            <dt className="font-medium">Giliran:</dt>
-            <dd>{conversation.total_turns}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="font-medium">Intent awal:</dt>
-            <dd>{conversation.initial_intent ?? '-'}</dd>
-          </div>
-          <div className="flex gap-2">
-            <dt className="font-medium">Krisis:</dt>
-            <dd>{conversation.has_crisis ? 'Ya' : 'Tidak'}</dd>
-          </div>
-        </dl>
-        <p className="text-sm text-text-secondary">Pembukaan ini sudah dicatat.</p>
 
-        <ol className="space-y-3">
-          {messages.map((message) => (
-            <MonitoringItem
-              key={message.id}
-              title={message.role === 'user' ? 'Pengguna' : 'RelaxMate'}
-              badges={
-                <>
-                  {message.is_crisis ? (
-                    <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Krisis</span>
-                  ) : null}
-                  {message.intent ? (
-                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>{message.intent}</span>
-                  ) : null}
-                  {message.confidence !== null ? (
-                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>
-                      Keyakinan {message.confidence}%{message.low_confidence ? ' (rendah)' : ''}
-                    </span>
-                  ) : null}
-                  {message.suggestion ? (
-                    <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>{message.suggestion}</span>
-                  ) : null}
-                </>
-              }
-            >
-              {message.content}
-            </MonitoringItem>
-          ))}
-        </ol>
+          <ol className="flex flex-col gap-3">
+            {messages.map((message) => (
+              <MonitoringItem
+                key={message.id}
+                title={message.role === 'user' ? 'Pengguna' : 'RelaxMate'}
+                kind={message.role === 'user' ? 'user' : 'assistant'}
+                crisis={message.is_crisis}
+                badges={
+                  <>
+                    {message.is_crisis ? (
+                      <Badge variant="crisis">
+                        <TriangleAlert aria-hidden="true" />
+                        Krisis
+                      </Badge>
+                    ) : null}
+                    {message.intent ? <Badge variant="outline">{message.intent}</Badge> : null}
+                    {message.confidence !== null ? (
+                      <Badge variant={message.low_confidence ? 'peach' : 'secondary'}>
+                        Keyakinan {message.confidence}%{message.low_confidence ? ' (rendah)' : ''}
+                      </Badge>
+                    ) : null}
+                    {message.suggestion ? (
+                      <Badge variant="mint">
+                        <Sparkles aria-hidden="true" />
+                        {message.suggestion}
+                      </Badge>
+                    ) : null}
+                  </>
+                }
+              >
+                {message.content}
+              </MonitoringItem>
+            ))}
+          </ol>
+        </section>
       </div>
     </AdminShell>
   );

@@ -1,46 +1,56 @@
 import { Link } from '@inertiajs/react';
+import { ClipboardList, Eye, MessagesSquare } from 'lucide-react';
+import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { NavTabsList, NavTabsTrigger } from '@/Components/ui/tabs';
 
 type MonitoringHeaderProps = {
   current: 'chat' | 'asesmen';
+  /** Tautan kembali ke daftar (halaman detail). */
+  back?: { href: string; label: string };
 };
 
 const TABS = [
-  { key: 'chat', label: 'Chat', href: '/admin/monitoring/chat' },
-  { key: 'asesmen', label: 'Asesmen', href: '/admin/monitoring/asesmen' },
+  { key: 'chat', label: 'Chat', href: '/admin/monitoring/chat', Icon: MessagesSquare },
+  { key: 'asesmen', label: 'Asesmen', href: '/admin/monitoring/asesmen', Icon: ClipboardList },
 ] as const;
 
-/** Judul, pengantar, banner tanpa identitas, dan tab Monitoring (SCR-022). */
-export default function MonitoringHeader({ current }: MonitoringHeaderProps) {
+/** Judul, pengantar, catatan tanpa identitas, dan tab Monitoring (SCR-022). Satu-satunya `h1` halaman. */
+export default function MonitoringHeader({ current, back }: MonitoringHeaderProps) {
   return (
     <>
-      <h1>Monitoring</h1>
-      <p className="mt-2 max-w-prose text-text-secondary">
-        Tinjauan kualitas, hanya baca. Daftar hanya memuat ID semu, tanggal, dan penanda. Isi baru terlihat setelah
-        kamu membukanya, dan setiap pembukaan dicatat.
-      </p>
+      <PageHeader
+        title="Monitoring"
+        description="Tinjauan kualitas, hanya baca. Daftar hanya memuat ID semu, tanggal, dan penanda. Isi baru terlihat setelah kamu membukanya, dan setiap pembukaan dicatat."
+        back={back}
+      />
 
-      <Alert className="mt-6">
-        <AlertDescription>Isi ditampilkan tanpa identitas. Jangan mencoba mengenali pemiliknya.</AlertDescription>
-      </Alert>
+      <div data-load className="mb-6 flex flex-col gap-4">
+        <Alert
+          role="note"
+          className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
+        >
+          <Eye className="text-brand-strong!" aria-hidden="true" />
+          <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
+            Isi ditampilkan tanpa identitas. Jangan mencoba mengenali pemiliknya.
+          </AlertDescription>
+        </Alert>
 
-      <nav aria-label="Jenis tinjauan" className="mt-6 flex gap-1 border-b border-border">
-        {TABS.map(({ key, label, href }) => {
-          const active = key === current;
-          return (
-            <Link
-              key={key}
-              href={href}
-              aria-current={active ? 'page' : undefined}
-              className={`inline-flex min-h-11 items-center border-b-2 px-4 transition-colors hover:text-brand-strong ${
-                active ? 'border-brand-strong font-medium text-brand-strong' : 'border-transparent text-text-secondary'
-              }`}
-            >
-              {label}
-            </Link>
-          );
-        })}
-      </nav>
+        <nav aria-label="Jenis tinjauan">
+          <NavTabsList>
+            {TABS.map(({ key, label, href, Icon }) => (
+              <li key={key}>
+                <NavTabsTrigger asChild active={key === current}>
+                  <Link href={href}>
+                    <Icon className="size-3.5" aria-hidden="true" />
+                    {label}
+                  </Link>
+                </NavTabsTrigger>
+              </li>
+            ))}
+          </NavTabsList>
+        </nav>
+      </div>
     </>
   );
 }
