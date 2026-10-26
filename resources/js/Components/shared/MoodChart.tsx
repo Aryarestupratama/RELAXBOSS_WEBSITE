@@ -164,25 +164,27 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
       <figcaption className="mt-1 text-xs text-text-secondary">
         Skala 1 ({MOOD_LABELS[1]}) sampai 5 ({MOOD_LABELS[5]}). Satu titik per hari adalah rata-rata catatanmu.
       </figcaption>
-      <table className="sr-only">
-        <caption>Rata-rata mood per hari, {range} hari terakhir</caption>
-        <thead>
-          <tr>
-            <th scope="col">Tanggal</th>
-            <th scope="col">Rata-rata mood (1 sampai 5)</th>
-            <th scope="col">Jumlah catatan</th>
-          </tr>
-        </thead>
-        <tbody>
-          {visible.map((day) => (
-            <tr key={day.date}>
-              <th scope="row">{day.label}</th>
-              <td>{day.average === null ? 'Tidak ada catatan' : formatAverage(day.average)}</td>
-              <td>{day.entries.length}</td>
+      <div className="sr-only">
+        <table>
+          <caption>Rata-rata mood per hari, {range} hari terakhir</caption>
+          <thead>
+            <tr>
+              <th scope="col">Tanggal</th>
+              <th scope="col">Rata-rata mood (1 sampai 5)</th>
+              <th scope="col">Jumlah catatan</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {visible.map((day) => (
+              <tr key={day.date}>
+                <th scope="row">{day.label}</th>
+                <td>{day.average === null ? 'Tidak ada catatan' : formatAverage(day.average)}</td>
+                <td>{day.entries.length}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }
@@ -239,23 +241,25 @@ export function MoodDayChart({ label, entries }: DayChartProps) {
       <figcaption className="mt-1 text-xs text-text-secondary">
         Semua catatan {label} sesuai jam (WIB). Skala 1 sampai 5.
       </figcaption>
-      <table className="sr-only">
-        <caption>Catatan mood {label}</caption>
-        <thead>
-          <tr>
-            <th scope="col">Jam</th>
-            <th scope="col">Mood</th>
-          </tr>
-        </thead>
-        <tbody>
-          {entries.map((entry) => (
-            <tr key={entry.id}>
-              <th scope="row">{entry.time}</th>
-              <td>{`${entry.mood_label} (${entry.mood})`}</td>
+      <div className="sr-only">
+        <table>
+          <caption>Catatan mood {label}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Jam</th>
+              <th scope="col">Mood</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {entries.map((entry) => (
+              <tr key={entry.id}>
+                <th scope="row">{entry.time}</th>
+                <td>{`${entry.mood_label} (${entry.mood})`}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </figure>
   );
 }

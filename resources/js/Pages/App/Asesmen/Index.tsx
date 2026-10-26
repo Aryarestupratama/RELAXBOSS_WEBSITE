@@ -64,19 +64,9 @@ export default function Index({ assessments }: IndexProps) {
                   href={`/app/asesmen/${assessment.slug}`}
                   data-lift
                   data-press
-                  className={`group relative flex h-full min-h-44 flex-col rounded-3xl p-4 pb-14 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover ${TONES[index % TONES.length]}`}
+                  className={`group relative flex h-full min-h-40 flex-col rounded-3xl p-5 pb-14 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover ${TONES[index % TONES.length]}`}
                 >
-                  <span className="grid size-12 place-items-center rounded-full bg-card/60" aria-hidden="true">
-                    <img
-                      src="/images/landing/asesmen-checklist.webp"
-                      width={48}
-                      height={48}
-                      alt=""
-                      data-tilt="-6"
-                      className="size-8 object-contain"
-                    />
-                  </span>
-                  <span className="mt-3 block text-base leading-snug font-bold">{assessment.name}</span>
+                  <span className="block text-base leading-snug font-bold">{assessment.name}</span>
                   <span className="mt-1 line-clamp-2 block text-[0.8125rem] leading-relaxed text-text-secondary">
                     {assessment.description}
                   </span>

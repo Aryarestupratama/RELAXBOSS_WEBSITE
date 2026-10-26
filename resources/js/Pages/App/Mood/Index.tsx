@@ -142,9 +142,8 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
         </Alert>
       ) : null}
 
-      <div className="mt-4 grid items-start gap-4 lg:grid-cols-12">
-        <div className="space-y-4 lg:col-span-5">
-          <section aria-labelledby="mood-form-title" data-load className={cardClass}>
+      <div className="mt-4 grid gap-4 lg:grid-cols-7">
+        <section aria-labelledby="mood-form-title" data-load className={`${cardClass} lg:col-span-4`}>
             <h2 id="mood-form-title" className="text-base font-semibold">
               Catat mood
             </h2>
@@ -212,41 +211,61 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                 </Button>
               </form>
             )}
-          </section>
+        </section>
 
-          <section aria-labelledby="mood-today-title" data-load className={cardClass}>
-            <h2 id="mood-today-title" className="text-base font-semibold">
-              Hari ini
-            </h2>
-            <div className="mt-3">
-              {today.length === 0 ? (
-                <p className="text-sm text-text-secondary">Belum ada catatan hari ini.</p>
-              ) : (
-                <EntryList entries={today} />
-              )}
-            </div>
-          </section>
-        </div>
+        <section aria-labelledby="mood-today-title" data-load className={`${cardClass} lg:col-span-3`}>
+          <h2 id="mood-today-title" className="text-base font-semibold">
+            Hari ini
+          </h2>
+          <div className="mt-3">
+            {today.length === 0 ? (
+              <p className="text-sm text-text-secondary">Belum ada catatan hari ini.</p>
+            ) : (
+              <EntryList entries={today} />
+            )}
+          </div>
+        </section>
 
-        <div className="space-y-4 lg:col-span-7">
-          <section aria-labelledby="mood-chart-title" data-load className={cardClass}>
+        <section aria-labelledby="mood-chart-title" data-load className={`${cardClass} lg:col-span-7`}>
             <div className="flex flex-wrap items-center justify-between gap-3">
               <h2 id="mood-chart-title" className="text-base font-semibold">
                 Polamu
               </h2>
-              <div role="group" aria-label="Rentang grafik" className="flex gap-1.5">
-                {([7, 30] as const).map((value) => (
-                  <Button
-                    key={value}
-                    type="button"
-                    variant={range === value ? 'default' : 'outline'}
-                    className={pillButton}
-                    aria-pressed={range === value}
-                    onClick={() => setRange(value)}
-                  >
-                    {value} hari
-                  </Button>
-                ))}
+              <div className="flex flex-wrap items-center gap-2">
+                {daysWithEntries.length > 0 ? (
+                  <>
+                    <label htmlFor="mood-day-select" className="sr-only">
+                      Lihat catatan satu hari
+                    </label>
+                    <select
+                      id="mood-day-select"
+                      value={selectedDate ?? ''}
+                      onChange={(event) => setSelectedDate(event.target.value === '' ? null : event.target.value)}
+                      className="min-h-9 rounded-full border-[1.5px] border-input bg-card px-3 text-sm text-foreground"
+                    >
+                      <option value="">Lihat catatan satu hari</option>
+                      {daysWithEntries.map((day) => (
+                        <option key={day.date} value={day.date}>
+                          {day.label} ({day.entries.length} catatan)
+                        </option>
+                      ))}
+                    </select>
+                  </>
+                ) : null}
+                <div role="group" aria-label="Rentang grafik" className="flex gap-1.5">
+                  {([7, 30] as const).map((value) => (
+                    <Button
+                      key={value}
+                      type="button"
+                      variant={range === value ? 'default' : 'outline'}
+                      className={pillButton}
+                      aria-pressed={range === value}
+                      onClick={() => setRange(value)}
+                    >
+                      {value} hari
+                    </Button>
+                  ))}
+                </div>
               </div>
             </div>
 
@@ -267,43 +286,20 @@ export default function Index({ today, limit, remaining, days, note_max_chars, s
                 </p>
               </div>
             )}
-          </section>
 
-          {daysWithEntries.length > 0 ? (
-            <section aria-labelledby="mood-day-title" data-load className={cardClass}>
-              <h2 id="mood-day-title" className="text-base font-semibold">
-                Lihat catatan satu hari
-              </h2>
-              <select
-                id="mood-day-select"
-                aria-labelledby="mood-day-title"
-                value={selectedDate ?? ''}
-                onChange={(event) => setSelectedDate(event.target.value === '' ? null : event.target.value)}
-                className="mt-3 block min-h-11 w-full rounded-xl border-[1.5px] border-input bg-card px-3 text-sm text-foreground sm:max-w-xs"
-              >
-                <option value="">Pilih hari</option>
-                {daysWithEntries.map((day) => (
-                  <option key={day.date} value={day.date}>
-                    {day.label} ({day.entries.length} catatan)
-                  </option>
-                ))}
-              </select>
-
-              {selectedDay ? (
-                <div className="mt-4 space-y-3 border-t border-border pt-4">
-                  <h3 ref={dayHeading} tabIndex={-1} className="text-[0.9375rem] font-semibold outline-none">
-                    Catatan {selectedDay.label}
-                  </h3>
-                  <MoodDayChart label={selectedDay.label} entries={selectedDay.entries} />
-                  <EntryList entries={selectedDay.entries} />
-                  <Button type="button" variant="outline" className={pillButton} onClick={() => setSelectedDate(null)}>
-                    Kembali ke grafik
-                  </Button>
-                </div>
-              ) : null}
-            </section>
+          {selectedDay ? (
+            <div className="mt-4 space-y-3 border-t border-border pt-4">
+              <h3 ref={dayHeading} tabIndex={-1} className="text-[0.9375rem] font-semibold outline-none">
+                Catatan {selectedDay.label}
+              </h3>
+              <MoodDayChart label={selectedDay.label} entries={selectedDay.entries} />
+              <EntryList entries={selectedDay.entries} />
+              <Button type="button" variant="outline" className={pillButton} onClick={() => setSelectedDate(null)}>
+                Tutup catatan hari
+              </Button>
+            </div>
           ) : null}
-        </div>
+        </section>
       </div>
     </AppShell>
   );

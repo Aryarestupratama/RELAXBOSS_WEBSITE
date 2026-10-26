@@ -140,17 +140,8 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
                 href={`/app/riwayat/${last_attempt.id}`}
                 data-lift
                 data-press
-                className={`${cardClass} group mt-1 flex items-center gap-3 p-3 transition-shadow duration-300 hover:shadow-lift-hover`}
+                className={`${cardClass} group mt-1 flex items-center gap-3 px-4 py-3 transition-shadow duration-300 hover:shadow-lift-hover`}
               >
-                <span className="grid size-14 shrink-0 place-items-center rounded-xl bg-soft-peach" aria-hidden="true">
-                  <img
-                    src="/images/landing/asesmen-checklist.webp"
-                    width={56}
-                    height={56}
-                    alt=""
-                    className="size-10 object-contain"
-                  />
-                </span>
                 <span className="min-w-0 flex-1">
                   <span className="block text-[0.9375rem] leading-snug font-semibold">{last_attempt.assessment_name}</span>
                   <span className="block text-[0.8125rem] text-text-secondary">{last_attempt.completed_at}</span>

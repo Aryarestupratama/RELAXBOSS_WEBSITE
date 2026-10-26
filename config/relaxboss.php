@@ -145,6 +145,21 @@ return [
     // Kosong sampai OQ-2 terjawab (RULE-049).
     'umb' => '',
 
+    // Klaim validasi Asesmen di halaman Publik /asesmen (RULE-049). Isi hanya yang sudah terkonfirmasi;
+    // kosongkan array untuk menyembunyikan seluruh bagian.
+    'assessment_validation' => [
+        [
+            'icon' => 'graduation-cap',
+            'title' => 'Dibantu psikologi Universitas Mercu Buana',
+            'text' => 'Asesmen divalidasi dengan bantuan pihak psikologi Universitas Mercu Buana.',
+        ],
+        [
+            'icon' => 'shield-check',
+            'title' => 'Divalidasi psikolog berlisensi',
+            'text' => 'Asesmen juga divalidasi oleh psikolog berlisensi.',
+        ],
+    ],
+
     // Cerita di halaman Tentang (SCR-004). Klaim publik (RULE-049): isi hanya yang sudah terkonfirmasi.
     // Kosongkan sebuah bagian (atau seluruh blok) untuk menyembunyikannya. Jabatan tanpa nama pribadi;
     // tambahkan nama hanya dengan izin yang bersangkutan.

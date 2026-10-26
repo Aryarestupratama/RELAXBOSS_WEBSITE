@@ -81,6 +81,23 @@
                 </ul>
             @endif
 
+            {{-- Validasi: hanya tampil bila config terisi (RULE-049) --}}
+            @if (count($validation) > 0)
+                <ul data-reveal class="mx-auto mt-10 grid max-w-3xl gap-4 sm:grid-cols-2" aria-label="Validasi asesmen">
+                    @foreach ($validation as $item)
+                        <li class="flex items-start gap-3 rounded-2xl p-4 text-text {{ $tones[$loop->index % 4] }}">
+                            <span class="grid size-10 shrink-0 place-items-center rounded-full bg-card text-primary" aria-hidden="true">
+                                <x-icon :name="$item['icon']" class="size-5" />
+                            </span>
+                            <div>
+                                <p class="text-sm font-semibold">{{ $item['title'] }}</p>
+                                <p class="mt-1 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
+                            </div>
+                        </li>
+                    @endforeach
+                </ul>
+            @endif
+
             {{-- 3. Catatan: teks biasa dengan ikon "i", bukan kartu --}}
             <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
                 <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />

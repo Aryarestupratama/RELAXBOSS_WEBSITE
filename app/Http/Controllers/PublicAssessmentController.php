@@ -24,7 +24,10 @@ class PublicAssessmentController extends Controller
             ->get()
             ->map(fn (Assessment $assessment): array => $presenter->listItem($assessment));
 
-        return view('public.asesmen-index', ['assessments' => $assessments]);
+        return view('public.asesmen-index', [
+            'assessments' => $assessments,
+            'validation' => (array) config('relaxboss.assessment_validation', []),
+        ]);
     }
 
     public function show(string $slug, PublicAssessmentPresenter $presenter): View
