@@ -1,6 +1,10 @@
-import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react';
-import CheckboxField from '@/Components/shared/CheckboxField';
+import { useState } from 'react';
+import { ArrowDown, ArrowUp, CircleAlert, Plus, Trash2 } from 'lucide-react';
+import ConfirmRemoveDialog from '@/Components/shared/ConfirmRemoveDialog';
 import FormField from '@/Components/shared/FormField';
+import SwitchField from '@/Components/shared/SwitchField';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
@@ -14,6 +18,8 @@ type AssessmentQuestionsEditorProps = {
   onChange: (questions: QuestionRow[]) => void;
 };
 
+const ICON_BUTTON = 'rounded-full! hover:bg-card!';
+
 /** Butir pertanyaan: teks, subskala, dan penanda terbalik. Urutan di daftar = urutan tampil. */
 export default function AssessmentQuestionsEditor({
   questions,
@@ -22,6 +28,8 @@ export default function AssessmentQuestionsEditor({
   errors,
   onChange,
 }: AssessmentQuestionsEditorProps) {
+  const [pending, setPending] = useState<number | null>(null);
+
   const update = (index: number, patch: Partial<QuestionRow>) => {
     onChange(questions.map((question, i) => (i === index ? { ...question, ...patch } : question)));
   };
@@ -36,6 +44,18 @@ export default function AssessmentQuestionsEditor({
     onChange(next);
   };
 
+  const removeAt = (index: number) => onChange(questions.filter((_, i) => i !== index));
+
+  /** Butir kosong langsung dihapus; yang sudah berisi minta konfirmasi dulu. */
+  const requestRemove = (index: number) => {
+    const question = questions[index];
+    if (question.text.trim() === '' && question.sub_scale.trim() === '') {
+      removeAt(index);
+    } else {
+      setPending(index);
+    }
+  };
+
   return (
     <div>
       <datalist id="subscale-suggestions">
@@ -45,21 +65,35 @@ export default function AssessmentQuestionsEditor({
       </datalist>
 
       {errors.questions ? (
-        <p role="alert" className="mb-3 text-sm text-destructive">
-          {errors.questions}
-        </p>
+        <Alert variant="destructive" className="mb-4 rounded-2xl">
+          <CircleAlert aria-hidden="true" />
+          <AlertDescription>{errors.questions}</AlertDescription>
+        </Alert>
       ) : null}
 
       <ol className="space-y-4">
         {questions.map((question, index) => (
-          <li key={index} className="rounded-lg border border-border p-4">
-            <div className="flex items-center justify-between gap-2">
-              <h3 className="text-base font-medium">Butir {index + 1}</h3>
-              <div className="flex">
+          <li key={index} className="rounded-2xl border border-border bg-neutral-soft/50 p-4 md:p-5">
+            <div className="flex items-center gap-3">
+              <span
+                className="grid size-8 shrink-0 place-items-center rounded-full bg-soft-lavender text-sm font-bold text-text tabular-nums"
+                aria-hidden="true"
+              >
+                {index + 1}
+              </span>
+              <h3 className="min-w-0 flex-1 text-base font-semibold">Butir {index + 1}</h3>
+              {question.sub_scale.trim() !== '' ? (
+                <Badge variant="sky" className="hidden max-w-40 truncate sm:inline-flex">
+                  {question.sub_scale.trim()}
+                </Badge>
+              ) : null}
+              {question.is_reversed ? <Badge variant="peach">Terbalik</Badge> : null}
+              <div className="-mr-2 flex">
                 <Button
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className={ICON_BUTTON}
                   aria-label={`Naikkan butir ${index + 1}`}
                   disabled={index === 0}
                   onClick={() => move(index, -1)}
@@ -70,6 +104,7 @@ export default function AssessmentQuestionsEditor({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className={ICON_BUTTON}
                   aria-label={`Turunkan butir ${index + 1}`}
                   disabled={index === questions.length - 1}
                   onClick={() => move(index, 1)}
@@ -80,16 +115,17 @@ export default function AssessmentQuestionsEditor({
                   type="button"
                   variant="ghost"
                   size="icon"
+                  className={ICON_BUTTON}
                   aria-label={`Hapus butir ${index + 1}`}
                   disabled={questions.length <= 1}
-                  onClick={() => onChange(questions.filter((_, i) => i !== index))}
+                  onClick={() => requestRemove(index)}
                 >
                   <Trash2 aria-hidden="true" />
                 </Button>
               </div>
             </div>
 
-            <div className="mt-3 space-y-3">
+            <div className="mt-4 space-y-4">
               <FormField id={`question-text-${index}`} label="Teks butir" error={errors[`questions.${index}.text`]}>
                 {(control) => (
                   <Textarea
@@ -114,12 +150,13 @@ export default function AssessmentQuestionsEditor({
                 )}
               </FormField>
 
-              <CheckboxField
+              <SwitchField
                 id={`question-reversed-${index}`}
                 label="Butir terbalik (skornya dibalik saat dihitung)"
                 checked={question.is_reversed}
                 onChange={(checked) => update(index, { is_reversed: checked })}
                 error={errors[`questions.${index}.is_reversed`] ?? errors[`questions.${index}.id`]}
+                className="[&>div]:bg-card"
               />
             </div>
           </li>
@@ -129,13 +166,27 @@ export default function AssessmentQuestionsEditor({
       <Button
         type="button"
         variant="outline"
-        className="mt-4"
+        className="mt-4 w-full rounded-2xl! border-dashed"
         disabled={questions.length >= maxQuestions}
         onClick={() => onChange([...questions, { ...EMPTY_QUESTION }])}
       >
         <Plus aria-hidden="true" />
         Tambah butir
       </Button>
+
+      <ConfirmRemoveDialog
+        open={pending !== null}
+        title={`Hapus butir ${pending !== null ? pending + 1 : ''}?`}
+        description="Butir ini dan isinya dihapus dari formulir. Perubahan baru tersimpan setelah kamu menekan simpan."
+        confirmLabel="Hapus butir"
+        onCancel={() => setPending(null)}
+        onConfirm={() => {
+          if (pending !== null) {
+            removeAt(pending);
+          }
+          setPending(null);
+        }}
+      />
     </div>
   );
 }

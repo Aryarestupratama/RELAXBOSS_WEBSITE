@@ -13,7 +13,7 @@ type AuthCheckboxProps = {
 
 /**
  * Kotak centang halaman tamu memakai shadcn `Checkbox` (Radix). Kotak 18px dengan area sentuh
- * diperluas lewat `after:` (target 44px tanpa membesarkan tampilan). `CheckboxField` tetap dipakai Admin.
+ * diperluas lewat `after:` (target 44px tanpa membesarkan tampilan).
  */
 export default function AuthCheckbox({ id, label, checked, onChange, error, required = false }: AuthCheckboxProps) {
   const errorId = error ? `${id}-error` : undefined;

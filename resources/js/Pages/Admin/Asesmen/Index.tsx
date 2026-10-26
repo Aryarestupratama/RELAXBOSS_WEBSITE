@@ -1,8 +1,23 @@
 import { Link } from '@inertiajs/react';
-import { ClipboardList, Plus } from 'lucide-react';
+import {
+  BadgeCheck,
+  CircleCheck,
+  CircleOff,
+  ClipboardCheck,
+  ClipboardList,
+  FlaskConical,
+  Info,
+  Pencil,
+  Plus,
+} from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
-import EmptyState from '@/Components/shared/EmptyState';
+import PageHeader from '@/Components/shared/PageHeader';
+import StatCard from '@/Components/shared/StatCard';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card } from '@/Components/ui/card';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 
 type AssessmentRow = {
   id: number;
@@ -21,107 +36,185 @@ type IndexProps = {
   assessments: AssessmentRow[];
 };
 
-const badgeBase = 'inline-flex items-center rounded-md px-2 py-1 text-sm font-medium';
+const NUM_HEAD = 'text-right';
+const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
+const PILL_BUTTON = 'rounded-full! px-5 text-sm';
+
+function StatusBadges({ assessment }: { assessment: AssessmentRow }) {
+  return (
+    <span className="flex flex-wrap gap-1.5">
+      {assessment.is_active ? (
+        <Badge variant="mint">
+          <CircleCheck aria-hidden="true" />
+          Aktif
+        </Badge>
+      ) : (
+        <Badge variant="secondary">
+          <CircleOff aria-hidden="true" />
+          Nonaktif
+        </Badge>
+      )}
+      {assessment.is_demo ? (
+        <Badge variant="peach">
+          <FlaskConical aria-hidden="true" />
+          Contoh
+        </Badge>
+      ) : null}
+      {assessment.is_validated ? (
+        <Badge variant="sky">
+          <BadgeCheck aria-hidden="true" />
+          Tervalidasi
+        </Badge>
+      ) : null}
+    </span>
+  );
+}
+
+function EditButton({ assessment }: { assessment: AssessmentRow }) {
+  return (
+    <Button asChild variant="outline" className={PILL_BUTTON}>
+      <Link href={`/admin/asesmen/${assessment.id}/ubah`} aria-label={`Ubah ${assessment.name}`}>
+        <Pencil className="size-4!" aria-hidden="true" />
+        Ubah
+      </Link>
+    </Button>
+  );
+}
+
+function NameCell({ assessment }: { assessment: AssessmentRow }) {
+  return (
+    <span className="flex items-center gap-3">
+      <span
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender text-text"
+        aria-hidden="true"
+      >
+        <ClipboardCheck className="size-5" />
+      </span>
+      <span className="min-w-0">
+        <span className="block font-semibold">{assessment.name}</span>
+        <span className="block text-xs text-text-secondary">{assessment.slug}</span>
+      </span>
+    </span>
+  );
+}
 
 /** SCR-020: daftar Instrumen. Hanya definisi; tidak ada jawaban atau hasil pengguna. */
 export default function Index({ assessments }: IndexProps) {
-  return (
-    <AdminShell title="Asesmen">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <h1>Asesmen</h1>
-          <p className="mt-2 max-w-prose text-text-secondary">
-            Kelola Instrumen, butir, pilihan jawaban, pengali, dan aturan skor. Instrumen tidak dihapus; nonaktifkan
-            untuk menyembunyikannya. Jumlah pengerjaan di bawah 5 ditampilkan sebagai &quot;&lt;5&quot;.
-          </p>
-        </div>
-        <Button asChild>
-          <Link href="/admin/asesmen/baru">
-            <Plus aria-hidden="true" />
-            Asesmen baru
-          </Link>
-        </Button>
-      </div>
+  const total = assessments.length;
+  const active = assessments.filter((assessment) => assessment.is_active).length;
 
-      <div className="mt-6">
-        {assessments.length === 0 ? (
-          <EmptyState
-            icon={ClipboardList}
-            message="Belum ada Asesmen. Buat yang pertama, ya."
-            action={
-              <Button asChild>
-                <Link href="/admin/asesmen/baru">Asesmen baru</Link>
-              </Button>
-            }
-          />
+  return (
+    <AdminShell title="Asesmen" staggered>
+      <PageHeader
+        title="Asesmen"
+        description="Kelola Instrumen, butir, pilihan jawaban, pengali, dan aturan skor."
+        actions={
+          <Button asChild className={PILL_BUTTON}>
+            <Link href="/admin/asesmen/baru">
+              <Plus aria-hidden="true" />
+              Asesmen baru
+            </Link>
+          </Button>
+        }
+      />
+
+      <div className="flex flex-col gap-6">
+        <div data-load>
+          <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
+            <Info className="text-brand-strong!" aria-hidden="true" />
+            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
+              Instrumen tidak dihapus; nonaktifkan untuk menyembunyikannya. Jumlah pengerjaan di bawah 5 ditampilkan
+              sebagai &quot;&lt;5&quot;.
+            </AlertDescription>
+          </Alert>
+        </div>
+
+        {total === 0 ? (
+          <Card tone="lavender" data-load className="items-center gap-4 px-6 py-10 text-center">
+            <span className="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+              <ClipboardList className="size-6" />
+            </span>
+            <p className="max-w-sm text-sm text-text">Belum ada Asesmen. Buat yang pertama, ya.</p>
+            <Button asChild className={PILL_BUTTON}>
+              <Link href="/admin/asesmen/baru">
+                <Plus aria-hidden="true" />
+                Asesmen baru
+              </Link>
+            </Button>
+          </Card>
         ) : (
-          <div className="overflow-x-auto rounded-xl bg-card shadow-card">
-            <table className="w-full min-w-[40rem] text-left">
-              <caption className="sr-only">Daftar Instrumen Asesmen</caption>
-              <thead className="bg-neutral-soft text-sm text-text-secondary">
-                <tr>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Asesmen
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    Status
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right font-medium">
-                    Butir
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right font-medium">
-                    Aturan
-                  </th>
-                  <th scope="col" className="px-4 py-3 text-right font-medium">
-                    Dikerjakan
-                  </th>
-                  <th scope="col" className="px-4 py-3 font-medium">
-                    <span className="sr-only">Aksi</span>
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
+          <>
+            <dl data-load className="grid gap-4 sm:grid-cols-3">
+              <StatCard label="Total Instrumen" value={String(total)} icon={ClipboardList} tone="lavender" />
+              <StatCard label="Aktif" value={String(active)} icon={CircleCheck} tone="mint" />
+              <StatCard label="Nonaktif" value={String(total - active)} icon={CircleOff} tone="peach" />
+            </dl>
+
+            <section aria-labelledby="daftar-instrumen" data-load className="flex flex-col gap-3">
+              <div className="flex items-center justify-between gap-3">
+                <h2 id="daftar-instrumen" className="text-lg leading-snug font-bold tracking-tight">
+                  Daftar Instrumen
+                </h2>
+                <Badge variant="outline">{total} Instrumen</Badge>
+              </div>
+
+              {/* >= 768px: tabel */}
+              <Card className="hidden gap-0 p-3 md:flex">
+                <Table className="min-w-[40rem]">
+                  <TableCaption className="sr-only">Daftar Instrumen Asesmen</TableCaption>
+                  <TableHeader>
+                    <TableRow className="border-0 bg-neutral-soft hover:bg-neutral-soft [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
+                      <TableHead>Asesmen</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className={NUM_HEAD}>Butir</TableHead>
+                      <TableHead className={NUM_HEAD}>Aturan</TableHead>
+                      <TableHead className={NUM_HEAD}>Dikerjakan</TableHead>
+                      <TableHead>
+                        <span className="sr-only">Aksi</span>
+                      </TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {assessments.map((assessment) => (
+                      <TableRow key={assessment.id}>
+                        <TableHead scope="row" className={ROW_HEAD}>
+                          <NameCell assessment={assessment} />
+                        </TableHead>
+                        <TableCell>
+                          <StatusBadges assessment={assessment} />
+                        </TableCell>
+                        <TableCell className="text-right tabular-nums">{assessment.question_count}</TableCell>
+                        <TableCell className="text-right tabular-nums">{assessment.rule_count}</TableCell>
+                        <TableCell className="text-right font-semibold tabular-nums">{assessment.attempts}</TableCell>
+                        <TableCell className="text-right">
+                          <EditButton assessment={assessment} />
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </Card>
+
+              {/* < 768px: kartu */}
+              <ul className="grid gap-3 md:hidden">
                 {assessments.map((assessment) => (
-                  <tr key={assessment.id} className="border-b border-border last:border-b-0">
-                    <th scope="row" className="px-4 py-3 font-normal">
-                      <span className="block font-medium">{assessment.name}</span>
-                      <span className="block text-sm text-text-secondary">{assessment.slug}</span>
-                    </th>
-                    <td className="px-4 py-3">
-                      <span className="flex flex-wrap gap-1">
-                        <span
-                          className={`${badgeBase} ${
-                            assessment.is_active ? 'bg-neutral-soft text-brand-strong' : 'bg-neutral-soft text-text-secondary'
-                          }`}
-                        >
-                          {assessment.is_active ? 'Aktif' : 'Nonaktif'}
-                        </span>
-                        {assessment.is_demo ? (
-                          <span className={`${badgeBase} bg-neutral-soft text-text-secondary`}>Contoh</span>
-                        ) : null}
-                        {assessment.is_validated ? (
-                          <span className={`${badgeBase} bg-neutral-soft text-brand-strong`}>Tervalidasi</span>
-                        ) : null}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 text-right">{assessment.question_count}</td>
-                    <td className="px-4 py-3 text-right">{assessment.rule_count}</td>
-                    <td className="px-4 py-3 text-right">{assessment.attempts}</td>
-                    <td className="px-4 py-3 text-right">
-                      <Button asChild variant="outline">
-                        <Link
-                          href={`/admin/asesmen/${assessment.id}/ubah`}
-                          aria-label={`Ubah ${assessment.name}`}
-                        >
-                          Ubah
-                        </Link>
-                      </Button>
-                    </td>
-                  </tr>
+                  <li key={assessment.id}>
+                    <Card className="gap-3 p-4">
+                      <NameCell assessment={assessment} />
+                      <StatusBadges assessment={assessment} />
+                      <p className="text-sm text-text-secondary">
+                        {assessment.question_count} butir · {assessment.rule_count} aturan · dikerjakan{' '}
+                        {assessment.attempts}
+                      </p>
+                      <div>
+                        <EditButton assessment={assessment} />
+                      </div>
+                    </Card>
+                  </li>
                 ))}
-              </tbody>
-            </table>
-          </div>
+              </ul>
+            </section>
+          </>
         )}
       </div>
     </AdminShell>

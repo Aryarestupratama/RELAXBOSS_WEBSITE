@@ -1,5 +1,6 @@
-import { Plus, Trash2 } from 'lucide-react';
+import { CircleAlert, Plus, Trash2 } from 'lucide-react';
 import FormField from '@/Components/shared/FormField';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { Input } from '@/Components/ui/input';
 import { toNumberOrEmpty, type FormErrors, type OptionRow } from '@/lib/adminAssessment';
@@ -22,14 +23,18 @@ export default function AssessmentOptionsEditor({ options, maxOptions, errors, o
   return (
     <div>
       {errors.options ? (
-        <p role="alert" className="mb-3 text-sm text-destructive">
-          {errors.options}
-        </p>
+        <Alert variant="destructive" className="mb-4 rounded-2xl">
+          <CircleAlert aria-hidden="true" />
+          <AlertDescription>{errors.options}</AlertDescription>
+        </Alert>
       ) : null}
 
-      <ul className="space-y-4">
+      <ul className="space-y-3">
         {options.map((option, index) => (
-          <li key={index} className="grid gap-3 sm:grid-cols-[8rem_1fr_auto] sm:items-start">
+          <li
+            key={index}
+            className="grid gap-3 rounded-2xl bg-neutral-soft p-3 sm:grid-cols-[7rem_1fr_auto] sm:items-start md:p-4"
+          >
             <FormField id={`option-value-${index}`} label={`Nilai pilihan ${index + 1}`} error={errors[`options.${index}.value`]}>
               {(control) => (
                 <Input
@@ -59,6 +64,7 @@ export default function AssessmentOptionsEditor({ options, maxOptions, errors, o
                 type="button"
                 variant="ghost"
                 size="icon"
+                className="rounded-full! hover:bg-card!"
                 aria-label={`Hapus pilihan ${index + 1}`}
                 disabled={options.length <= 2}
                 onClick={() => onChange(options.filter((_, i) => i !== index))}
@@ -73,7 +79,7 @@ export default function AssessmentOptionsEditor({ options, maxOptions, errors, o
       <Button
         type="button"
         variant="outline"
-        className="mt-4"
+        className="mt-4 w-full rounded-2xl! border-dashed"
         disabled={options.length >= maxOptions}
         onClick={() => onChange([...options, { value: nextValue, label: '' }])}
       >

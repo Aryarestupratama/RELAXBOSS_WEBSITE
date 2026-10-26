@@ -10,7 +10,7 @@ type FormProps = {
 /** SCR-020: buat dan ubah Asesmen. `key` memuat ulang formulir setelah simpan agar ID butir baru ikut terbaca. */
 export default function Form({ form, status }: FormProps) {
   return (
-    <AdminShell title={form.mode === 'create' ? 'Asesmen baru' : 'Ubah Asesmen'}>
+    <AdminShell title={form.mode === 'create' ? 'Asesmen baru' : 'Ubah Asesmen'} staggered>
       <AssessmentForm key={`${form.mode}-${form.id ?? 'new'}-${form.version}`} definition={form} status={status} />
     </AdminShell>
   );
