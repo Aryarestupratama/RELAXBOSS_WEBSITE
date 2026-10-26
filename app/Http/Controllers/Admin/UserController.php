@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers\Admin;
 
+use App\Actions\Admin\CreateAdminUser;
 use App\Actions\Admin\SetUserActiveStatus;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Admin\CreateAdminRequest;
 use App\Http\Requests\Admin\UpdateUserStatusRequest;
 use App\Models\User;
 use App\Services\Admin\UserAdminPresenter;
@@ -16,7 +18,8 @@ use Inertia\Response;
 
 /**
  * SCR-021 (FR-024, API-019): daftar Pengguna terbatas dan nonaktifkan akun.
- * Tidak ada hapus, ubah profil, atau halaman detail: admin tidak melihat data pribadi (RULE-042).
+ * Tambah admin baru (API-023, FR-035). Tidak ada hapus, ubah profil orang lain, atau halaman detail:
+ * admin tidak melihat data pribadi (RULE-042).
  */
 final class UserController extends Controller
 {
@@ -43,5 +46,12 @@ final class UserController extends Controller
         $action->handle($request->user(), $user, $active);
 
         return back()->with('status', $active ? 'user-activated' : 'user-deactivated');
+    }
+
+    public function storeAdmin(CreateAdminRequest $request, CreateAdminUser $action): RedirectResponse
+    {
+        $action->handle((string) $request->validated('name'), (string) $request->validated('email'));
+
+        return back()->with('status', 'admin-created');
     }
 }

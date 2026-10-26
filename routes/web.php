@@ -11,10 +11,12 @@ use App\Http\Controllers\App\AccountController;
 use App\Http\Controllers\App\AiConsentController;
 use App\Http\Controllers\App\AssessmentController;
 use App\Http\Controllers\App\AttemptRecommendationController;
+use App\Http\Controllers\App\AvatarController;
 use App\Http\Controllers\App\ChatMessageController;
 use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\MoodController;
+use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\RelaxMateController;
 use App\Http\Controllers\App\TrainingConsentController;
 use App\Http\Controllers\Auth\EmailVerificationController;
@@ -73,6 +75,12 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     // Akun (SCR-018). Hapus akun (API-016) meminta kata sandi; Action membatasi percobaan dan menolak admin terakhir.
     Route::get('/akun', [AccountController::class, 'show'])->name('account.show');
     Route::delete('/akun', [AccountController::class, 'destroy'])->name('account.destroy');
+    // Ubah profil, ganti kata sandi, dan foto profil (API-020 s.d. API-022). Selalu milik pengguna yang masuk.
+    Route::patch('/akun/profil', [ProfileController::class, 'update'])->name('account.profile.update');
+    Route::put('/akun/sandi', [ProfileController::class, 'updatePassword'])->name('account.password.update');
+    Route::get('/akun/foto', [AvatarController::class, 'show'])->name('account.avatar.show');
+    Route::post('/akun/foto', [AvatarController::class, 'store'])->middleware('throttle:10,1')->name('account.avatar.store');
+    Route::delete('/akun/foto', [AvatarController::class, 'destroy'])->name('account.avatar.destroy');
 });
 
 // Area admin (SCR-019 dst.). Middleware `admin` menolak non-admin dengan 403 di sisi server.
@@ -103,6 +111,9 @@ Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->nam
         ->name('articles.update');
     // Daftar Pengguna terbatas dan nonaktifkan akun (SCR-021, API-019). Tanpa hapus dan tanpa detail pengguna.
     Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
+    Route::post('/pengguna/admin', [AdminUserController::class, 'storeAdmin'])
+        ->middleware('throttle:10,1')
+        ->name('users.store-admin');
     Route::patch('/pengguna/{user}/status', [AdminUserController::class, 'updateStatus'])
         ->whereNumber('user')
         ->name('users.status');

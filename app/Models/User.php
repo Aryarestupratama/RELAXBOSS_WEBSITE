@@ -46,6 +46,7 @@ class User extends Authenticatable implements MustVerifyEmail
     {
         return [
             'email_verified_at' => 'datetime',
+            'avatar_updated_at' => 'datetime',
             'password' => 'hashed',
             'role' => UserRole::class,
             'is_active' => 'boolean',

@@ -14,11 +14,13 @@ import {
   Search,
   ShieldCheck,
   UserCheck,
+  UserPlus,
   UserX,
   Users,
   X,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
+import CreateAdminDialog from '@/Components/shared/CreateAdminDialog';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
@@ -50,6 +52,7 @@ type IndexProps = {
 const STATUS_TEXT: Record<string, string> = {
   'user-activated': 'Akun diaktifkan kembali.',
   'user-deactivated': 'Akun dinonaktifkan. Sesinya langsung diakhiri.',
+  'admin-created': 'Akun admin dibuat. Tautan atur kata sandi dikirim ke emailnya.',
 };
 
 const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
@@ -123,6 +126,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
   const [query, setQuery] = useState(search);
   const [target, setTarget] = useState<UserRow | null>(null);
   const [busyId, setBusyId] = useState<number | null>(null);
+  const [createOpen, setCreateOpen] = useState(false);
 
   const submitSearch = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -189,6 +193,12 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
       <PageHeader
         title="Pengguna"
         description="Daftar terbatas: email, tanggal daftar, status verifikasi, dan status aktif."
+        actions={
+          <Button type="button" variant="outline" className={PILL_BUTTON} onClick={() => setCreateOpen(true)}>
+            <UserPlus aria-hidden="true" />
+            Tambah admin
+          </Button>
+        }
       />
 
       <div className="flex flex-col gap-6">
@@ -377,6 +387,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
           }
         }}
       />
+      <CreateAdminDialog open={createOpen} onClose={() => setCreateOpen(false)} />
     </AdminShell>
   );
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Http\Controllers\App;
 
 use App\Actions\Account\DeleteUserAccount;
+use App\Actions\Account\ManageUserAvatar;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\App\DeleteAccountRequest;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response as SymfonyResponse;
 /** SCR-018: info akun, persetujuan pelatihan (API-013 di controller lain), dan hapus akun (API-016). */
 final class AccountController extends Controller
 {
-    public function show(Request $request, DeleteUserAccount $deleteAccount): Response
+    public function show(Request $request, DeleteUserAccount $deleteAccount, ManageUserAvatar $avatar): Response
     {
         $user = $request->user();
 
@@ -27,7 +28,11 @@ final class AccountController extends Controller
                 'major' => $user->major,
                 'institution_name' => $user->institution_name,
             ],
+            'avatar_url' => $avatar->exists($user)
+                ? '/app/akun/foto?v='.$user->avatar_updated_at->getTimestamp()
+                : null,
             'is_only_admin' => $deleteAccount->isOnlyAdmin($user),
+            'status' => session('status'),
         ]);
     }
 

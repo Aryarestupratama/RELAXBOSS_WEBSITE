@@ -39,6 +39,8 @@ final class DeleteUserAccount
     /**
      * @throws ValidationException
      */
+    public function __construct(private readonly ManageUserAvatar $avatar) {}
+
     public function handle(User $user, string $password): void
     {
         $this->assertNotOnlyAdmin($user);
@@ -76,6 +78,9 @@ final class DeleteUserAccount
             // sehingga logout (yang boleh menyimpan remember_token) tidak membuat ulang barisnya.
             User::query()->whereKey($user->getKey())->delete();
         });
+
+        // Foto profil ikut dihapus (FR-019): berkasnya di luar cascade basis data.
+        $this->avatar->purge((int) $user->getKey());
     }
 
     /**

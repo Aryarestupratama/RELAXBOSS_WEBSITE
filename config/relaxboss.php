@@ -78,7 +78,18 @@ return [
         'login_per_minute' => 5,
         'login_window_seconds' => 60,
         'delete_account_per_minute' => 5,
+        'change_password_per_minute' => 5,
         'reset_expire_minutes' => 60,
+    ],
+
+    // Foto profil (FR-033). Berkas ada di disk privat dan hanya disajikan kepada pemiliknya (RULE-042).
+    'avatar' => [
+        'max_kb' => 2048,
+        'max_pixels' => 4096,
+        'size' => 256,
+        'quality' => 85,
+        'mimes' => ['jpg', 'jpeg', 'png', 'webp'],
+        'per_minute' => 10,
     ],
 
     'ai' => [
