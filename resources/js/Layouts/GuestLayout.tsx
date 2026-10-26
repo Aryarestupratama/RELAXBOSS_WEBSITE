@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import AuthShowcase from '@/Components/shared/AuthShowcase';
 import AuthTabs from '@/Components/shared/AuthTabs';
 import Logo from '@/Components/shared/Logo';
+import { Card } from '@/Components/ui/card';
 import { useEnter, useFloat } from '@/lib/useMotion';
 
 type Illustration = 'masuk' | 'daftar';
@@ -39,8 +40,8 @@ export default function GuestLayout({ title, illustration = 'masuk', tab, wide =
     <>
       <Head title={`${title} | RelaxBoss`} />
       <div className="flex min-h-screen items-center justify-center bg-surface-alt px-4 py-6 sm:py-10">
-        <div
-          className={`grid w-full rounded-3xl border border-border bg-card p-2 shadow-lift motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-98 motion-safe:duration-700 lg:min-h-[34rem] lg:max-w-[60rem] lg:grid-cols-[0.9fr_1.1fr] lg:p-2.5 max-lg:max-w-md`}
+        <Card
+          className={`grid w-full gap-0 p-2 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-98 motion-safe:duration-700 lg:min-h-[34rem] lg:max-w-[60rem] lg:grid-cols-[0.9fr_1.1fr] lg:p-2.5 max-lg:max-w-md`}
         >
           <aside className="relative hidden flex-col overflow-hidden rounded-2xl bg-soft-lavender p-6 lg:flex" aria-label="RelaxBoss">
             <span className="pointer-events-none absolute -top-16 -right-14 size-52 rounded-full bg-soft-sky" aria-hidden="true" />
@@ -81,7 +82,7 @@ export default function GuestLayout({ title, illustration = 'masuk', tab, wide =
               {children}
             </main>
           </div>
-        </div>
+        </Card>
       </div>
     </>
   );

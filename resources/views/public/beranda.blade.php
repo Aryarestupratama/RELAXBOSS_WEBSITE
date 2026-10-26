@@ -6,18 +6,18 @@
 @php
     // Kartu emosi (bagian 2). `image` kosong = sementara memakai ikon Lucide sampai ilustrasinya ada.
     $emotions = [
-        ['name' => 'Gangguan Kecemasan', 'text' => 'Pikiran sulit berhenti berputar dan cemas pada hal yang belum terjadi.', 'tone' => 'bg-soft-lavender', 'offset' => 'lg:mt-8', 'image' => 'emosi-kecemasan.webp', 'width' => 720, 'height' => 647, 'alt' => 'Ilustrasi mahasiswa yang cemas memeluk lutut, dengan coretan pikiran di atas kepalanya.', 'icon' => null],
-        ['name' => 'Depresi', 'text' => 'Rasa sedih dan hampa yang berlangsung lama, hingga minat pada hal yang disukai hilang.', 'tone' => 'bg-soft-sky', 'offset' => 'lg:mt-0', 'image' => 'emosi-depresi.webp', 'width' => 720, 'height' => 557, 'alt' => 'Ilustrasi mahasiswa yang murung duduk di tepi tempat tidur, dengan awan kecil di atas kepalanya.', 'icon' => null],
-        ['name' => 'Insomnia', 'text' => 'Sulit tidur atau sering terbangun, sehingga tubuh tidak sempat pulih.', 'tone' => 'bg-soft-mint', 'offset' => 'lg:mt-5', 'image' => 'emosi-insomnia.webp', 'width' => 720, 'height' => 476, 'alt' => 'Ilustrasi mahasiswa yang terjaga di tempat tidur pada malam hari, dengan bulan, bintang, dan jam weker di samping.', 'icon' => null],
-        ['name' => 'Stres Akademik', 'text' => 'Tugas, ujian, dan tenggat menumpuk sampai terasa tak ada habisnya.', 'tone' => 'bg-soft-peach', 'offset' => 'lg:mt-1', 'image' => 'emosi-stres-akademik.webp', 'width' => 720, 'height' => 554, 'alt' => 'Ilustrasi mahasiswa yang kewalahan di meja belajar dengan tumpukan buku, laptop, dan kertas berterbangan.', 'icon' => null],
+        ['name' => 'Gangguan Kecemasan', 'text' => 'Pikiran sulit berhenti berputar dan cemas pada hal yang belum terjadi.', 'tone' => 'lavender', 'offset' => 'lg:mt-8', 'image' => 'emosi-kecemasan.webp', 'width' => 720, 'height' => 647, 'alt' => 'Ilustrasi mahasiswa yang cemas memeluk lutut, dengan coretan pikiran di atas kepalanya.', 'icon' => null],
+        ['name' => 'Depresi', 'text' => 'Rasa sedih dan hampa yang berlangsung lama, hingga minat pada hal yang disukai hilang.', 'tone' => 'sky', 'offset' => 'lg:mt-0', 'image' => 'emosi-depresi.webp', 'width' => 720, 'height' => 557, 'alt' => 'Ilustrasi mahasiswa yang murung duduk di tepi tempat tidur, dengan awan kecil di atas kepalanya.', 'icon' => null],
+        ['name' => 'Insomnia', 'text' => 'Sulit tidur atau sering terbangun, sehingga tubuh tidak sempat pulih.', 'tone' => 'mint', 'offset' => 'lg:mt-5', 'image' => 'emosi-insomnia.webp', 'width' => 720, 'height' => 476, 'alt' => 'Ilustrasi mahasiswa yang terjaga di tempat tidur pada malam hari, dengan bulan, bintang, dan jam weker di samping.', 'icon' => null],
+        ['name' => 'Stres Akademik', 'text' => 'Tugas, ujian, dan tenggat menumpuk sampai terasa tak ada habisnya.', 'tone' => 'peach', 'offset' => 'lg:mt-1', 'image' => 'emosi-stres-akademik.webp', 'width' => 720, 'height' => 554, 'alt' => 'Ilustrasi mahasiswa yang kewalahan di meja belajar dengan tumpukan buku, laptop, dan kertas berterbangan.', 'icon' => null],
     ];
 
     // Kartu fitur (bagian 4). Tamu diarahkan ke pendaftaran untuk fitur yang butuh akun.
     $features = [
-        ['name' => 'Mood Tracker', 'text' => 'Catat suasana hati harian dan lihat polanya dari waktu ke waktu.', 'tone' => 'bg-soft-sky', 'icon' => 'smile', 'href' => auth()->check() ? url('/mood') : url('/daftar')],
-        ['name' => 'RelaxMate', 'text' => 'Teman bicara AI yang mendengarkan dan menyarankan langkah kecil.', 'tone' => 'bg-soft-mint', 'icon' => 'message-circle', 'href' => auth()->check() ? url('/relaxmate') : url('/daftar')],
-        ['name' => 'Asesmen', 'text' => 'Kuesioner singkat untuk mengenali kondisi diri. Bukan diagnosis.', 'tone' => 'bg-soft-peach', 'icon' => 'clipboard-check', 'href' => url('/asesmen')],
-        ['name' => 'Artikel', 'text' => 'Bacaan ringan tentang menjaga kesehatan mental sehari-hari.', 'tone' => 'bg-soft-lavender', 'icon' => 'file-text', 'href' => url('/artikel')],
+        ['name' => 'Mood Tracker', 'text' => 'Catat suasana hati harian dan lihat polanya dari waktu ke waktu.', 'tone' => 'sky', 'icon' => 'smile', 'href' => auth()->check() ? url('/mood') : url('/daftar')],
+        ['name' => 'RelaxMate', 'text' => 'Teman bicara AI yang mendengarkan dan menyarankan langkah kecil.', 'tone' => 'mint', 'icon' => 'message-circle', 'href' => auth()->check() ? url('/relaxmate') : url('/daftar')],
+        ['name' => 'Asesmen', 'text' => 'Kuesioner singkat untuk mengenali kondisi diri. Bukan diagnosis.', 'tone' => 'peach', 'icon' => 'clipboard-check', 'href' => url('/asesmen')],
+        ['name' => 'Artikel', 'text' => 'Bacaan ringan tentang menjaga kesehatan mental sehari-hari.', 'tone' => 'lavender', 'icon' => 'file-text', 'href' => url('/artikel')],
     ];
 
     // Panduan (bagian 5): urutan nyata, jadi daftar bernomor.
@@ -53,17 +53,21 @@
             <div data-stagger class="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($emotions as $emotion)
                     <div data-item class="{{ $emotion['offset'] }}">
-                        <article data-lift class="flex flex-col gap-2 rounded-2xl p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $emotion['tone'] }}">
-                            <h2 class="text-lg leading-snug font-bold">{{ $emotion['name'] }}</h2>
-                            <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $emotion['text'] }}</p>
-                            @if ($emotion['image'])
-                                <img src="{{ asset('images/landing/'.$emotion['image']) }}" width="{{ $emotion['width'] }}" height="{{ $emotion['height'] }}" alt="{{ $emotion['alt'] }}" loading="lazy" class="mt-1 h-36 w-full object-contain">
-                            @else
-                                <div class="mt-1 grid h-36 place-items-center" aria-hidden="true">
-                                    <span class="grid size-20 place-items-center rounded-full bg-card/60 text-primary"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
-                                </div>
-                            @endif
-                        </article>
+                        <x-ui.card tag="article" :tone="$emotion['tone']" data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
+                            <x-ui.card.header class="px-0! gap-2">
+                                <x-ui.card.title tag="h2">{{ $emotion['name'] }}</x-ui.card.title>
+                                <x-ui.card.description class="text-[0.8125rem]">{{ $emotion['text'] }}</x-ui.card.description>
+                            </x-ui.card.header>
+                            <x-ui.card.content class="px-0!">
+                                @if ($emotion['image'])
+                                    <img src="{{ asset('images/landing/'.$emotion['image']) }}" width="{{ $emotion['width'] }}" height="{{ $emotion['height'] }}" alt="{{ $emotion['alt'] }}" loading="lazy" class="mt-1 h-36 w-full object-contain">
+                                @else
+                                    <div class="mt-1 grid h-36 place-items-center" aria-hidden="true">
+                                        <span class="grid size-20 place-items-center rounded-full bg-card/60 text-primary"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
+                                    </div>
+                                @endif
+                            </x-ui.card.content>
+                        </x-ui.card>
                     </div>
                 @endforeach
             </div>
@@ -112,15 +116,17 @@
             <div data-stagger class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($features as $feature)
                     <div data-item>
-                        <article data-lift class="group relative flex min-h-56 flex-col gap-2 rounded-3xl p-5 pb-16 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $feature['tone'] }}">
-                            <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
-                            <h3 class="mt-1 text-xl font-bold">{{ $feature['name'] }}</h3>
-                            <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $feature['text'] }}</p>
+                        <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" data-lift class="group relative min-h-56 gap-2! px-5 pb-16 transition-shadow duration-300 hover:shadow-lift-hover">
+                            <x-ui.card.header class="px-0!">
+                                <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
+                                <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
+                                <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
+                            </x-ui.card.header>
                             <a href="{{ $feature['href'] }}" aria-label="Coba {{ $feature['name'] }}"
                                class="absolute right-0 bottom-0 grid h-12 w-14 place-items-center rounded-tl-[20px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary">
                                 <x-icon name="arrow-up-right" class="size-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                             </a>
-                        </article>
+                        </x-ui.card>
                     </div>
                 @endforeach
             </div>

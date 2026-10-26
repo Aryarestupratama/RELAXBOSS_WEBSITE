@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import RequiredMark from '@/Components/shared/RequiredMark';
-import { Label } from '@/Components/ui/label';
+import { Field, FieldDescription, FieldError, FieldLabel } from '@/Components/ui/field';
 
 export type FieldControlProps = {
   id: string;
@@ -27,22 +27,22 @@ export default function FormField({ id, label, error, hint, required = false, co
   const describedBy = [hintId, errorId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className={compact ? 'space-y-1' : 'space-y-1.5'}>
-      <Label htmlFor={id} className={compact ? 'text-[0.8125rem]' : undefined}>
+    <Field className={compact ? 'gap-1' : 'gap-1.5'}>
+      <FieldLabel htmlFor={id} className={compact ? 'text-[0.8125rem]' : undefined}>
         {label}
         {required ? <RequiredMark /> : null}
-      </Label>
+      </FieldLabel>
       {children({ id, 'aria-invalid': Boolean(error), 'aria-describedby': describedBy })}
       {hint ? (
-        <p id={hintId} className={compact ? 'text-xs leading-snug text-text-secondary' : 'text-sm text-text-secondary'}>
+        <FieldDescription id={hintId} className={compact ? 'text-xs leading-snug' : undefined}>
           {hint}
-        </p>
+        </FieldDescription>
       ) : null}
       {error ? (
-        <p id={errorId} className={compact ? 'text-xs leading-snug text-destructive' : 'text-sm text-destructive'}>
+        <FieldError id={errorId} className={compact ? 'text-xs leading-snug' : undefined}>
           {error}
-        </p>
+        </FieldError>
       ) : null}
-    </div>
+    </Field>
   );
 }

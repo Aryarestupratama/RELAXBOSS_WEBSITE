@@ -13,9 +13,9 @@
             : '';
         $supervisors = array_values(array_filter((array) ($about['supervisors'] ?? []), 'filled'));
         $campusCards = array_values(array_filter([
-            filled($collaboration) ? ['icon' => 'users', 'tone' => 'bg-soft-sky', 'title' => 'Kolaborasi dua fakultas', 'text' => $collaboration] : null,
-            filled($awardText) ? ['icon' => 'graduation-cap', 'tone' => 'bg-soft-peach', 'title' => 'Penghargaan', 'text' => $awardText.'.'] : null,
-            count($supervisors) > 0 ? ['icon' => 'shield-check', 'tone' => 'bg-soft-mint', 'title' => 'Didampingi dan dipantau', 'list' => $supervisors] : null,
+            filled($collaboration) ? ['icon' => 'users', 'tone' => 'sky', 'title' => 'Kolaborasi dua fakultas', 'text' => $collaboration] : null,
+            filled($awardText) ? ['icon' => 'graduation-cap', 'tone' => 'peach', 'title' => 'Penghargaan', 'text' => $awardText.'.'] : null,
+            count($supervisors) > 0 ? ['icon' => 'shield-check', 'tone' => 'mint', 'title' => 'Didampingi dan dipantau', 'list' => $supervisors] : null,
         ]));
     @endphp
 
@@ -70,20 +70,24 @@
                 </div>
                 <div data-stagger class="mt-8 grid gap-4 md:grid-cols-3">
                     @foreach ($campusCards as $card)
-                        <article data-item data-lift class="flex flex-col gap-2 rounded-3xl p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $card['tone'] }}">
-                            <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $card['icon'] }}" class="size-5" /></span>
-                            <h3 class="mt-1 text-xl font-bold">{{ $card['title'] }}</h3>
-                            @isset($card['list'])
-                                <p class="text-[0.8125rem] leading-relaxed text-text-secondary">Dalam pengembangannya, RelaxBoss didampingi dan dipantau oleh:</p>
-                                <ul class="mt-1 space-y-1.5 text-sm font-medium">
-                                    @foreach ($card['list'] as $role)
-                                        <li class="flex items-start gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>{{ $role }}</li>
-                                    @endforeach
-                                </ul>
-                            @else
-                                <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $card['text'] }}</p>
-                            @endisset
-                        </article>
+                        <x-ui.card tag="article" :tone="$card['tone']" radius="rounded-3xl" data-item data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
+                            <x-ui.card.header class="px-0!">
+                                <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $card['icon'] }}" class="size-5" /></span>
+                                <x-ui.card.title class="mt-1 text-xl">{{ $card['title'] }}</x-ui.card.title>
+                            </x-ui.card.header>
+                            <x-ui.card.content class="px-0!">
+                                @isset($card['list'])
+                                    <p class="text-[0.8125rem] leading-relaxed text-text-secondary">Dalam pengembangannya, RelaxBoss didampingi dan dipantau oleh:</p>
+                                    <ul class="mt-2 space-y-1.5 text-sm font-medium">
+                                        @foreach ($card['list'] as $role)
+                                            <li class="flex items-start gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>{{ $role }}</li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $card['text'] }}</p>
+                                @endisset
+                            </x-ui.card.content>
+                        </x-ui.card>
                     @endforeach
                 </div>
             </div>
@@ -96,15 +100,17 @@
             <h2 id="fitur" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Yang bisa kamu lakukan</h2>
             <div data-stagger class="mt-6 grid gap-4 md:grid-cols-3">
                 @foreach ([
-                    ['icon' => 'clipboard-check', 'tone' => 'bg-soft-peach', 'name' => 'Asesmen', 'text' => 'Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.'],
-                    ['icon' => 'smile', 'tone' => 'bg-soft-sky', 'name' => 'Mood Tracker', 'text' => 'Catat perasaanmu dari hari ke hari dan lihat polanya.'],
-                    ['icon' => 'message-circle', 'tone' => 'bg-soft-mint', 'name' => 'RelaxMate', 'text' => 'Teman bicara berbasis AI untuk bercerita kapan saja. Bukan psikolog atau layanan medis.'],
+                    ['icon' => 'clipboard-check', 'tone' => 'peach', 'name' => 'Asesmen', 'text' => 'Jawab beberapa pertanyaan dan lihat gambaran awal kondisimu. Hasilnya bukan diagnosis.'],
+                    ['icon' => 'smile', 'tone' => 'sky', 'name' => 'Mood Tracker', 'text' => 'Catat perasaanmu dari hari ke hari dan lihat polanya.'],
+                    ['icon' => 'message-circle', 'tone' => 'mint', 'name' => 'RelaxMate', 'text' => 'Teman bicara berbasis AI untuk bercerita kapan saja. Bukan psikolog atau layanan medis.'],
                 ] as $feature)
-                    <article data-item data-lift class="flex flex-col gap-2 rounded-3xl p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover {{ $feature['tone'] }}">
-                        <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
-                        <h3 class="mt-1 text-xl font-bold">{{ $feature['name'] }}</h3>
-                        <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $feature['text'] }}</p>
-                    </article>
+                    <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" data-item data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
+                        <x-ui.card.header class="px-0!">
+                            <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
+                            <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
+                            <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
+                        </x-ui.card.header>
+                    </x-ui.card>
                 @endforeach
             </div>
         </div>
@@ -115,14 +121,14 @@
         <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
             <h2 id="nama" data-reveal class="text-center text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Tentang nama</h2>
             <div data-stagger class="relative mx-auto mt-8 grid max-w-3xl items-stretch gap-4 md:grid-cols-2 md:gap-6">
-                <article data-item data-lift class="flex flex-col items-center justify-center rounded-3xl bg-soft-mint p-6 text-center text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
+                <x-ui.card tag="article" tone="mint" radius="rounded-3xl" data-item data-lift class="items-center justify-center p-6 text-center transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
                     <p class="text-3xl font-bold" aria-hidden="true">Relax</p>
                     <p class="mt-2 text-sm"><span class="font-semibold">&ldquo;Relax&rdquo;</span> adalah ajakan untuk tenang.</p>
-                </article>
-                <article data-item data-lift class="flex flex-col items-center justify-center rounded-3xl bg-soft-lavender p-6 text-center text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
+                </x-ui.card>
+                <x-ui.card tag="article" tone="lavender" radius="rounded-3xl" data-item data-lift class="items-center justify-center p-6 text-center transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
                     <p class="text-3xl font-bold" aria-hidden="true">Boss</p>
                     <p class="mt-2 text-sm"><span class="font-semibold">&ldquo;Boss&rdquo;</span> mengingatkan bahwa kamulah yang memegang kendali atas stresmu.</p>
-                </article>
+                </x-ui.card>
                 <span class="pointer-events-none absolute top-1/2 left-1/2 z-10 hidden size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border/60 bg-card text-lg font-semibold text-text shadow-popover md:grid" aria-hidden="true">+</span>
             </div>
         </div>
@@ -134,15 +140,17 @@
             <h2 id="judul-aman" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Ruang aman untuk mahasiswa</h2>
             <div data-stagger class="mt-6 grid gap-4 md:grid-cols-3">
                 @foreach ([
-                    ['icon' => 'clipboard-check', 'tone' => 'bg-soft-peach', 'name' => 'Bukan diagnosis', 'text' => 'Hasil asesmen adalah gambaran awal untuk membantumu mengenali kondisi, bukan penilaian medis.'],
-                    ['icon' => 'shield-check', 'tone' => 'bg-soft-sky', 'name' => 'Privasi dijaga', 'text' => 'Isi catatan dan percakapanmu dienkripsi, dan tinjauan kualitas dilakukan tanpa identitasmu.'],
-                    ['icon' => 'message-circle', 'tone' => 'bg-soft-mint', 'name' => 'Jalur ke profesional', 'text' => 'Selalu ada arahan dan kontak bantuan bila kamu butuh pendampingan lebih lanjut.'],
+                    ['icon' => 'clipboard-check', 'tone' => 'peach', 'name' => 'Bukan diagnosis', 'text' => 'Hasil asesmen adalah gambaran awal untuk membantumu mengenali kondisi, bukan penilaian medis.'],
+                    ['icon' => 'shield-check', 'tone' => 'sky', 'name' => 'Privasi dijaga', 'text' => 'Isi catatan dan percakapanmu dienkripsi, dan tinjauan kualitas dilakukan tanpa identitasmu.'],
+                    ['icon' => 'message-circle', 'tone' => 'mint', 'name' => 'Jalur ke profesional', 'text' => 'Selalu ada arahan dan kontak bantuan bila kamu butuh pendampingan lebih lanjut.'],
                 ] as $item)
-                    <article data-item data-lift class="rounded-2xl border border-border/60 bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover">
-                        <span class="grid size-11 place-items-center rounded-full text-primary {{ $item['tone'] }}" aria-hidden="true"><x-icon name="{{ $item['icon'] }}" class="size-5" /></span>
-                        <h3 class="mt-4 text-lg font-bold">{{ $item['name'] }}</h3>
-                        <p class="mt-2 text-sm leading-relaxed text-text-secondary">{{ $item['text'] }}</p>
-                    </article>
+                    <x-ui.card tag="article" data-item data-lift class="gap-0! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
+                        <x-ui.card.header class="px-0!">
+                            <span class="grid size-11 place-items-center rounded-full text-primary {{ ['peach' => 'bg-soft-peach', 'sky' => 'bg-soft-sky', 'mint' => 'bg-soft-mint'][$item['tone']] }}" aria-hidden="true"><x-icon name="{{ $item['icon'] }}" class="size-5" /></span>
+                            <x-ui.card.title class="mt-3 text-lg">{{ $item['name'] }}</x-ui.card.title>
+                            <x-ui.card.description class="mt-1 leading-relaxed">{{ $item['text'] }}</x-ui.card.description>
+                        </x-ui.card.header>
+                    </x-ui.card>
                 @endforeach
             </div>
 
