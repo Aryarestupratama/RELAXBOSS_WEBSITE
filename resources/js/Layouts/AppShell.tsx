@@ -10,6 +10,9 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react';
+import { Button } from '@/Components/ui/button';
+import { Card } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 import { initMotion } from '@/lib/motion';
 
 type NavItem = {
@@ -98,38 +101,42 @@ export default function AppShell({
         </a>
 
         {/* Rail (>= 768px) */}
-        <aside className="fixed inset-y-3 left-3 z-40 hidden w-24 flex-col items-center justify-between rounded-2xl border-[1.5px] border-primary bg-card py-5 shadow-lift md:flex">
-          <div className="flex w-full flex-col items-center gap-6 px-2.5">
-            <a href="/" aria-label="RelaxBoss, ke Beranda" data-press className="inline-flex min-h-11 items-center">
-              <img src="/images/logo-relaxboss.png" width={36} height={36} alt="" className="size-9 rounded-lg" />
-            </a>
-            <nav aria-label="Navigasi utama" className="flex w-full flex-col gap-2">
-              {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
-                <Link
-                  key={href}
-                  href={href}
-                  data-press
-                  aria-current={isActive(url, href) ? 'page' : undefined}
-                  className={railItem}
-                >
-                  <Icon className={iconMotion} aria-hidden="true" />
-                  {label}
-                </Link>
-              ))}
-            </nav>
-          </div>
-          <div className="flex w-full flex-col gap-2 px-2.5">
-            {showHelp ? (
-              <a href="/konsultasi" data-press className={railItem}>
-                <LifeBuoy className={iconMotion} aria-hidden="true" />
-                Bantuan
+        <aside className="fixed inset-y-3 left-3 z-40 hidden w-24 md:block">
+          <Card className="h-full justify-between rounded-2xl border-[1.5px] border-primary py-5">
+            <div className="flex w-full flex-col items-center gap-5 px-2.5">
+              <a href="/" aria-label="RelaxBoss, ke Beranda" data-press className="inline-flex min-h-11 items-center">
+                <img src="/images/logo-relaxboss.png" width={36} height={36} alt="" className="size-9 rounded-lg" />
               </a>
-            ) : null}
-            <button type="button" data-press onClick={() => router.post('/keluar')} className={railItem}>
-              <LogOut className={iconMotion} aria-hidden="true" />
-              Keluar
-            </button>
-          </div>
+              <Separator className="w-10" />
+              <nav aria-label="Navigasi utama" className="flex w-full flex-col gap-2">
+                {NAV_ITEMS.map(({ label, href, icon: Icon }) => (
+                  <Link
+                    key={href}
+                    href={href}
+                    data-press
+                    aria-current={isActive(url, href) ? 'page' : undefined}
+                    className={railItem}
+                  >
+                    <Icon className={iconMotion} aria-hidden="true" />
+                    {label}
+                  </Link>
+                ))}
+              </nav>
+            </div>
+            <div className="flex w-full flex-col items-center gap-2 px-2.5">
+              <Separator className="mb-1 w-10" />
+              {showHelp ? (
+                <a href="/konsultasi" data-press className={railItem}>
+                  <LifeBuoy className={iconMotion} aria-hidden="true" />
+                  Bantuan
+                </a>
+              ) : null}
+              <button type="button" data-press onClick={() => router.post('/keluar')} className={railItem}>
+                <LogOut className={iconMotion} aria-hidden="true" />
+                Keluar
+              </button>
+            </div>
+          </Card>
         </aside>
 
         {/* Bar atas (HP) */}
@@ -151,15 +158,16 @@ export default function AppShell({
               >
                 <LifeBuoy className="size-5" aria-hidden="true" />
               </a>
-              <button
+              <Button
                 type="button"
+                variant="outline"
                 data-press
                 onClick={() => router.post('/keluar')}
-                className="inline-flex h-9 items-center gap-1.5 rounded-lg border-[1.5px] border-primary px-3 text-sm font-medium text-primary"
+                className="px-3 py-0 text-sm [&_svg:not([class*='size-'])]:size-4"
               >
-                <LogOut className="size-4" aria-hidden="true" />
+                <LogOut aria-hidden="true" />
                 Keluar
-              </button>
+              </Button>
             </div>
           </div>
         </header>
