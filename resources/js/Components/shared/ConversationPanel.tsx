@@ -1,7 +1,11 @@
 import type { ComponentProps, MouseEvent } from 'react';
 import { Link } from '@inertiajs/react';
 import { ChevronRight, LoaderCircle, Plus } from 'lucide-react';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
+import { cn } from '@/lib/utils';
 import { RELAXMATE_EMPTY } from '@/lib/relaxmate';
 
 export type ConversationItem = {
@@ -73,13 +77,13 @@ export default function ConversationPanel({
   const pagerProps = listOnlyReload ? { only: LIST_PROPS, preserveState: true, preserveScroll: true } : {};
 
   return (
-    <section
-      aria-labelledby="daftar-percakapan"
-      className={`flex flex-col rounded-3xl bg-card shadow-lift ${className}`}
-    >
-      <h2 id="daftar-percakapan" className="px-5 pb-2 pt-5 text-base font-semibold">
-        Percakapanmu
-      </h2>
+    <Card role="region" aria-labelledby="daftar-percakapan" className={cn('gap-0', className)}>
+      <CardHeader className="px-5 pt-5 pb-3">
+        <CardTitle id="daftar-percakapan" role="heading" aria-level={2} className="text-base">
+          Percakapanmu
+        </CardTitle>
+      </CardHeader>
+      <Separator />
 
       {conversations.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 pb-8 pt-2 text-center">
@@ -88,7 +92,7 @@ export default function ConversationPanel({
         </div>
       ) : (
         <>
-          <ul className="flex flex-1 flex-col gap-1 overflow-y-auto px-2.5 py-1">
+          <ul className="flex flex-1 flex-col gap-1 overflow-y-auto px-2.5 py-2">
             {conversations.map((conversation) => {
               const active = conversation.id === activeId;
               return (
@@ -103,9 +107,9 @@ export default function ConversationPanel({
                   >
                     <span className="min-w-0">
                       <span className="block text-sm font-semibold">{conversation.label}</span>
-                      <span className={`block text-xs ${active ? 'text-text' : 'text-text-secondary'}`}>
+                      <Badge variant={active ? 'outline' : 'secondary'} className="mt-1">
                         {conversation.total_turns} balasan
-                      </span>
+                      </Badge>
                     </span>
                     <ChevronRight
                       className="size-4 shrink-0 transition-transform duration-200 group-hover:translate-x-0.5"
@@ -117,8 +121,9 @@ export default function ConversationPanel({
             })}
           </ul>
 
+          <Separator />
           {prevUrl || nextUrl ? (
-            <nav aria-label="Halaman daftar percakapan" className="flex gap-2 px-5 pb-2 pt-3">
+            <nav aria-label="Halaman daftar percakapan" className="flex gap-2 px-5 pt-3">
               {prevUrl ? (
                 <Button asChild variant="outline" className="flex-1 rounded-full! px-3 text-sm">
                   <Link href={prevUrl} {...pagerProps}>
@@ -140,11 +145,11 @@ export default function ConversationPanel({
             </nav>
           ) : null}
 
-          <div className="hidden px-5 pb-5 pt-3 lg:block">
+          <CardFooter className="hidden px-5 pt-3 pb-5 lg:flex">
             <StartConversationButton starting={starting} onClick={onStart} className="w-full" {...startProps} />
-          </div>
+          </CardFooter>
         </>
       )}
-    </section>
+    </Card>
   );
 }

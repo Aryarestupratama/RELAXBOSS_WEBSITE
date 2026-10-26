@@ -11,6 +11,8 @@ import Mascot from '@/Components/shared/Mascot';
 import SuggestionCard from '@/Components/shared/SuggestionCard';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
+import { Card, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
 import { postJson } from '@/lib/http';
 import type { MascotName } from '@/lib/mascot';
@@ -234,13 +236,14 @@ export default function Show({
         </div>
 
         {/* Satu kartu: satu kepala, lalu maskot (kiri, >= 1280px) dan obrolan (kanan). Di bawah 1280px maskot jadi wajah kecil di kepala. */}
-        <section
+        <Card
           data-load
+          role="region"
           aria-label="Percakapan dengan RelaxMate"
-          className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-3xl bg-card shadow-lift"
+          className="min-h-0 min-w-0 flex-1 gap-0 overflow-hidden"
         >
           {/* Satu kepala untuk maskot dan obrolan */}
-          <header className="flex items-center gap-3 border-b border-border px-4 py-3 md:px-5">
+          <CardHeader className="flex-row items-center gap-3 px-4 py-3 md:px-5">
             <span
               aria-hidden="true"
               className="relative size-12 shrink-0 overflow-hidden rounded-full bg-soft-lavender xl:hidden"
@@ -248,10 +251,13 @@ export default function Show({
               <Mascot state={mascot} className="absolute -left-2 -top-1 [--s:0.19]" />
             </span>
             <div className="min-w-0">
-              <h1 className="text-base leading-tight font-bold md:text-lg">RelaxMate</h1>
+              <CardTitle role="heading" aria-level={1} className="text-base leading-tight font-bold md:text-lg">
+                RelaxMate
+              </CardTitle>
               <p className="text-[0.8125rem] text-text-secondary">{conversation.label}</p>
             </div>
-          </header>
+          </CardHeader>
+          <Separator />
 
           <div className="flex min-h-0 flex-1 flex-col xl:flex-row">
             <div
@@ -332,7 +338,8 @@ export default function Show({
               </ol>
             </div>
 
-            <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 border-t border-border p-3 md:px-5 md:py-4">
+            <Separator />
+            <div className="grid grid-cols-[minmax(0,1fr)] gap-2.5 p-3 md:px-5 md:py-4">
               {(error || unanswered) && !sending ? (
                 <Alert variant="destructive">
                   <AlertDescription>
@@ -393,7 +400,7 @@ export default function Show({
             </div>
           </div>
           </div>
-        </section>
+        </Card>
       </div>
 
       <ConsentDialog

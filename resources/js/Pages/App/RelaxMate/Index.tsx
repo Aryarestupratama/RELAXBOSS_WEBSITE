@@ -1,16 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
 import ConversationPanel, {
   StartConversationButton,
   type ConversationItem,
 } from '@/Components/shared/ConversationPanel';
 import Mascot from '@/Components/shared/Mascot';
+import { Card } from '@/Components/ui/card';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
 import { MASCOT_LEAVE_MS, type MascotName } from '@/lib/mascot';
 import { markMascotEntrance } from '@/lib/mascotEntrance';
-import { RELAXMATE_INTRO } from '@/lib/relaxmate';
+import { RELAXMATE_INTRO, RELAXMATE_NEW } from '@/lib/relaxmate';
 import { useStartConversation } from '@/lib/useStartConversation';
 
 type IndexProps = {
@@ -68,6 +70,8 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
 
   return (
     <AppShell title="RelaxMate" wide staggered>
+      <PageHeader title="RelaxMate" description={RELAXMATE_INTRO} />
+
       <div className="flex flex-col gap-4 lg:flex-row">
         <div data-load className="order-2 lg:order-1 lg:w-80 lg:shrink-0">
           <ConversationPanel
@@ -78,13 +82,15 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
             onStart={start}
             startProps={startProps}
             onOpen={(href) => leaveThen(() => router.visit(href))}
-            className="lg:h-[clamp(28rem,calc(100dvh_-_9rem),36rem)]"
+            className="lg:h-[clamp(26rem,calc(100dvh_-_15rem),36rem)]"
           />
         </div>
 
-        <section
+        <Card
           data-load
-          className="order-1 flex min-w-0 flex-1 flex-col items-center justify-center rounded-3xl bg-card px-6 py-8 text-center shadow-lift lg:order-2 lg:h-[clamp(28rem,calc(100dvh_-_9rem),36rem)] lg:px-8"
+          role="region"
+          aria-label="Mulai bercerita"
+          className="order-1 min-w-0 flex-1 items-center justify-center gap-0 px-6 py-8 text-center lg:order-2 lg:h-[clamp(26rem,calc(100dvh_-_15rem),36rem)] lg:px-8"
         >
           <div aria-hidden="true" className="relative mb-1 h-45 w-47 overflow-hidden md:h-64 md:w-64">
             <div className="absolute inset-x-2 bottom-0 h-32 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-soft-lavender md:h-45" />
@@ -95,10 +101,9 @@ export default function Index({ conversations, prev_page_url, next_page_url }: I
               className="absolute bottom-3 left-1/2 -translate-x-1/2 [--s:0.36] md:bottom-3.5 md:[--s:0.52]"
             />
           </div>
-          <h1 className="mt-2 text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">RelaxMate</h1>
-          <p className="mt-2 max-w-md text-sm leading-relaxed text-text-secondary md:text-base">{RELAXMATE_INTRO}</p>
+          <p className="mt-2 max-w-md text-base leading-relaxed text-text md:text-lg">{RELAXMATE_NEW}</p>
           <StartConversationButton starting={starting} onClick={start} className="mt-5" {...startProps} />
-        </section>
+        </Card>
       </div>
 
       <ConsentDialog
