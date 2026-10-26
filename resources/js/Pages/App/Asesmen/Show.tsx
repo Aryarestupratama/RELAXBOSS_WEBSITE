@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, ClipboardCheck, Clock, Info, ListChecks } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, Clock, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
+import DisclaimerNote from '@/Components/shared/DisclaimerNote';
 import { Badge } from '@/Components/ui/badge';
 import {
   Breadcrumb,
@@ -14,6 +14,7 @@ import {
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
+import { ASSESSMENT_DISCLAIMER } from '@/lib/assessment';
 
 type ShowProps = {
   assessment: {
@@ -203,19 +204,17 @@ export default function Show({ assessment }: ShowProps) {
             </Card>
           ) : null}
 
-          <Alert data-load role="note" className="rounded-2xl border-border/60 shadow-card">
-            <Info aria-hidden="true" className="text-primary" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text-secondary">
-              Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang
-              tepat, bicarakan dengan psikolog atau tenaga profesional.{' '}
+          <div data-load>
+            <DisclaimerNote>
+              {ASSESSMENT_DISCLAIMER}{' '}
               <a
                 href="/konsultasi"
                 className="font-semibold text-brand-strong underline underline-offset-4 hover:text-nav-hover"
               >
                 Bicara dengan profesional
               </a>
-            </AlertDescription>
-          </Alert>
+            </DisclaimerNote>
+          </div>
         </div>
       </div>
     </AppShell>

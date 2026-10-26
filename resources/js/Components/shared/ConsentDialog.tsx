@@ -2,7 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { ShieldCheck } from 'lucide-react';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 import {
   CONSENT_AI_TEXT,
   CONSENT_AI_TITLE,
@@ -73,7 +75,7 @@ export default function ConsentDialog({ open, onDecline, onComplete }: ConsentDi
     post('/app/akun/persetujuan-pelatihan', { choice }, onComplete);
 
   return (
-    <dialog
+    <Dialog
       ref={dialogRef}
       aria-labelledby="consent-title"
       aria-describedby="consent-desc"
@@ -83,32 +85,18 @@ export default function ConsentDialog({ open, onDecline, onComplete }: ConsentDi
           onDecline();
         }
       }}
-      className="m-auto max-h-[calc(100dvh-2rem)] w-[calc(100%-2rem)] max-w-lg overflow-y-auto rounded-xl border border-border bg-card p-6 text-card-foreground shadow-popover backdrop:bg-primary/40"
+      className="max-w-lg"
     >
-      <p className="flex items-center gap-2 text-sm text-text-secondary">
-        <ShieldCheck className="size-4 text-brand-strong" aria-hidden="true" />
-        Langkah {step} dari 2
-      </p>
-
-      {step === 1 ? (
-        <>
-          <h2 id="consent-title" ref={headingRef} tabIndex={-1} className="mt-2 text-lg font-semibold outline-none">
-            {CONSENT_AI_TITLE}
-          </h2>
-          <p id="consent-desc" className="mt-3 text-text-secondary">
-            {CONSENT_AI_TEXT}
-          </p>
-        </>
-      ) : (
-        <>
-          <h2 id="consent-title" ref={headingRef} tabIndex={-1} className="mt-2 text-lg font-semibold outline-none">
-            {CONSENT_TRAINING_QUESTION}
-          </h2>
-          <p id="consent-desc" className="mt-3 text-text-secondary">
-            {CONSENT_TRAINING_TEXT}
-          </p>
-        </>
-      )}
+      <DialogHeader>
+        <Badge variant="lavender" className="mb-1">
+          <ShieldCheck aria-hidden="true" />
+          Langkah {step} dari 2
+        </Badge>
+        <DialogTitle id="consent-title" ref={headingRef} tabIndex={-1}>
+          {step === 1 ? CONSENT_AI_TITLE : CONSENT_TRAINING_QUESTION}
+        </DialogTitle>
+        <DialogDescription id="consent-desc">{step === 1 ? CONSENT_AI_TEXT : CONSENT_TRAINING_TEXT}</DialogDescription>
+      </DialogHeader>
 
       {error ? (
         <Alert variant="destructive" className="mt-4">
@@ -116,25 +104,25 @@ export default function ConsentDialog({ open, onDecline, onComplete }: ConsentDi
         </Alert>
       ) : null}
 
-      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="ghost" disabled={processing} onClick={onDecline}>
+      <DialogFooter>
+        <Button variant="ghost" className="rounded-full! px-5 text-sm" disabled={processing} onClick={onDecline}>
           Nanti saja
         </Button>
         {step === 1 ? (
-          <Button disabled={processing} onClick={agree}>
+          <Button className="rounded-full! px-5 text-sm" disabled={processing} onClick={agree}>
             Setuju dan lanjut
           </Button>
         ) : (
           <>
-            <Button variant="outline" disabled={processing} onClick={() => choose('denied')}>
+            <Button variant="outline" className="rounded-full! px-5 text-sm" disabled={processing} onClick={() => choose('denied')}>
               Tidak, terima kasih
             </Button>
-            <Button variant="outline" disabled={processing} onClick={() => choose('granted')}>
+            <Button variant="outline" className="rounded-full! px-5 text-sm" disabled={processing} onClick={() => choose('granted')}>
               Ya, boleh
             </Button>
           </>
         )}
-      </div>
-    </dialog>
+      </DialogFooter>
+    </Dialog>
   );
 }

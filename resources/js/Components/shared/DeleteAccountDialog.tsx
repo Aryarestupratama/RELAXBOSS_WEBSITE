@@ -1,10 +1,10 @@
 import { useEffect, useRef, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
-import { X } from 'lucide-react';
 import FormField from '@/Components/shared/FormField';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
+import { Dialog, DialogClose, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 
 type DeleteAccountDialogProps = {
   open: boolean;
@@ -52,7 +52,7 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
   };
 
   return (
-    <dialog
+    <Dialog
       ref={ref}
       aria-labelledby="delete-account-title"
       aria-describedby="delete-account-desc"
@@ -62,25 +62,14 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
           onClose();
         }
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-3xl bg-card p-5 text-card-foreground shadow-popover backdrop:bg-primary/40"
     >
-      <div className="flex items-start justify-between gap-3">
-        <h2 id="delete-account-title" className="text-base font-bold">
-          Hapus akun?
-        </h2>
-        <button
-          type="button"
-          onClick={onClose}
-          disabled={form.processing}
-          aria-label="Tutup"
-          className="-mt-1 -mr-2 inline-flex size-11 shrink-0 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-neutral-soft hover:text-text disabled:opacity-50"
-        >
-          <X className="size-5" aria-hidden="true" />
-        </button>
-      </div>
-      <p id="delete-account-desc" className="mt-1 text-[0.8125rem] leading-relaxed text-text-secondary">
-        Semua datamu akan dihapus permanen dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.
-      </p>
+      <DialogHeader className="relative pr-10">
+        <DialogTitle id="delete-account-title">Hapus akun?</DialogTitle>
+        <DialogDescription id="delete-account-desc" className="text-[0.8125rem]">
+          Semua datamu akan dihapus permanen dan tidak bisa dikembalikan. Masukkan kata sandi untuk melanjutkan.
+        </DialogDescription>
+        <DialogClose onClick={onClose} disabled={form.processing} className="absolute top-0 right-0 mt-0 -mr-2" />
+      </DialogHeader>
 
       <form onSubmit={submit} noValidate className="mt-4 space-y-4">
         {errors.account ? (
@@ -102,15 +91,15 @@ export default function DeleteAccountDialog({ open, onClose }: DeleteAccountDial
           )}
         </FormField>
 
-        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+        <DialogFooter className="mt-0">
           <Button type="button" variant="ghost" className="rounded-full! px-5 text-sm" onClick={onClose} disabled={form.processing}>
             Batal
           </Button>
           <Button type="submit" variant="destructive" className="rounded-full! px-5 text-sm" disabled={form.processing}>
             {form.processing ? 'Memproses...' : 'Hapus akun saya'}
           </Button>
-        </div>
+        </DialogFooter>
       </form>
-    </dialog>
+    </Dialog>
   );
 }

@@ -20,8 +20,9 @@ type LikertScaleProps = {
 
 /**
  * CMP-003. Satu butir per layar; pilihan dari `assessments.options`; keyboard lewat tombol panah.
- * Pilihan terpilih: garis `--primary`, latar `--soft-lavender`, teks tebal, dan ikon centang
- * (tidak hanya warna). Teks selalu `--text` (RULE-052).
+ * Kartu radio gaya shadcn: radio asli disembunyikan secara visual (tetap fokus dan terbaca pembaca layar),
+ * diganti penanda bundar di kiri. Terpilih: garis `--primary`, latar `--soft-lavender`, teks tebal, dan
+ * penanda terisi dengan centang (tidak hanya warna). Teks selalu `--text` (RULE-052).
  */
 export default function LikertScale({ name, legend, options, value, onChange, disabled = false }: LikertScaleProps) {
   return (
@@ -41,16 +42,24 @@ export default function LikertScale({ name, legend, options, value, onChange, di
             key={option.value}
             htmlFor={id}
             className={cn(
-              'flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border-[1.5px] px-4 py-2.5 text-sm text-text transition-all duration-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring motion-safe:hover:translate-x-0.5',
+              'relative flex min-h-12 cursor-pointer items-center gap-3 rounded-2xl border-[1.5px] px-4 py-2.5 text-sm text-text transition-all duration-200 has-focus-visible:outline-2 has-focus-visible:outline-offset-2 has-focus-visible:outline-ring motion-safe:hover:translate-x-0.5',
               selected
                 ? 'border-primary bg-soft-lavender font-semibold shadow-card'
                 : 'border-border bg-card hover:border-primary/40 hover:bg-neutral-soft',
               disabled && 'cursor-not-allowed opacity-60 motion-safe:hover:translate-x-0',
             )}
           >
-            <RadioGroupItem id={id} value={String(option.value)} />
+            <RadioGroupItem id={id} value={String(option.value)} className="sr-only" />
+            <span
+              aria-hidden="true"
+              className={cn(
+                'grid size-5 shrink-0 place-items-center rounded-full border-[1.5px] transition-colors',
+                selected ? 'border-primary bg-primary text-on-primary' : 'border-input-border bg-card',
+              )}
+            >
+              {selected ? <Check className="size-3" strokeWidth={3} /> : null}
+            </span>
             <span className="flex-1">{option.label}</span>
-            {selected ? <Check className="size-4 shrink-0 text-primary" aria-hidden="true" /> : null}
           </label>
         );
       })}

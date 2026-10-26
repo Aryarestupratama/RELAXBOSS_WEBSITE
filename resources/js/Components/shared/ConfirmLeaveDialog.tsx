@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { Button } from '@/Components/ui/button';
+import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
 
 type ConfirmLeaveDialogProps = {
   open: boolean;
@@ -40,7 +41,7 @@ export default function ConfirmLeaveDialog({
   }, [open]);
 
   return (
-    <dialog
+    <Dialog
       ref={ref}
       aria-labelledby="leave-title"
       aria-describedby="leave-desc"
@@ -48,22 +49,19 @@ export default function ConfirmLeaveDialog({
         event.preventDefault();
         onStay();
       }}
-      className="m-auto w-[calc(100%-2rem)] max-w-md rounded-xl border border-border bg-card p-6 text-card-foreground shadow-popover backdrop:bg-primary/40"
     >
-      <h2 id="leave-title" className="text-lg font-semibold">
-        {title}
-      </h2>
-      <p id="leave-desc" className="mt-2 text-text-secondary">
-        {description}
-      </p>
-      <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <Button variant="destructive" onClick={onLeave}>
+      <DialogHeader>
+        <DialogTitle id="leave-title">{title}</DialogTitle>
+        <DialogDescription id="leave-desc">{description}</DialogDescription>
+      </DialogHeader>
+      <DialogFooter>
+        <Button variant="destructive" className="rounded-full! px-5 text-sm" onClick={onLeave}>
           {leaveLabel}
         </Button>
-        <Button autoFocus onClick={onStay}>
+        <Button autoFocus className="rounded-full! px-5 text-sm" onClick={onStay}>
           {stayLabel}
         </Button>
-      </div>
-    </dialog>
+      </DialogFooter>
+    </Dialog>
   );
 }
