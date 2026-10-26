@@ -1,7 +1,22 @@
 import type { ReactNode } from 'react';
-import { ClipboardList, Users } from 'lucide-react';
+import {
+  CalendarDays,
+  ClipboardCheck,
+  ClipboardList,
+  Info,
+  LifeBuoy,
+  MessageCircle,
+  Smile,
+  UserCheck,
+  Users,
+} from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
-import EmptyState from '@/Components/shared/EmptyState';
+import PageHeader from '@/Components/shared/PageHeader';
+import StatCard from '@/Components/shared/StatCard';
+import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Badge } from '@/Components/ui/badge';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 
 type AiRow = {
   feature: string;
@@ -38,18 +53,12 @@ type DashboardProps = {
   min_group_size: number;
 };
 
-const cardClass = 'rounded-xl bg-card p-5 shadow-card';
-const crisisCardClass = 'rounded-xl bg-crisis-bg p-5';
 const numberFormat = new Intl.NumberFormat('id-ID');
 
-function Stat({ label, value, crisis = false }: { label: string; value: string; crisis?: boolean }) {
-  return (
-    <div className={`flex flex-col justify-between ${crisis ? crisisCardClass : cardClass}`}>
-      <dt className={`text-sm font-medium ${crisis ? 'text-crisis-text' : 'text-text-secondary'}`}>{label}</dt>
-      <dd className={`mt-3 text-3xl font-semibold ${crisis ? 'text-crisis-text' : ''}`}>{value}</dd>
-    </div>
-  );
-}
+/** Judul kolom angka: rata kanan. */
+const NUM_HEAD = 'text-right';
+/** Sel judul baris: `th scope="row"` dengan tampilan sel biasa. */
+const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
 
 function Section({
   id,
@@ -63,10 +72,12 @@ function Section({
   children: ReactNode;
 }) {
   return (
-    <section aria-labelledby={id} className="flex flex-col gap-3">
+    <section aria-labelledby={id} data-load className="flex flex-col gap-3">
       <div>
-        <h2 id={id}>{title}</h2>
-        {note ? <p className="text-sm text-text-secondary">{note}</p> : null}
+        <h2 id={id} className="text-lg leading-snug font-bold tracking-tight">
+          {title}
+        </h2>
+        {note ? <p className="mt-0.5 text-sm text-text-secondary">{note}</p> : null}
       </div>
       {children}
     </section>
@@ -75,46 +86,38 @@ function Section({
 
 function AiTable({ caption, rows }: { caption: string; rows: AiRow[] }) {
   return (
-    <div className={cardClass}>
-      <h3 className="mb-3">{caption}</h3>
-      <div className="overflow-x-auto">
-        <table className="w-full min-w-[28rem] text-left text-sm">
-          <caption className="sr-only">{caption}</caption>
-          <thead className="bg-neutral-soft text-text-secondary">
-            <tr>
-              <th scope="col" className="rounded-l-lg px-3 py-2.5 font-medium">
-                Fitur
-              </th>
-              <th scope="col" className="px-2 py-2.5 text-right font-medium">
-                Request
-              </th>
-              <th scope="col" className="px-2 py-2.5 text-right font-medium">
-                Dibatasi (429)
-              </th>
-              <th scope="col" className="px-2 py-2.5 text-right font-medium">
-                Galat
-              </th>
-              <th scope="col" className="rounded-r-lg px-3 py-2.5 text-right font-medium">
-                Token
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+    <Card className="gap-3 p-5">
+      <CardHeader>
+        <CardTitle className="text-base font-bold">{caption}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Table className="min-w-[28rem]">
+          <TableCaption className="sr-only">{caption}</TableCaption>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent">
+              <TableHead>Fitur</TableHead>
+              <TableHead className={NUM_HEAD}>Request</TableHead>
+              <TableHead className={NUM_HEAD}>Dibatasi (429)</TableHead>
+              <TableHead className={NUM_HEAD}>Galat</TableHead>
+              <TableHead className={NUM_HEAD}>Token</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.map((row) => (
-              <tr key={row.feature} className="border-b border-border last:border-b-0">
-                <th scope="row" className="px-3 py-3 font-normal">
+              <TableRow key={row.feature}>
+                <TableHead scope="row" className={ROW_HEAD}>
                   {row.feature}
-                </th>
-                <td className="px-2 py-3 text-right">{numberFormat.format(row.requests)}</td>
-                <td className="px-2 py-3 text-right">{numberFormat.format(row.rate_limited)}</td>
-                <td className="px-2 py-3 text-right">{numberFormat.format(row.errors)}</td>
-                <td className="px-3 py-3 text-right font-medium">{numberFormat.format(row.tokens)}</td>
-              </tr>
+                </TableHead>
+                <TableCell className="text-right tabular-nums">{numberFormat.format(row.requests)}</TableCell>
+                <TableCell className="text-right tabular-nums">{numberFormat.format(row.rate_limited)}</TableCell>
+                <TableCell className="text-right tabular-nums">{numberFormat.format(row.errors)}</TableCell>
+                <TableCell className="text-right font-semibold tabular-nums">{numberFormat.format(row.tokens)}</TableCell>
+              </TableRow>
             ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </TableBody>
+        </Table>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -123,93 +126,112 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
   const { users, usage, crisis, kpi, ai } = stats;
 
   return (
-    <AdminShell title="Ringkasan">
-      <div className="flex flex-col gap-8">
-        <header className="max-w-3xl">
-          <h1>Ringkasan</h1>
-          <p className="mt-2 text-text-secondary">
-            Angka agregat tanpa identitas. Angka di bawah {min_group_size} ditampilkan sebagai &quot;&lt;
-            {min_group_size}&quot; demi privasi pengguna. Akun admin tidak dihitung.
-          </p>
-        </header>
+    <AdminShell title="Ringkasan" staggered>
+      <PageHeader title="Ringkasan" description="Angka agregat tanpa identitas." />
+
+      <div className="flex flex-col gap-7">
+        <div data-load>
+          <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
+            <Info className="text-brand-strong!" aria-hidden="true" />
+            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
+              Angka di bawah {min_group_size} ditampilkan sebagai &quot;&lt;{min_group_size}&quot; demi privasi pengguna.
+              Akun admin tidak dihitung.
+            </AlertDescription>
+          </Alert>
+        </div>
 
         {users.empty ? (
-          <EmptyState icon={Users} message="Belum ada pengguna. Angka akan muncul setelah ada yang mendaftar." />
+          <Card tone="lavender" data-load className="items-center gap-3 px-6 py-8 text-center">
+            <span className="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+              <Users className="size-6" />
+            </span>
+            <p className="max-w-sm text-sm text-text">
+              Belum ada pengguna. Angka akan muncul setelah ada yang mendaftar.
+            </p>
+          </Card>
         ) : null}
 
         <Section id="pengguna" title="Pengguna">
           <dl className="grid gap-4 sm:grid-cols-2">
-            <Stat label="Akun terdaftar" value={users.registered} />
-            <Stat label="Akun terverifikasi" value={users.verified} />
+            <StatCard label="Akun terdaftar" value={users.registered} icon={Users} tone="lavender" />
+            <StatCard label="Akun terverifikasi" value={users.verified} icon={UserCheck} tone="sky" />
           </dl>
         </Section>
 
         <Section id="pemakaian" title="Pemakaian fitur">
           <div className="grid items-start gap-4 lg:grid-cols-12">
-            <dl className="flex flex-col gap-4 lg:col-span-5">
-              <Stat label="Asesmen selesai" value={usage.assessments_total} />
-              <Stat label="Mood Entry dibuat" value={usage.mood_entries} />
-              <Stat label="Percakapan dimulai" value={usage.conversations} />
+            <dl className="grid gap-4 sm:grid-cols-3 lg:col-span-5 lg:grid-cols-1">
+              <StatCard label="Asesmen selesai" value={usage.assessments_total} icon={ClipboardCheck} tone="peach" />
+              <StatCard label="Mood Entry dibuat" value={usage.mood_entries} icon={Smile} tone="mint" />
+              <StatCard label="Percakapan dimulai" value={usage.conversations} icon={MessageCircle} tone="lavender" />
             </dl>
 
-            <div className={`${cardClass} lg:col-span-7`}>
-              <h3 className="mb-3">Asesmen selesai per jenis</h3>
-              {usage.assessments_by_type.length === 0 ? (
-                <div className="flex flex-col items-center gap-2 rounded-lg bg-neutral-soft px-6 py-8 text-center">
-                  <ClipboardList className="size-8 text-text-muted" aria-hidden="true" />
-                  <p className="text-text-secondary">Belum ada Asesmen yang selesai.</p>
-                </div>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full min-w-[18rem] text-left text-sm">
-                    <caption className="sr-only">Asesmen selesai per jenis</caption>
-                    <thead className="bg-neutral-soft text-text-secondary">
-                      <tr>
-                        <th scope="col" className="rounded-l-lg px-3 py-2.5 font-medium">
-                          Asesmen
-                        </th>
-                        <th scope="col" className="rounded-r-lg px-3 py-2.5 text-right font-medium">
-                          Selesai
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody>
+            <Card className="gap-3 p-5 lg:col-span-7">
+              <CardHeader>
+                <CardTitle className="text-base font-bold">Asesmen selesai per jenis</CardTitle>
+              </CardHeader>
+              <CardContent>
+                {usage.assessments_by_type.length === 0 ? (
+                  <div className="flex flex-col items-center gap-2 rounded-2xl bg-neutral-soft px-6 py-8 text-center">
+                    <ClipboardList className="size-8 text-text-muted" aria-hidden="true" />
+                    <p className="text-sm text-text-secondary">Belum ada Asesmen yang selesai.</p>
+                  </div>
+                ) : (
+                  <Table className="min-w-[18rem]">
+                    <TableCaption className="sr-only">Asesmen selesai per jenis</TableCaption>
+                    <TableHeader>
+                      <TableRow className="hover:bg-transparent">
+                        <TableHead>Asesmen</TableHead>
+                        <TableHead className={NUM_HEAD}>Selesai</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
                       {usage.assessments_by_type.map((row) => (
-                        <tr key={row.name} className="border-b border-border last:border-b-0">
-                          <th scope="row" className="px-3 py-3 font-normal">
+                        <TableRow key={row.name}>
+                          <TableHead scope="row" className={ROW_HEAD}>
                             {row.name}
-                          </th>
-                          <td className="px-3 py-3 text-right font-medium">{row.total}</td>
-                        </tr>
+                          </TableHead>
+                          <TableCell className="text-right font-semibold tabular-nums">{row.total}</TableCell>
+                        </TableRow>
                       ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
+                    </TableBody>
+                  </Table>
+                )}
+              </CardContent>
+            </Card>
           </div>
         </Section>
 
         <Section id="kpi" title="Indikator keberhasilan">
           <ul className="grid gap-4 md:grid-cols-3">
             {kpi.map((item) => (
-              <li key={item.code} className={`flex flex-col justify-between ${cardClass}`}>
-                <div>
-                  <h3 className="text-base font-semibold">
-                    {item.code} {item.title}
-                  </h3>
-                  {item.value === null ? (
-                    <p className="mt-3 text-lg font-semibold text-text-muted">Belum cukup data</p>
-                  ) : (
-                    <p className="mt-3 text-3xl font-semibold">{item.value}</p>
-                  )}
-                  <p className="mt-1 text-sm text-text-secondary">
-                    {item.value === null
-                      ? `Persentase tampil bila kohort minimal ${min_group_size} orang.`
-                      : `Target ${item.target}. Kohort: ${item.cohort} orang.`}
+              <li key={item.code} className="flex">
+                <Card className="w-full gap-4 p-5">
+                  <CardHeader className="gap-2">
+                    <Badge variant="outline" className="w-fit">
+                      {item.code}
+                    </Badge>
+                    <CardTitle className="text-base font-bold">{item.title}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="flex flex-col gap-2">
+                    {item.value === null ? (
+                      <p className="text-lg font-semibold text-text-muted">Belum cukup data</p>
+                    ) : (
+                      <p className="text-3xl leading-none font-bold tracking-tight tabular-nums">{item.value}</p>
+                    )}
+                    {item.value === null ? (
+                      <CardDescription>Persentase tampil bila kohort minimal {min_group_size} orang.</CardDescription>
+                    ) : (
+                      <div className="flex flex-wrap gap-1.5">
+                        <Badge variant="mint">Target {item.target}</Badge>
+                        <Badge variant="secondary">Kohort: {item.cohort} orang</Badge>
+                      </div>
+                    )}
+                  </CardContent>
+                  <p className="mt-auto rounded-2xl bg-neutral-soft p-3 text-[0.8125rem] leading-relaxed text-text-secondary">
+                    {item.description}
                   </p>
-                </div>
-                <p className="mt-4 rounded-lg bg-neutral-soft p-3 text-sm text-text-secondary">{item.description}</p>
+                </Card>
               </li>
             ))}
           </ul>
@@ -217,10 +239,10 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
 
         <Section id="krisis" title="Crisis Response terpicu" note="Hanya hitungan, tanpa isi pesan dan tanpa identitas.">
           <dl className="grid grid-cols-2 gap-4 md:grid-cols-4">
-            <Stat crisis label="Total" value={crisis.total} />
-            <Stat crisis label="30 hari terakhir" value={crisis.last_30_days} />
-            <Stat crisis label="Dari chat" value={crisis.rule} />
-            <Stat crisis label="Dari jawaban PFA" value={crisis.pfa_rule} />
+            <StatCard tone="crisis" label="Total" value={crisis.total} icon={LifeBuoy} />
+            <StatCard tone="crisis" label="30 hari terakhir" value={crisis.last_30_days} icon={CalendarDays} />
+            <StatCard tone="crisis" label="Dari chat" value={crisis.rule} icon={MessageCircle} />
+            <StatCard tone="crisis" label="Dari jawaban PFA" value={crisis.pfa_rule} icon={ClipboardList} />
           </dl>
         </Section>
 
