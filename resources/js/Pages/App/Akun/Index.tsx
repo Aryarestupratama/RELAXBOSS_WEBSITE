@@ -2,9 +2,14 @@ import { useState } from 'react';
 import { router, usePage } from '@inertiajs/react';
 import { Check, CircleAlert, CircleCheck, Info, Trash2 } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import PageHeader from '@/Components/shared/PageHeader';
 import DeleteAccountDialog from '@/Components/shared/DeleteAccountDialog';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
+import { Avatar, AvatarFallback } from '@/Components/ui/avatar';
+import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { Separator } from '@/Components/ui/separator';
 import {
   CONSENT_ERROR,
   CONSENT_TRAINING_QUESTION,
@@ -23,8 +28,6 @@ type IndexProps = {
 };
 
 type Choice = 'granted' | 'denied';
-
-const cardClass = 'rounded-3xl bg-card p-5 shadow-lift';
 
 const CHOICES: { value: Choice; label: string }[] = [
   { value: 'granted', label: 'Ya, boleh' },
@@ -70,41 +73,38 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
 
   const initial = profile.name.trim().charAt(0).toUpperCase() || '?';
 
+  const infoRows = [
+    { label: 'Nama', value: profile.name, breakAll: false },
+    { label: 'Email', value: profile.email, breakAll: true },
+    { label: 'Jurusan', value: profile.major, breakAll: false },
+    { label: 'Kampus', value: profile.institution_name, breakAll: false },
+  ];
+
   return (
     <AppShell title="Akun" wide staggered>
-      <div data-load>
-        <h1 className="text-2xl leading-tight font-bold tracking-tight md:text-[1.75rem]">Akun</h1>
-        <p className="mt-1 text-sm text-text-secondary">Data akunmu dan pengaturan privasi.</p>
-      </div>
+      <PageHeader title="Akun" description="Data akunmu dan pengaturan privasi." />
 
-      <div className="mt-4">
-        <div className="min-w-0 space-y-4">
-          <section
-                        aria-labelledby="judul-info-akun"
-            data-load
-            className="overflow-hidden rounded-3xl bg-card shadow-lift"
-          >
-            <div className="flex items-center gap-4 bg-soft-lavender px-5 py-4" aria-hidden="true">
-              <span className="grid size-12 shrink-0 select-none place-items-center rounded-full bg-card/60 text-xl font-bold text-text">
-                {initial}
-              </span>
-              <div className="min-w-0">
-                <p className="truncate text-base font-bold text-text">{profile.name}</p>
-                <p className="truncate text-[0.8125rem] text-text-secondary">{profile.email}</p>
-              </div>
+      <div className="min-w-0 space-y-4">
+        <Card data-load role="region" aria-labelledby="judul-info-akun" className="gap-0 overflow-hidden">
+          <div className="flex items-center gap-4 bg-soft-lavender px-5 py-4" aria-hidden="true">
+            <Avatar>
+              <AvatarFallback>{initial}</AvatarFallback>
+            </Avatar>
+            <div className="min-w-0">
+              <p className="truncate text-base font-bold text-text">{profile.name}</p>
+              <p className="truncate text-[0.8125rem] text-text-secondary">{profile.email}</p>
             </div>
+          </div>
 
-            <div className="p-5">
-              <h2 id="judul-info-akun" className="text-base font-semibold">
+          <div className="flex flex-col gap-4 p-5">
+            <CardHeader>
+              <CardTitle id="judul-info-akun" role="heading" aria-level={2} className="text-base">
                 Info akun
-              </h2>
-              <dl className="mt-3 grid gap-3 sm:grid-cols-2">
-                {[
-                  { label: 'Nama', value: profile.name, breakAll: false },
-                  { label: 'Email', value: profile.email, breakAll: true },
-                  { label: 'Jurusan', value: profile.major, breakAll: false },
-                  { label: 'Kampus', value: profile.institution_name, breakAll: false },
-                ].map(({ label, value, breakAll }) => (
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <dl className="grid gap-3 sm:grid-cols-2">
+                {infoRows.map(({ label, value, breakAll }) => (
                   <div key={label} className="min-w-0">
                     <dt className="mb-1 text-xs text-text-secondary">{label}</dt>
                     <dd
@@ -117,103 +117,112 @@ export default function Index({ profile, is_only_admin }: IndexProps) {
                   </div>
                 ))}
               </dl>
-            </div>
-          </section>
+            </CardContent>
+          </div>
+        </Card>
 
-          <div className="grid items-start gap-4 xl:grid-cols-5">
-            <section
-                            aria-labelledby="judul-persetujuan"
-              data-load
-              className={`${cardClass} xl:col-span-3`}
-            >
-              <h2 id="judul-persetujuan" className="text-base font-semibold">
+        <div className="grid items-start gap-4 xl:grid-cols-5">
+          <Card data-load role="region" aria-labelledby="judul-persetujuan" className="gap-4 p-5 xl:col-span-3">
+            <CardHeader className="flex-row flex-wrap items-center justify-between gap-2">
+              <CardTitle id="judul-persetujuan" role="heading" aria-level={2} className="text-base">
                 Persetujuan pelatihan
-              </h2>
-              <p className="mt-2 text-sm font-semibold">{CONSENT_TRAINING_QUESTION}</p>
-              <p className="mt-1 text-[0.8125rem] leading-relaxed text-text-secondary">{CONSENT_TRAINING_TEXT}</p>
-
-              <p className="mt-4 flex items-center gap-2 rounded-xl bg-neutral-soft px-3.5 py-2 text-sm font-medium" role="status">
+              </CardTitle>
+              <Badge variant={answered && choice !== null ? 'mint' : 'secondary'} role="status" className="py-1 whitespace-normal">
                 {answered && choice !== null ? (
-                  <CircleCheck className="size-4.5 shrink-0 text-success" aria-hidden="true" />
+                  <CircleCheck aria-hidden="true" />
                 ) : (
-                  <Info className="size-4.5 shrink-0 text-text-secondary" aria-hidden="true" />
+                  <Info aria-hidden="true" />
                 )}
                 {statusText(choice, answered)}
-              </p>
+              </Badge>
+            </CardHeader>
+            <Separator />
 
-              {saved ? (
-                <Alert className="mt-3">
-                  <CircleCheck className="text-success!" aria-hidden="true" />
-                  <AlertDescription>Pilihanmu tersimpan.</AlertDescription>
-                </Alert>
-              ) : null}
-              {failed ? (
-                <Alert variant="destructive" className="mt-3">
-                  <CircleAlert aria-hidden="true" />
-                  <AlertDescription>{CONSENT_ERROR}</AlertDescription>
-                </Alert>
-              ) : null}
+            <CardContent className="space-y-1">
+              <p className="text-sm font-semibold">{CONSENT_TRAINING_QUESTION}</p>
+              <p className="text-[0.8125rem] leading-relaxed text-text-secondary">{CONSENT_TRAINING_TEXT}</p>
+            </CardContent>
 
-              <div className="mt-3 flex flex-col gap-2 sm:flex-row">
-                {CHOICES.map(({ value, label }) => {
-                  const selected = answered && choice === value;
-                  return (
-                    <Button
-                      key={value}
-                      type="button"
-                      variant="outline"
-                      aria-pressed={selected}
-                      disabled={saving}
-                      onClick={() => saveChoice(value)}
-                      className={`rounded-full! px-5 text-sm ${
-                        selected ? 'border-2 border-primary bg-soft-lavender font-semibold hover:bg-soft-lavender hover:text-primary' : ''
-                      }`}
-                    >
-                      {selected ? <Check aria-hidden="true" /> : null}
-                      {label}
-                    </Button>
-                  );
-                })}
-              </div>
-            </section>
+            {saved ? (
+              <Alert>
+                <CircleCheck className="text-success!" aria-hidden="true" />
+                <AlertDescription>Pilihanmu tersimpan.</AlertDescription>
+              </Alert>
+            ) : null}
+            {failed ? (
+              <Alert variant="destructive">
+                <CircleAlert aria-hidden="true" />
+                <AlertDescription>{CONSENT_ERROR}</AlertDescription>
+              </Alert>
+            ) : null}
 
-            <section
-                            aria-labelledby="judul-hapus-akun"
-              data-load
-              className="rounded-3xl bg-crisis-bg p-5 shadow-lift xl:col-span-2"
-            >
-              <h2 id="judul-hapus-akun" className="flex items-center gap-2 text-base font-semibold text-crisis-text">
+            <CardFooter className="flex-col items-stretch gap-2 sm:flex-row">
+              {CHOICES.map(({ value, label }) => {
+                const selected = answered && choice === value;
+                return (
+                  <Button
+                    key={value}
+                    type="button"
+                    variant="outline"
+                    aria-pressed={selected}
+                    disabled={saving}
+                    onClick={() => saveChoice(value)}
+                    className={`rounded-full! px-5 text-sm ${
+                      selected ? 'border-2 border-primary bg-soft-lavender font-semibold hover:bg-soft-lavender hover:text-primary' : ''
+                    }`}
+                  >
+                    {selected ? <Check aria-hidden="true" /> : null}
+                    {label}
+                  </Button>
+                );
+              })}
+            </CardFooter>
+          </Card>
+
+          <Card
+            data-load
+            role="region"
+            aria-labelledby="judul-hapus-akun"
+            className="gap-4 border-destructive/40 bg-crisis-bg p-5 xl:col-span-2"
+          >
+            <CardHeader>
+              <CardTitle
+                id="judul-hapus-akun"
+                role="heading"
+                aria-level={2}
+                className="flex items-center gap-2 text-base text-crisis-text"
+              >
                 <Trash2 className="size-4.5" aria-hidden="true" />
                 Hapus akun
-              </h2>
-              <p className="mt-2 text-[0.8125rem] leading-relaxed text-text-secondary">
+              </CardTitle>
+              <CardDescription className="text-[0.8125rem] leading-relaxed">
                 Semua datamu akan dihapus permanen dan tidak bisa dikembalikan. Data yang sudah diekspor untuk
                 pelatihan model (bila kamu menyetujuinya) tidak ikut terhapus, dan salinan cadangan hilang otomatis
                 sesuai masa simpannya.
-              </p>
+              </CardDescription>
+            </CardHeader>
 
-              {is_only_admin ? (
-                <Alert className="mt-3">
-                  <Info aria-hidden="true" />
-                  <AlertDescription>
-                    Kamu satu-satunya admin, jadi akun ini belum bisa dihapus. Jadikan orang lain admin lebih dulu.
-                  </AlertDescription>
-                </Alert>
-              ) : null}
+            {is_only_admin ? (
+              <Alert>
+                <Info aria-hidden="true" />
+                <AlertDescription>
+                  Kamu satu-satunya admin, jadi akun ini belum bisa dihapus. Jadikan orang lain admin lebih dulu.
+                </AlertDescription>
+              </Alert>
+            ) : null}
 
-              <div className="mt-4">
-                <Button
-                  type="button"
-                  variant="destructive"
-                  className="rounded-full! px-5 text-sm"
-                  disabled={is_only_admin}
-                  onClick={() => setDeleteOpen(true)}
-                >
-                  Hapus akun
-                </Button>
-              </div>
-            </section>
-          </div>
+            <CardFooter>
+              <Button
+                type="button"
+                variant="destructive"
+                className="rounded-full! px-5 text-sm"
+                disabled={is_only_admin}
+                onClick={() => setDeleteOpen(true)}
+              >
+                Hapus akun
+              </Button>
+            </CardFooter>
+          </Card>
         </div>
       </div>
 
