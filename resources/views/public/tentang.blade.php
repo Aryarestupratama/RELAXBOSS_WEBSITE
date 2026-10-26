@@ -52,7 +52,7 @@
                 </p>
             </div>
 
-            <figure data-reveal="right" class="flex min-h-40 flex-col justify-center rounded-3xl bg-soft-lavender p-6 text-text shadow-lift md:p-8">
+            <figure data-reveal="right" class="flex min-h-40 flex-col justify-center rounded-3xl bg-card p-6 text-text shadow-lift md:p-8">
                 <blockquote class="text-xl leading-snug font-bold md:text-2xl">
                     &ldquo;Anda yang mengendalikan stres, bukan sebaliknya.&rdquo;
                 </blockquote>
@@ -72,7 +72,7 @@
                     @foreach ($campusCards as $card)
                         <x-ui.card tag="article" :tone="$card['tone']" radius="rounded-3xl" data-item data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
                             <x-ui.card.header class="px-0!">
-                                <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $card['icon'] }}" class="size-5" /></span>
+                                <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $card['icon'] }}" class="size-5" /></span>
                                 <x-ui.card.title class="mt-1 text-xl">{{ $card['title'] }}</x-ui.card.title>
                             </x-ui.card.header>
                             <x-ui.card.content class="px-0!">
@@ -106,7 +106,7 @@
                 ] as $feature)
                     <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" data-item data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
                         <x-ui.card.header class="px-0!">
-                            <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
+                            <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
                             <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
                             <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
                         </x-ui.card.header>

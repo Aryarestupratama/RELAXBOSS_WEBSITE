@@ -31,7 +31,7 @@ export default function StatCard({ label, value, icon: Icon, tone = 'lavender', 
       <div className="flex items-start justify-between gap-3">
         <dt className={cn('text-sm font-medium', crisis ? 'text-crisis-text' : 'text-text-secondary')}>{label}</dt>
         <span
-          className={cn('grid size-10 shrink-0 place-items-center rounded-full bg-card/60', crisis ? 'text-crisis-text' : 'text-primary')}
+          className={cn('grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender', crisis ? 'text-crisis-text' : 'text-primary')}
           aria-hidden="true"
         >
           <Icon className="size-5" />

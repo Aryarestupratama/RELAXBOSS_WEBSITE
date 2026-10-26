@@ -53,7 +53,7 @@ function ActionTile({ icon: Icon, title, description, href, tone }: ActionTilePr
     >
       <Card tone={tone} className="min-h-36 gap-1 p-4 pr-16 transition-shadow duration-300 group-hover:shadow-lift-hover">
         <CardHeader className="gap-0">
-          <span className="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+          <span className="grid size-10 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
             <Icon className="size-5" />
           </span>
           <CardTitle className="mt-3 text-base font-bold">{title}</CardTitle>

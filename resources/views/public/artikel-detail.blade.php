@@ -56,8 +56,8 @@
     @if ($assessment)
         <section class="bg-background" aria-label="Asesmen terkait">
             <div class="mx-auto max-w-3xl px-4 pb-10 md:pb-14">
-                <div data-reveal class="flex flex-col gap-5 rounded-3xl bg-soft-lavender p-6 text-text shadow-lift sm:flex-row sm:items-center md:p-8">
-                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-5" /></span>
+                <div data-reveal class="flex flex-col gap-5 rounded-3xl bg-card p-6 text-text shadow-lift sm:flex-row sm:items-center md:p-8">
+                    <span class="grid size-12 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-5" /></span>
                     <div class="flex-1">
                         <h2 class="text-xl font-bold">Ingin mengenali kondisimu?</h2>
                         <p class="mt-1 text-sm leading-relaxed text-text-secondary">Coba asesmen {{ $assessment['name'] }} untuk gambaran awal. Hasilnya bukan diagnosis.</p>

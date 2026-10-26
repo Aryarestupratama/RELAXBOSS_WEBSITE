@@ -1,11 +1,7 @@
 @props(['id', 'title', 'icon', 'tone' => 'yellow'])
 @php
-    // Urutan warna kuning, hijau, ungu mengikuti kartu fitur Beranda (Design 7, SCR-001).
-    $circle = match ($tone) {
-        'green' => 'bg-mood-green text-text',
-        'brand' => 'bg-brand-soft text-text',
-        default => 'bg-mood-yellow text-text',
-    };
+    // Lingkaran ikon selalu ungu muda (TASK-028AB); `tone` dipertahankan agar pemanggil lama tidak berubah.
+    $circle = 'bg-soft-lavender text-text';
 @endphp
 <x-ui.card tag="section" id="{{ $id }}" aria-labelledby="{{ $id }}-judul" data-reveal class="scroll-mt-24 p-6 md:p-8" :flush="true">
     <div class="flex items-center gap-4">

@@ -41,21 +41,21 @@
                 </div>
 
                 <div data-load="pop" class="w-full max-w-md justify-self-center lg:max-w-none">
-                    <div class="rounded-3xl bg-soft-mint p-6 text-text shadow-lift">
-                        <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+                    <div class="rounded-3xl bg-card p-6 text-text shadow-lift">
+                        <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
                             <x-icon name="clipboard-check" class="size-5" />
                         </span>
                         <h2 class="mt-3 text-xl font-bold">Sekilas</h2>
                         <dl class="mt-3 space-y-3 text-sm">
                             <div class="flex items-center gap-3">
-                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="clock" class="size-4" /></span>
+                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="clock" class="size-4" /></span>
                                 <div>
                                     <dt class="text-xs text-text-secondary">Waktu pengerjaan</dt>
                                     <dd class="font-semibold">Sekitar {{ $assessment['estimated_minutes'] }} menit</dd>
                                 </div>
                             </div>
                             <div class="flex items-center gap-3">
-                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="list-checks" class="size-4" /></span>
+                                <span class="grid size-9 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="list-checks" class="size-4" /></span>
                                 <div>
                                     <dt class="text-xs text-text-secondary">Jumlah pertanyaan</dt>
                                     <dd class="font-semibold">{{ $assessment['question_count'] }} pertanyaan</dd>

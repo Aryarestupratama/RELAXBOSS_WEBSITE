@@ -63,7 +63,7 @@
                                     <img src="{{ asset('images/landing/'.$emotion['image']) }}" width="{{ $emotion['width'] }}" height="{{ $emotion['height'] }}" alt="{{ $emotion['alt'] }}" loading="lazy" class="mt-1 h-36 w-full object-contain">
                                 @else
                                     <div class="mt-1 grid h-36 place-items-center" aria-hidden="true">
-                                        <span class="grid size-20 place-items-center rounded-full bg-card/60 text-primary"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
+                                        <span class="grid size-20 place-items-center rounded-full bg-soft-lavender text-primary"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
                                     </div>
                                 @endif
                             </x-ui.card.content>
@@ -118,7 +118,7 @@
                     <div data-item>
                         <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" data-lift class="group relative min-h-56 gap-2! px-5 pb-16 transition-shadow duration-300 hover:shadow-lift-hover">
                             <x-ui.card.header class="px-0!">
-                                <span class="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
+                                <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
                                 <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
                                 <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
                             </x-ui.card.header>

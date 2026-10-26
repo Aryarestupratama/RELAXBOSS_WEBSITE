@@ -75,7 +75,7 @@ export default function ChatIndex({ filter, rows, prev_page_url, next_page_url }
 
         {rows.length === 0 ? (
           <Card tone="lavender" data-load className="items-center gap-3 px-6 py-10 text-center">
-            <span className="grid size-12 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+            <span className="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
               <MessagesSquare className="size-6" />
             </span>
             <p className="max-w-sm text-sm text-text">{EMPTY[filter]}</p>

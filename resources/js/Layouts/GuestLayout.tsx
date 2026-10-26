@@ -44,9 +44,9 @@ export default function GuestLayout({ title, illustration = 'masuk', tab, wide =
           className={`grid w-full gap-0 p-2 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-98 motion-safe:duration-700 lg:min-h-[34rem] lg:max-w-[60rem] lg:grid-cols-[0.9fr_1.1fr] lg:p-2.5 max-lg:max-w-md`}
         >
           <aside className="relative hidden flex-col overflow-hidden rounded-2xl bg-soft-lavender p-6 lg:flex" aria-label="RelaxBoss">
-            <span className="pointer-events-none absolute -top-16 -right-14 size-52 rounded-full bg-soft-sky" aria-hidden="true" />
+            <span className="pointer-events-none absolute -top-16 -right-14 size-52 rounded-full bg-card/50" aria-hidden="true" />
             <span className="pointer-events-none absolute top-1/2 -left-20 size-48 rounded-full bg-soft-lavender" aria-hidden="true" />
-            <span className="pointer-events-none absolute right-6 bottom-36 size-16 rounded-full bg-soft-mint" aria-hidden="true" />
+            <span className="pointer-events-none absolute right-6 bottom-36 size-16 rounded-full bg-card/50" aria-hidden="true" />
 
             <div className="relative">
               <Logo />

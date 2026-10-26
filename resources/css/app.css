@@ -105,8 +105,12 @@
     --input-border: #797B75;
     --primary: #192338;
     --on-primary: #FFFFFF;
-    --brand: #7948FC;
-    --brand-strong: #6A38EE;
+    /* Keputusan founder (TASK-028AB): warna warni hanya untuk label mood. Aksen merek (tautan, ikon, grafik, progres)
+       kini memakai biru RelaxBoss (--primary); satu-satunya ungu yang tersisa adalah cincin fokus dan pastel ungu muda. */
+    --brand: var(--primary);
+    --brand-strong: var(--primary);
+    /* Cincin fokus tetap berwarna agar terlihat di atas putih maupun navy (WCAG 2.4.7); ungu #6A38EE, 6,15:1 dengan putih. */
+    --focus-ring: #6A38EE;
     /* Ungu muda untuk lencana di atas permukaan gelap (mis. "Admin" di rail navy) dan tint transparan (penanda aktif navigasi).
        Untuk kartu dan lingkaran hias pakai --soft-lavender. Teks di atasnya --text (bukan putih) */
     --brand-soft: #C3B1FF;
@@ -137,9 +141,12 @@
     /* Warna hover semua tombol dan tautan bernavy, publik maupun aplikasi (navy sedikit lebih biru dari --primary; --primary tetap untuk keadaan diam dan terpilih). Teks putih di atasnya 16,6:1. */
     --nav-hover: #0A2244;
     --soft-lavender: #DED4FF;
-    --soft-sky: #C9E2F8;
-    --soft-mint: #CDEEDD;
-    --soft-peach: #FBDCCD;
+    /* TASK-028AB: satu-satunya warna isian di dalam kartu adalah ungu muda. Sky, mint, dan peach dialiaskan ke --soft-lavender
+       agar semua pemakai lama (kotak ikon, lencana, lingkaran hias) ikut tanpa mengubah tiap berkas. Hapus ketiganya
+       beserta prop `tone` saat pembersihan (TODO-LATER). */
+    --soft-sky: var(--soft-lavender);
+    --soft-mint: var(--soft-lavender);
+    --soft-peach: var(--soft-lavender);
 
     /* Variabel shadcn dipetakan ke token di atas (Design bagian 3) */
     --background: var(--page-bg);
@@ -156,7 +163,7 @@
     --accent-foreground: var(--text);
     --destructive: var(--danger);
     --input: var(--input-border);
-    --ring: var(--brand-strong);
+    --ring: var(--focus-ring);
     --radius: 0.5rem;
 }
 
@@ -185,7 +192,7 @@
 
     /* Cincin fokus (Design bagian 2): hanya :focus-visible */
     :focus-visible {
-        outline: 2px solid var(--brand-strong);
+        outline: 2px solid var(--focus-ring);
         outline-offset: 3px;
         border-radius: 4px;
     }

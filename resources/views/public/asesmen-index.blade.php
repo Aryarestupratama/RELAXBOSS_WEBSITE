@@ -24,7 +24,7 @@
     <section class="bg-background" aria-label="Daftar asesmen">
         <div class="mx-auto max-w-6xl px-4 pb-14 md:pb-20">
             @if ($assessments->isEmpty())
-                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-10 text-center">
+                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-10 text-center">
                     <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-7" /></span>
                     <p class="mt-4 text-lg font-semibold text-text">Daftar asesmen sedang disiapkan.</p>
                     <div class="mt-5"><x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link></div>

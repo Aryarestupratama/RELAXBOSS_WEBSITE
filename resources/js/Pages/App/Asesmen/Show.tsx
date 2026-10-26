@@ -139,7 +139,7 @@ export default function Show({ assessment }: ShowProps) {
         <div className="space-y-4 lg:col-span-4">
           <Card data-load="pop" tone="mint" role="region" aria-labelledby="judul-sekilas" className="gap-3 p-5">
             <CardHeader className="gap-3">
-              <span className="grid size-10 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+              <span className="grid size-10 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
                 <ClipboardCheck className="size-5" />
               </span>
               <CardTitle id="judul-sekilas" role="heading" aria-level={2} className="text-base font-bold">
@@ -150,7 +150,7 @@ export default function Show({ assessment }: ShowProps) {
               <dl className="text-sm">
                 <div className="flex items-center gap-3">
                   <span
-                    className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary"
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary"
                     aria-hidden="true"
                   >
                     <Clock className="size-4" />
@@ -163,7 +163,7 @@ export default function Show({ assessment }: ShowProps) {
                 <Separator className="my-3 bg-text/10" />
                 <div className="flex items-center gap-3">
                   <span
-                    className="grid size-9 shrink-0 place-items-center rounded-full bg-card/60 text-primary"
+                    className="grid size-9 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary"
                     aria-hidden="true"
                   >
                     <ListChecks className="size-4" />

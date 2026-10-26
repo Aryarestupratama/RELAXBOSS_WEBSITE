@@ -58,13 +58,13 @@ const EASE = 'ease-[cubic-bezier(0.2,0.7,0.2,1)]';
 
 /*
  * Item rail (putih, garis --primary): teks dan ikon --primary; hover = pil --primary membesar dari tengah
- * dengan teks --on-primary; halaman aktif = --brand dengan teks --on-primary (RULE-052) dan --shadow-lift.
+ * dengan teks --on-primary; halaman aktif = --soft-lavender dengan teks --text (RULE-052) dan --shadow-lift.
  */
 const railItem =
   `group relative isolate flex h-14 w-full flex-col items-center justify-center gap-1 rounded-xl px-1 text-[0.6875rem] font-medium text-primary transition-all duration-300 ${EASE} ` +
   'before:absolute before:inset-0 before:-z-10 before:scale-75 before:rounded-xl before:bg-primary before:opacity-0 before:transition-all before:duration-300 before:ease-[cubic-bezier(0.2,0.7,0.2,1)] ' +
   'hover:text-on-primary hover:before:scale-100 hover:before:opacity-100 ' +
-  'aria-[current=page]:bg-brand aria-[current=page]:text-on-primary aria-[current=page]:shadow-lift aria-[current=page]:before:opacity-0';
+  'aria-[current=page]:bg-soft-lavender aria-[current=page]:text-text aria-[current=page]:shadow-lift aria-[current=page]:before:opacity-0';
 
 const iconMotion = `size-5 transition-transform duration-300 ${EASE} group-hover:-translate-y-0.5 group-hover:scale-110 group-aria-[current=page]:scale-110`;
 

@@ -6,7 +6,7 @@
 <li data-item>
     <x-ui.card tag="article" :interactive="true" class="h-full overflow-hidden" :flush="true">
         <div class="flex items-center justify-between gap-3 px-5 py-4 {{ $tones[$index % 4] }}">
-            <span class="grid size-11 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true">
+            <span class="grid size-11 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
                 <x-icon name="file-text" class="size-5" />
             </span>
             <x-ui.badge variant="outline">{{ $item['category_label'] }}</x-ui.badge>

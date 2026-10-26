@@ -79,7 +79,7 @@
             <h2 id="kontak" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Kontak bantuan</h2>
 
             @if (count($contacts) === 0)
-                <div data-reveal="pop" class="mx-auto mt-6 flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-10 text-center">
+                <div data-reveal="pop" class="mx-auto mt-6 flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-10 text-center">
                     <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="phone" class="size-7" /></span>
                     <p class="mt-4 text-lg font-semibold text-text">Daftar kontak sedang disiapkan.</p>
                 </div>

@@ -1,15 +1,9 @@
 @props(['tag' => 'div', 'tone' => null, 'interactive' => false, 'flush' => false, 'radius' => 'rounded-2xl'])
 @php
-    // Kartu bergaya shadcn (Card). Warna hanya dari token; teks di atas pastel selalu --text (RULE-052).
+    // Kartu bergaya shadcn (Card). Warna hanya dari token (RULE-050/052).
     // `interactive`: seluruh kartu bisa diklik lewat satu tautan `after:absolute after:inset-0` di judul.
-    $surface = match ($tone) {
-        'lavender' => 'bg-soft-lavender',
-        'sky' => 'bg-soft-sky',
-        'mint' => 'bg-soft-mint',
-        'peach' => 'bg-soft-peach',
-        'muted' => 'bg-surface-alt',
-        default => 'bg-card',
-    };
+    // Keputusan founder (TASK-028AB): semua kartu putih; `tone` dipertahankan agar pemanggil lama tidak berubah.
+    $surface = 'bg-card';
 @endphp
 <{{ $tag }} data-slot="card" @if ($interactive) data-lift @endif
     {{ $attributes->class([

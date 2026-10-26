@@ -3,17 +3,19 @@ import { cn } from '@/lib/utils';
 
 /**
  * Card bergaya shadcn. Warna hanya dari token (RULE-050/052); bayangan memakai --shadow-lift.
- * `tone` memberi latar pastel; teks di atas pastel selalu --text.
+ * Keputusan founder (TASK-028AB): SEMUA kartu putih (--card) dengan bayangan. Warna di dalam kartu hanya ungu muda
+ * (--soft-lavender) pada kotak ikon, lencana, dan hiasan. Prop `tone` dipertahankan agar pemanggil lama tidak berubah,
+ * tetapi tidak lagi mengubah latar.
  */
 type CardTone = 'default' | 'lavender' | 'sky' | 'mint' | 'peach' | 'muted';
 
 const TONES: Record<CardTone, string> = {
   default: 'bg-card',
-  lavender: 'bg-soft-lavender',
-  sky: 'bg-soft-sky',
-  mint: 'bg-soft-mint',
-  peach: 'bg-soft-peach',
-  muted: 'bg-surface-alt',
+  lavender: 'bg-card',
+  sky: 'bg-card',
+  mint: 'bg-card',
+  peach: 'bg-card',
+  muted: 'bg-card',
 };
 
 function Card({ className, tone = 'default', ...props }: ComponentProps<'div'> & { tone?: CardTone }) {

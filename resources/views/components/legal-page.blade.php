@@ -91,8 +91,8 @@
         @endisset
 
         <a href="{{ url($docs[$other]['href']) }}" data-reveal data-lift
-           class="group flex max-w-3xl items-center gap-4 rounded-3xl bg-soft-lavender p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-6">
-            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-card/60 text-primary" aria-hidden="true"><x-icon name="{{ $docs[$other]['icon'] }}" class="size-5" /></span>
+           class="group flex max-w-3xl items-center gap-4 rounded-3xl bg-card p-5 text-text shadow-lift transition-shadow duration-300 hover:shadow-lift-hover md:p-6">
+            <span class="grid size-12 shrink-0 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $docs[$other]['icon'] }}" class="size-5" /></span>
             <span class="flex-1">
                 <span class="block text-xl font-bold">{{ $otherCard['title'] }}</span>
                 <span class="mt-1 block text-sm leading-relaxed text-text-secondary">{{ $otherCard['text'] }}</span>

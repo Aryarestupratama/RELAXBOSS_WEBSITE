@@ -46,7 +46,7 @@
     <section class="bg-background" aria-label="Daftar artikel">
         <div class="mx-auto max-w-6xl px-4 pb-8 md:pb-10">
             @if ($articles->isEmpty())
-                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-surface-alt px-5 py-8 text-center">
+                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-8 text-center">
                     <img src="{{ asset('images/landing/robot-wave.webp') }}" width="800" height="800" loading="lazy" alt="" class="size-32 object-contain">
                     <p class="mt-3 text-lg font-semibold text-text">
                         {{ $activeCategory ? 'Belum ada artikel untuk kategori ini.' : 'Artikel sedang disiapkan.' }}
