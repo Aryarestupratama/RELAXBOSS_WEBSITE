@@ -41,7 +41,7 @@
                     RelaxBoss membantu Anda mencatat suasana hati, berbicara dengan teman AI yang mendengarkan, dan mengenali diri lewat asesmen singkat, satu langkah kecil setiap hari.
                 </p>
                 <div data-load class="mt-6">
-                    <x-button-link href="{{ url('/daftar') }}" class="rounded-full! px-6 text-sm">Mulai Mengendalikan Stres Anda</x-button-link>
+                    <x-account-cta label="Mulai Mengendalikan Stres Anda" class="rounded-full! px-6 text-sm" />
                 </div>
             </div>
         </div>
@@ -141,7 +141,7 @@
                     <h2 id="judul-panduan" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Empat langkah menuju perasaan lebih baik</h2>
                     <p class="mt-3 text-base text-text-secondary">Tidak perlu terburu-buru. Ikuti satu per satu, sesuai kecepatan Anda.</p>
                     <div class="mt-5">
-                        <x-button-link href="{{ url('/daftar') }}" class="rounded-full! px-6 text-sm">Siap Merasa Lebih Baik</x-button-link>
+                        <x-account-cta label="Siap Merasa Lebih Baik" class="rounded-full! px-6 text-sm" />
                     </div>
                 </div>
                 <ol data-stagger class="relative space-y-6">
@@ -170,7 +170,7 @@
                     <h2 id="judul-penutup" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Siap merasa lebih baik?</h2>
                     <p class="mt-3 text-base text-text-secondary">Tidak perlu menunggu semuanya membaik. Mulai hari ini, dan kami temani Anda.</p>
                     <div class="mt-5 flex flex-wrap gap-3">
-                        <x-button-link href="{{ url('/daftar') }}" class="rounded-full! px-6 text-sm">Daftar Gratis</x-button-link>
+                        <x-account-cta label="Daftar Gratis" class="rounded-full! px-6 text-sm" />
                         <x-button-link href="#fitur" variant="outline" class="rounded-full! border-2! bg-card px-6 text-sm">Pelajari Fitur</x-button-link>
                     </div>
                 </div>

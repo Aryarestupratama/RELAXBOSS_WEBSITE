@@ -41,6 +41,8 @@ class HandleInertiaRequests extends Middleware
             'crisisContacts' => fn (): array => $this->crisisContacts(),
             // Status consent milik pengguna sendiri, untuk ConsentDialog dan halaman Akun (FR-013).
             'consent' => fn (): ?array => $this->consent($request),
+            // Hanya penanda peran (tanpa identitas), untuk tautan "Admin" di AppShell.
+            'auth' => fn (): ?array => $request->user() === null ? null : ['is_admin' => $request->user()->isAdmin()],
         ];
     }
 

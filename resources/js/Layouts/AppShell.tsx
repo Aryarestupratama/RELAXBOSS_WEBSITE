@@ -6,6 +6,7 @@ import {
   LifeBuoy,
   LogOut,
   MessageCircle,
+  ShieldCheck,
   Smile,
   User,
   type LucideIcon,
@@ -79,7 +80,8 @@ export default function AppShell({
   fill = false,
   children,
 }: AppShellProps) {
-  const { url } = usePage();
+  const { url, props } = usePage();
+  const isAdmin = (props as { auth?: { is_admin: boolean } | null }).auth?.is_admin === true;
 
   useEffect(() => {
     initMotion();
@@ -102,7 +104,7 @@ export default function AppShell({
 
         {/* Rail (>= 768px) */}
         <aside className="fixed inset-y-3 left-3 z-40 hidden w-24 md:block">
-          <Card className="h-full justify-between rounded-2xl border-[1.5px] border-primary py-5">
+          <Card className="h-full justify-between overflow-y-auto rounded-2xl border-[1.5px] border-primary py-5">
             <div className="flex w-full flex-col items-center gap-5 px-2.5">
               <a href="/" aria-label="RelaxBoss, ke Beranda" data-press className="inline-flex min-h-11 items-center">
                 <img src="/images/logo-relaxboss.png" width={36} height={36} alt="" className="size-9 rounded-lg" />
@@ -125,6 +127,12 @@ export default function AppShell({
             </div>
             <div className="flex w-full flex-col items-center gap-2 px-2.5">
               <Separator className="mb-1 w-10" />
+              {isAdmin ? (
+                <Link href="/admin" data-press className={railItem}>
+                  <ShieldCheck className={iconMotion} aria-hidden="true" />
+                  Admin
+                </Link>
+              ) : null}
               {showHelp ? (
                 <a href="/konsultasi" data-press className={railItem}>
                   <LifeBuoy className={iconMotion} aria-hidden="true" />
@@ -151,6 +159,15 @@ export default function AppShell({
               RelaxBoss
             </a>
             <div className="flex items-center gap-1">
+              {isAdmin ? (
+                <Link
+                  href="/admin"
+                  aria-label="Ke Panel Admin"
+                  className="inline-flex size-11 items-center justify-center rounded-lg text-primary transition-colors hover:text-nav-hover"
+                >
+                  <ShieldCheck className="size-5" aria-hidden="true" />
+                </Link>
+              ) : null}
               <a
                 href="/konsultasi"
                 aria-label="Butuh bantuan sekarang?"

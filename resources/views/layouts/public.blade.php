@@ -62,7 +62,12 @@
 
             <div class="ml-auto flex items-center gap-2">
                 @auth
-                    <a href="{{ url('/dashboard') }}" data-press class="{{ $btnOutline }}">Dashboard</a>
+                    @if (auth()->user()->isAdmin())
+                        <a href="{{ url('/dashboard') }}" data-press class="hidden sm:inline-flex {{ $btnOutline }}">Dashboard</a>
+                        <a href="{{ url('/admin') }}" data-press class="{{ $btnSolid }}">Panel Admin</a>
+                    @else
+                        <a href="{{ url('/dashboard') }}" data-press class="{{ $btnSolid }}">Dashboard</a>
+                    @endif
                 @else
                     <a href="{{ url('/masuk') }}" data-press class="{{ $btnOutline }}">Masuk</a>
                     <a href="{{ url('/daftar') }}" data-press class="hidden sm:inline-flex {{ $btnSolid }}">Daftar gratis</a>
