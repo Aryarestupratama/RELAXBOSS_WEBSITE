@@ -32,8 +32,8 @@
 
 @section('content')
     {{-- 1. Hero --}}
-    <section class="bg-background" aria-labelledby="judul-hero">
-        <div class="mx-auto max-w-6xl px-4 pt-10 pb-8 md:pt-14 md:pb-10">
+    <section class="flex min-h-[26rem] items-center bg-background md:min-h-[32rem]" aria-labelledby="judul-hero">
+        <div class="mx-auto w-full max-w-6xl px-4 pt-16 pb-14 md:pt-24 md:pb-20">
             <div class="max-w-3xl">
                 <h1 id="judul-hero" data-load class="text-[1.875rem] leading-[1.1] font-bold tracking-tight md:text-5xl lg:text-[3.25rem]">
                     Anda yang mengendalikan stres, bukan sebaliknya.
@@ -80,7 +80,7 @@
                 <div data-reveal>
                     <h2 id="judul-tentang" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Apa itu RelaxBoss?</h2>
                     <p class="mt-3 max-w-prose text-base text-text-secondary">
-                        RelaxBoss adalah ruang aman bagi mahasiswa dan pekerja untuk mengelola stres sehari-hari.
+                        RelaxBoss adalah ruang aman bagi mahasiswa untuk mengelola stres sehari-hari.
                         Bukan layanan darurat dan bukan pengganti tenaga profesional.
                     </p>
                     <div class="mt-5">
