@@ -41,6 +41,7 @@ Untuk menguji AI sungguhan, isi `GROQ_KEYS_CHAT` dan `GROQ_KEYS_ASSESSMENT` di `
 | `php artisan relaxboss:check-crisis` | Periksa `resources/crisis/cases.json`; jalankan setiap prompt AI atau kata kunci krisis berubah |
 | `php artisan relaxboss:preflight` | Periksa kesiapan produksi; gagal berarti jangan go-live |
 | `php artisan relaxboss:backup-db` | Cadangkan database ke `storage/app/private/backups` (dijadwalkan harian) |
+| `php artisan relaxboss:purge-content` | Hapus Instrumen, hasil Asesmen, artikel, chat, mood, dan log sebelum go-live (akun tetap); jalankan `relaxboss:backup-db` dulu |
 | `php artisan relaxboss:export-ai-data {chat\|assessment}` | Ekspor data AI dari pengguna yang menyetujui, tanpa identitas |
 
 Cron produksi: `* * * * * php artisan schedule:run`. Contoh konfigurasi produksi ada di `.env.production.example`.
