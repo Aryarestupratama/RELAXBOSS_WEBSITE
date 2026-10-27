@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
+import { ArrowRight, BookOpen, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import ActionTile from '@/Components/shared/ActionTile';
 import PageHeader from '@/Components/shared/PageHeader';
@@ -70,6 +70,17 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
               href="/app/riwayat"
               tone="sky"
             />
+            {/* /artikel adalah halaman Blade (FR-021), jadi tautan biasa (native), bukan kunjungan Inertia. */}
+            <div className="sm:col-span-2">
+              <ActionTile
+                icon={BookOpen}
+                title="Artikel"
+                description="Bacaan edukasi seputar stres, tidur, dan kesehatan mental."
+                href="/artikel"
+                tone="mint"
+                native
+              />
+            </div>
           </div>
 
           <section aria-labelledby="judul-asesmen" data-load>
