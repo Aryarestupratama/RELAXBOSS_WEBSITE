@@ -116,20 +116,25 @@
         </div>
     </section>
 
-    {{-- 5. Tentang nama --}}
+    {{-- 5. Tentang nama: tipografi saja, tanpa kartu. Relax di kiri atas, Boss di kanan bawah. --}}
     <section class="bg-background" aria-labelledby="nama">
-        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
-            <h2 id="nama" data-reveal class="text-center text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Tentang nama</h2>
-            <div data-stagger class="relative mx-auto mt-8 grid max-w-3xl items-stretch gap-4 md:grid-cols-2 md:gap-6">
-                <x-ui.card tag="article" tone="mint" radius="rounded-3xl" data-item data-lift class="items-center justify-center p-6 text-center transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
-                    <p class="text-3xl font-bold" aria-hidden="true">Relax</p>
-                    <p class="mt-2 text-sm"><span class="font-semibold">&ldquo;Relax&rdquo;</span> adalah ajakan untuk tenang.</p>
-                </x-ui.card>
-                <x-ui.card tag="article" tone="lavender" radius="rounded-3xl" data-item data-lift class="items-center justify-center p-6 text-center transition-shadow duration-300 hover:shadow-lift-hover md:p-8">
-                    <p class="text-3xl font-bold" aria-hidden="true">Boss</p>
-                    <p class="mt-2 text-sm"><span class="font-semibold">&ldquo;Boss&rdquo;</span> mengingatkan bahwa kamulah yang memegang kendali atas stresmu.</p>
-                </x-ui.card>
-                <span class="pointer-events-none absolute top-1/2 left-1/2 z-10 hidden size-10 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full border border-border/60 bg-card text-lg font-semibold text-text shadow-popover md:grid" aria-hidden="true">+</span>
+        <div class="mx-auto max-w-5xl px-4 py-16 md:py-24">
+            <h2 id="nama" data-reveal class="text-xs font-semibold tracking-[0.3em] text-text-secondary uppercase">Tentang nama</h2>
+
+            <div class="mt-10 md:mt-14">
+                <div data-reveal="left" class="max-w-md">
+                    <p class="text-xs font-medium tracking-[0.3em] text-text-secondary" aria-hidden="true">01</p>
+                    <h3 class="mt-3 text-6xl leading-none font-light tracking-tight text-text md:text-8xl">Relax</h3>
+                    <p class="mt-5 text-base leading-relaxed text-text-secondary md:text-lg">Ajakan untuk tenang.</p>
+                </div>
+
+                <div class="my-10 border-t border-border md:my-14" aria-hidden="true"></div>
+
+                <div data-reveal="right" class="ml-auto max-w-md text-right">
+                    <p class="text-xs font-medium tracking-[0.3em] text-text-secondary" aria-hidden="true">02</p>
+                    <h3 class="mt-3 text-6xl leading-none font-light tracking-tight text-primary md:text-8xl">Boss</h3>
+                    <p class="mt-5 text-base leading-relaxed text-text-secondary md:text-lg">Pengingat bahwa kamulah yang memegang kendali atas stresmu.</p>
+                </div>
             </div>
         </div>
     </section>

@@ -7,7 +7,7 @@
     @php
         // Pastel yang sama dengan Beranda dan Asesmen (Design 2); teks di atasnya --text.
         $tones = ['bg-soft-lavender', 'bg-soft-sky', 'bg-soft-mint', 'bg-soft-peach'];
-        // Butir ini bukan urutan langkah, jadi tanpa nomor dan tanpa ikon.
+        // Butir ini bukan urutan langkah, jadi tanpa nomor dan tanpa ikon (bento di bagian 3).
         $signs = [
             'Rasa tertekan berlangsung berminggu-minggu dan mengganggu kuliah, tidur, atau makanmu.',
             'Kamu sulit menikmati hal yang dulu kamu sukai.',
@@ -31,15 +31,9 @@
     <section class="bg-background" aria-labelledby="darurat">
         <div class="mx-auto max-w-6xl px-4 pb-10 md:pb-14">
             <div data-reveal class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-crisis-text/30 bg-crisis-bg p-5 text-crisis-text md:flex-row md:items-center md:p-6">
-                <div class="flex items-start gap-4">
-                    <span class="mt-0.5 shrink-0" aria-hidden="true"><x-icon name="shield" class="size-6" /></span>
-                    <div>
-                        <h2 id="darurat" class="text-lg font-bold md:text-xl">Kalau kamu sedang dalam bahaya</h2>
-                        <p class="mt-1.5 max-w-2xl text-sm leading-relaxed">
-                            Kalau kamu berpikir untuk menyakiti dirimu sendiri, tolong hubungi bantuan sekarang atau minta seseorang yang kamu percaya menemanimu.
-                            Kamu tidak harus menghadapi ini sendirian.
-                        </p>
-                    </div>
+                <div>
+                    <h2 id="darurat" class="text-lg font-bold md:text-xl">Kalau kamu sedang dalam bahaya</h2>
+                    <p class="mt-1.5 max-w-2xl text-sm leading-relaxed">Kalau kamu berpikir menyakiti dirimu sendiri, hubungi bantuan sekarang atau minta seseorang menemanimu.</p>
                 </div>
                 <a href="#kontak-bantuan" class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold underline underline-offset-4">Lihat kontak bantuan</a>
             </div>
@@ -50,20 +44,31 @@
     <section class="bg-surface-alt" aria-labelledby="kapan">
         <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
             <h2 id="kapan" data-reveal class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Kapan sebaiknya mencari bantuan</h2>
-            <ul data-stagger class="mt-6 grid gap-4 md:grid-cols-2">
+            {{-- Bento: kartu pertama besar (dua kolom, dua baris), kartu krisis selebar penuh di bawah. --}}
+            <ul data-stagger class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($signs as $sign)
-                    <li data-item>
-                        <x-ui.card class="h-full">
-                            <x-ui.card.content>
-                                <p class="text-sm leading-relaxed text-text md:text-base">{{ $sign }}</p>
+                    @php
+                        $cell = [
+                            'lg:col-span-2 lg:row-span-2',
+                            'lg:col-span-2',
+                            'lg:col-span-1',
+                            'lg:col-span-1',
+                        ][$loop->index];
+                        $big = $loop->first;
+                    @endphp
+                    <li data-item class="{{ $cell }}">
+                        <x-ui.card data-lift class="h-full justify-between {{ $big ? 'bg-soft-lavender!' : '' }} transition-shadow duration-300 hover:shadow-lift-hover">
+                            <x-ui.card.content class="flex h-full flex-col gap-6">
+                                <span class="h-1 w-10 rounded-full bg-primary/30" aria-hidden="true"></span>
+                                <p class="{{ $big ? 'mt-auto text-xl leading-snug font-semibold md:text-2xl' : 'text-sm leading-relaxed md:text-base' }} text-text">{{ $sign }}</p>
                             </x-ui.card.content>
                         </x-ui.card>
                     </li>
                 @endforeach
-                <li data-item class="md:col-span-2">
-                    <x-ui.card class="border-l-4 border-l-crisis-text">
+                <li data-item class="sm:col-span-2 lg:col-span-4">
+                    <x-ui.card class="border-crisis-text/30 bg-crisis-bg! text-crisis-text">
                         <x-ui.card.content>
-                            <p class="text-sm font-semibold text-text md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
+                            <p class="text-sm font-semibold md:text-base">Kamu punya pikiran untuk menyakiti diri sendiri.</p>
                         </x-ui.card.content>
                     </x-ui.card>
                 </li>
