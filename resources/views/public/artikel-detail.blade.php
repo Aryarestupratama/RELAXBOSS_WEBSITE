@@ -69,16 +69,10 @@
     @endif
 
 
-    {{-- 4. Catatan: teks biasa dengan ikon "i" (pola halaman Asesmen) --}}
+    {{-- Catatan: x-inline-note (satu kalimat, selebar konten) --}}
     <section class="bg-background" aria-label="Catatan penting">
         <div class="mx-auto max-w-3xl px-4 pb-10 md:pb-14">
-            <div data-reveal class="flex items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                <p>
-                    Artikel ini bersifat edukasi, bukan diagnosis dan bukan pengganti konsultasi dengan psikolog atau tenaga profesional.
-                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
-                </p>
-            </div>
+            <x-inline-note data-reveal>Artikel ini bersifat edukasi, bukan diagnosis atau pengganti <a href="{{ url('/konsultasi') }}">konsultasi profesional</a>.</x-inline-note>
         </div>
     </section>
 

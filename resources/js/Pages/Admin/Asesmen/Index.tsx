@@ -6,14 +6,13 @@ import {
   ClipboardCheck,
   ClipboardList,
   FlaskConical,
-  Info,
   Pencil,
   Plus,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import StatCard from '@/Components/shared/StatCard';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
@@ -120,13 +119,7 @@ export default function Index({ assessments }: IndexProps) {
 
       <div className="flex flex-col gap-6">
         <div data-load>
-          <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
-            <Info className="text-brand-strong!" aria-hidden="true" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-              Instrumen tidak dihapus; nonaktifkan untuk menyembunyikannya. Jumlah pengerjaan di bawah 5 ditampilkan
-              sebagai &quot;&lt;5&quot;.
-            </AlertDescription>
-          </Alert>
+          <InlineNote>Instrumen tidak dihapus, hanya dinonaktifkan, dan jumlah pengerjaan di bawah 5 tampil sebagai &quot;&lt;5&quot;.</InlineNote>
         </div>
 
         {total === 0 ? (

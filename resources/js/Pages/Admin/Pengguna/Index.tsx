@@ -7,7 +7,6 @@ import {
   CircleAlert,
   CircleCheck,
   CircleOff,
-  Info,
   LoaderCircle,
   MailCheck,
   MailQuestion,
@@ -22,6 +21,7 @@ import {
 import AdminShell from '@/Layouts/AdminShell';
 import CreateAdminDialog from '@/Components/shared/CreateAdminDialog';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
@@ -224,16 +224,7 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
         ) : null}
 
         <div data-load>
-          <Alert
-            role="note"
-            className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
-          >
-            <Info className="text-brand-strong!" aria-hidden="true" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-              Data pribadi lain tidak ditampilkan. Akun yang dinonaktifkan tidak bisa masuk dan sesinya langsung
-              diakhiri; datanya tidak dihapus.
-            </AlertDescription>
-          </Alert>
+          <InlineNote>Hanya data terbatas yang tampil, dan akun nonaktif tidak bisa masuk tetapi datanya tidak dihapus.</InlineNote>
         </div>
 
         <Card data-load className="p-4 md:p-5">

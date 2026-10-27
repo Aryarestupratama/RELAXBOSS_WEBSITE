@@ -108,17 +108,12 @@
             @endif
 
             {{-- 3. Catatan --}}
-            <x-ui.alert data-reveal icon="info" class="mx-auto mt-8 max-w-2xl">
-                <div class="space-y-1.5 text-text-secondary">
-                    @guest
-                        <p>Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.</p>
-                    @endguest
-                    <p>
-                        Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
-                        <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
-                    </p>
-                </div>
-            </x-ui.alert>
+            <div class="mt-8 space-y-3">
+                @guest
+                    <x-inline-note data-reveal>Masuk dulu untuk mengerjakan asesmen; hasilnya tersimpan di riwayatmu.</x-inline-note>
+                @endguest
+                <x-inline-note data-reveal>Hasil ini bukan diagnosis; untuk penilaian yang tepat, <a href="{{ url('/konsultasi') }}">bicarakan dengan profesional</a>.</x-inline-note>
+            </div>
         </div>
     </section>
 @endsection

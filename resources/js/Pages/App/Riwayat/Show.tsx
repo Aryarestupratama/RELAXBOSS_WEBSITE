@@ -6,7 +6,7 @@ import AiRecommendationCard from '@/Components/shared/AiRecommendationCard';
 import PageHeader from '@/Components/shared/PageHeader';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
 import CrisisBanner from '@/Components/shared/CrisisBanner';
-import DisclaimerNote from '@/Components/shared/DisclaimerNote';
+import InlineNote from '@/Components/shared/InlineNote';
 import FormField from '@/Components/shared/FormField';
 import ResultMeter from '@/Components/shared/ResultMeter';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
@@ -167,7 +167,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
           </ul>
 
           <div data-load>
-            <DisclaimerNote>{ASSESSMENT_DISCLAIMER}</DisclaimerNote>
+            <InlineNote>{ASSESSMENT_DISCLAIMER}</InlineNote>
           </div>
 
           {showForm ? (

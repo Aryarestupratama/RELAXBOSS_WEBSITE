@@ -7,7 +7,6 @@ import {
   ExternalLink,
   FileText,
   FlaskConical,
-  Info,
   Pencil,
   PenLine,
   Plus,
@@ -15,6 +14,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
@@ -147,13 +147,7 @@ export default function Index({ articles, prev_page_url, next_page_url, status }
         ) : null}
 
         <div data-load>
-          <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
-            <Info className="text-brand-strong!" aria-hidden="true" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-              Artikel tidak dihapus; kembalikan ke draf bila tidak ingin tampil. Sebelum terbit, pastikan tidak ada
-              klaim diagnosis, kolaborasi UMB, atau validasi psikolog yang belum terkonfirmasi.
-            </AlertDescription>
-          </Alert>
+          <InlineNote>Artikel tidak dihapus (kembalikan ke draf), dan sebelum terbit pastikan tidak ada klaim diagnosis, UMB, atau validasi psikolog yang belum terkonfirmasi.</InlineNote>
         </div>
 
         {articles.length === 0 ? (

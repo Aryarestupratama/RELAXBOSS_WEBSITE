@@ -35,7 +35,7 @@
                     </div>
                     @guest
                         <p data-load class="mt-3 max-w-prose text-sm text-text-secondary">
-                            Kamu perlu masuk untuk mengerjakan asesmen. Hasilnya tersimpan di akunmu dan bisa dilihat lagi di riwayat.
+                            Masuk dulu untuk mengerjakan asesmen; hasilnya tersimpan di riwayatmu.
                         </p>
                     @endguest
                 </div>
@@ -132,16 +132,10 @@
         </section>
     @endif
 
-    {{-- 5. Catatan: teks biasa dengan ikon "i", bukan kartu (pola Asesmen, Artikel, Tentang, Konsultasi) --}}
+    {{-- 5. Catatan: x-inline-note (satu kalimat, selebar konten) --}}
     <section class="bg-background" aria-label="Catatan penting">
         <div class="mx-auto max-w-6xl px-4 pt-10 pb-14 md:pt-14 md:pb-20">
-            <div data-reveal class="mx-auto flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                <p>
-                    Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.
-                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
-                </p>
-            </div>
+            <x-inline-note data-reveal>Hasil ini bukan diagnosis; untuk penilaian yang tepat, <a href="{{ url('/konsultasi') }}">bicarakan dengan profesional</a>.</x-inline-note>
         </div>
     </section>
 @endsection

@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ClipboardList, Eye, MessagesSquare } from 'lucide-react';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { NavTabsList, NavTabsTrigger } from '@/Components/ui/tabs';
 
 type MonitoringHeaderProps = {
@@ -26,15 +26,7 @@ export default function MonitoringHeader({ current, back }: MonitoringHeaderProp
       />
 
       <div data-load className="mb-6 flex flex-col gap-4">
-        <Alert
-          role="note"
-          className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
-        >
-          <Eye className="text-brand-strong!" aria-hidden="true" />
-          <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-            Isi ditampilkan tanpa identitas. Jangan mencoba mengenali pemiliknya.
-          </AlertDescription>
-        </Alert>
+        <InlineNote icon={Eye}>Isi ditampilkan tanpa identitas, jadi jangan mencoba mengenali pemiliknya.</InlineNote>
 
         <nav aria-label="Jenis tinjauan">
           <NavTabsList>

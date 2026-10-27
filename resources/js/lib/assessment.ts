@@ -10,9 +10,9 @@ export const SEVERITY_EXPLANATION: Record<SeverityLevel, string> = {
     'Tandanya cukup berat. Kamu tidak harus menghadapinya sendirian; berbicara dengan tenaga profesional bisa sangat membantu.',
 };
 
-/** Bank teks Design: "Disclaimer Asesmen". */
-export const ASSESSMENT_DISCLAIMER =
-  'Hasil ini bukan diagnosis. Ini gambaran awal untuk membantumu mengenali kondisimu. Untuk penilaian yang tepat, bicarakan dengan psikolog atau tenaga profesional.';
+/** Bank teks Design: "Disclaimer Asesmen" (satu kalimat). `LEAD` dipakai bila kalimat diakhiri tautan. */
+export const ASSESSMENT_DISCLAIMER_LEAD = 'Hasil ini bukan diagnosis; untuk penilaian yang tepat, ';
+export const ASSESSMENT_DISCLAIMER = `${ASSESSMENT_DISCLAIMER_LEAD}bicarakan dengan psikolog atau tenaga profesional.`;
 
 export function severityOf(value: string): SeverityLevel {
   return value === 'mild' || value === 'moderate' || value === 'severe' ? value : 'normal';

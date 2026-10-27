@@ -14,6 +14,7 @@ import {
 } from 'lucide-react';
 import FormField from '@/Components/shared/FormField';
 import FormSection, { FormSaveBar, FormSectionNav } from '@/Components/shared/FormSection';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
@@ -133,13 +134,7 @@ export default function ArticleForm({ definition, status }: ArticleFormProps) {
           ) : null}
 
           {definition.is_demo ? (
-            <Alert role="note" className={cn(NOTE_ALERT, 'border-l-warning')}>
-              <FlaskConical className="text-warning!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-                Ini artikel contoh (slug berawalan demo-). Di produksi artikel contoh tidak tampil dan tidak boleh
-                terbit.
-              </AlertDescription>
-            </Alert>
+            <InlineNote tone="warning" icon={FlaskConical}>Ini artikel contoh (slug berawalan demo-), jadi tidak tampil dan tidak boleh terbit di produksi.</InlineNote>
           ) : null}
 
           {errorCount > 0 ? (

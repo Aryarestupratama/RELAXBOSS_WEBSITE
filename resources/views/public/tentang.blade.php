@@ -154,13 +154,7 @@
                 @endforeach
             </div>
 
-            <div data-reveal class="mx-auto mt-8 flex max-w-2xl items-start gap-2.5 text-sm leading-relaxed text-text-secondary" role="note">
-                <x-icon name="info" class="mt-0.5 size-5 shrink-0 text-primary" />
-                <p>
-                    RelaxBoss bukan psikolog atau layanan medis, dan hasil asesmen bukan diagnosis.
-                    <a href="{{ url('/konsultasi') }}" class="font-semibold text-primary underline underline-offset-4">Bicara dengan profesional</a>
-                </p>
-            </div>
+            <x-inline-note data-reveal class="mt-8">RelaxBoss bukan psikolog atau layanan medis, jadi untuk penilaian yang tepat <a href="{{ url('/konsultasi') }}">bicarakan dengan profesional</a>.</x-inline-note>
         </div>
     </section>
 @endsection

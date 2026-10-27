@@ -82,9 +82,7 @@
         </x-legal-section>
 
         <x-slot:after>
-            <x-disclaimer>
-                RelaxBoss bukan psikolog atau layanan medis.
-            </x-disclaimer>
+            <x-inline-note>RelaxBoss bukan psikolog atau layanan medis.</x-inline-note>
         </x-slot:after>
     </x-legal-page>
 @endsection

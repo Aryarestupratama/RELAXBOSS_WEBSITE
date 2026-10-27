@@ -1,7 +1,7 @@
 import { Link } from '@inertiajs/react';
 import { ArrowRight, ClipboardCheck, Clock, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
-import DisclaimerNote from '@/Components/shared/DisclaimerNote';
+import InlineNote from '@/Components/shared/InlineNote';
 import { Badge } from '@/Components/ui/badge';
 import {
   Breadcrumb,
@@ -14,7 +14,7 @@ import {
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
-import { ASSESSMENT_DISCLAIMER } from '@/lib/assessment';
+import { ASSESSMENT_DISCLAIMER_LEAD } from '@/lib/assessment';
 
 type ShowProps = {
   assessment: {
@@ -205,15 +205,10 @@ export default function Show({ assessment }: ShowProps) {
           ) : null}
 
           <div data-load>
-            <DisclaimerNote>
-              {ASSESSMENT_DISCLAIMER}{' '}
-              <a
-                href="/konsultasi"
-                className="font-semibold text-brand-strong underline underline-offset-4 hover:text-nav-hover"
-              >
-                Bicara dengan profesional
-              </a>
-            </DisclaimerNote>
+            <InlineNote>
+              {ASSESSMENT_DISCLAIMER_LEAD}
+              <a href="/konsultasi">bicarakan dengan profesional</a>.
+            </InlineNote>
           </div>
         </div>
       </div>

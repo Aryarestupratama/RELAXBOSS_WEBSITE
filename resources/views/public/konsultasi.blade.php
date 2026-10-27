@@ -124,9 +124,7 @@
                 </ul>
             @endif
 
-            <x-ui.alert data-reveal icon="info" class="mx-auto mt-8 max-w-2xl">
-                RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.
-            </x-ui.alert>
+            <x-inline-note data-reveal class="mt-8">RelaxBoss bukan psikolog atau layanan medis, dan hasil Asesmen bukan diagnosis.</x-inline-note>
         </div>
     </section>
 @endsection

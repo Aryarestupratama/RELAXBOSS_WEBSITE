@@ -3,7 +3,6 @@ import {
   CalendarDays,
   ClipboardCheck,
   ClipboardList,
-  Info,
   LifeBuoy,
   MessageCircle,
   Smile,
@@ -11,9 +10,9 @@ import {
   Users,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import StatCard from '@/Components/shared/StatCard';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
@@ -131,13 +130,7 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
 
       <div className="flex flex-col gap-7">
         <div data-load>
-          <Alert role="note" className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card">
-            <Info className="text-brand-strong!" aria-hidden="true" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-              Angka di bawah {min_group_size} ditampilkan sebagai &quot;&lt;{min_group_size}&quot; demi privasi pengguna.
-              Akun admin tidak dihitung.
-            </AlertDescription>
-          </Alert>
+          <InlineNote>Angka di bawah {min_group_size} tampil sebagai &quot;&lt;{min_group_size}&quot; demi privasi, dan akun admin tidak dihitung.</InlineNote>
         </div>
 
         {users.empty ? (

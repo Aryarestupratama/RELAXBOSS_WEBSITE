@@ -1,11 +1,12 @@
 import { useEffect, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
-import { CheckCircle, CircleAlert, FileText, Gauge, Info, ListChecks, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { CheckCircle, CircleAlert, FileText, Gauge, ListChecks, ShieldCheck, SlidersHorizontal } from 'lucide-react';
 import AssessmentOptionsEditor from '@/Components/shared/AssessmentOptionsEditor';
 import AssessmentQuestionsEditor from '@/Components/shared/AssessmentQuestionsEditor';
 import AssessmentRulesEditor from '@/Components/shared/AssessmentRulesEditor';
 import FormField from '@/Components/shared/FormField';
 import FormSection, { FormSaveBar, FormSectionNav } from '@/Components/shared/FormSection';
+import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
 import SwitchField from '@/Components/shared/SwitchField';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
@@ -104,13 +105,7 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
           ) : null}
 
           {definition.has_attempts ? (
-            <Alert role="note" className={cn(NOTE_ALERT, 'border-l-warning')}>
-              <Info className="text-warning!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-                Asesmen ini sudah dikerjakan ({definition.attempts} kali). Hasil lama tidak berubah. Tetapi bila kamu
-                mengubah pilihan jawaban, pengali, atau butir, jawaban lama tidak lagi sebanding dengan versi baru.
-              </AlertDescription>
-            </Alert>
+            <InlineNote tone="warning">Asesmen ini sudah dikerjakan {definition.attempts} kali, jadi mengubah pilihan, pengali, atau butir membuat jawaban lama tak lagi sebanding.</InlineNote>
           ) : null}
 
           {errorCount > 0 ? (

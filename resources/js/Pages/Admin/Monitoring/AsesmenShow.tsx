@@ -1,9 +1,9 @@
-import { CalendarDays, ClipboardList, Info, Lock } from 'lucide-react';
+import { CalendarDays, ClipboardList, Lock } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
+import InlineNote from '@/Components/shared/InlineNote';
 import MonitoringHeader from '@/Components/shared/MonitoringHeader';
 import MonitoringItem from '@/Components/shared/MonitoringItem';
 import MonitoringMeta from '@/Components/shared/MonitoringMeta';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Card } from '@/Components/ui/card';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
@@ -45,15 +45,7 @@ export default function AsesmenShow({ attempt }: AsesmenShowProps) {
         />
 
         <div data-load>
-          <Alert
-            role="note"
-            className="rounded-2xl border-transparent border-l-4 border-l-brand-strong px-4 py-3 shadow-card"
-          >
-            <Info className="text-brand-strong!" aria-hidden="true" />
-            <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-              Jawaban per butir dan jawaban PFA tidak ditampilkan untuk admin.
-            </AlertDescription>
-          </Alert>
+          <InlineNote>Jawaban per butir dan jawaban PFA tidak ditampilkan untuk admin.</InlineNote>
         </div>
 
         <section aria-labelledby="hasil-subskala" data-load className="flex flex-col gap-3">
