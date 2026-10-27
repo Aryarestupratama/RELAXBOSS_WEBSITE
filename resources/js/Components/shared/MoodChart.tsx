@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay, type MoodEntryItem } from '@/lib/mood';
+import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay } from '@/lib/mood';
 
 const HEIGHT = 200;
 const MARGIN = { top: 12, right: 14, bottom: 28, left: 40 };
@@ -76,12 +76,10 @@ function Tooltip({ x, y, width, text }: { x: number; y: number; width: number; t
 type RangeChartProps = {
   days: MoodDay[];
   range: 7 | 30;
-  selectedDate: string | null;
-  onSelectDay: (date: string) => void;
 };
 
 /** Mode 7 atau 30 hari: satu titik per hari (rata-rata). Hari tanpa entri menjadi celah. */
-export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: RangeChartProps) {
+export function MoodRangeChart({ days, range }: RangeChartProps) {
   const [ref, width] = useWidth();
   const [hover, setHover] = useState<number | null>(null);
   const visible = days.slice(-range);
@@ -133,8 +131,6 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
                 ) : null}
                 {day.average !== null ? (
                   <g
-                    className="cursor-pointer"
-                    onClick={() => onSelectDay(day.date)}
                     onMouseEnter={() => setHover(index)}
                     onMouseLeave={() => setHover(null)}
                   >
@@ -142,9 +138,9 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
                     <circle
                       cx={xScale(index)}
                       cy={yScale(day.average)}
-                      r={selectedDate === day.date || hover === index ? 7 : 5.5}
+                      r={hover === index ? 7 : 5.5}
                       className={`${DOT_FILL[moodLevel(day.average)]} stroke-primary`}
-                      strokeWidth={selectedDate === day.date ? 3 : 1.75}
+                      strokeWidth={1.75}
                     />
                   </g>
                 ) : null}
@@ -180,81 +176,6 @@ export function MoodRangeChart({ days, range, selectedDate, onSelectDay }: Range
                 <th scope="row">{day.label}</th>
                 <td>{day.average === null ? 'Tidak ada catatan' : formatAverage(day.average)}</td>
                 <td>{day.entries.length}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </figure>
-  );
-}
-
-type DayChartProps = {
-  label: string;
-  entries: MoodEntryItem[];
-};
-
-const DAY_TICKS = [0, 6, 12, 18, 24];
-
-/** Mode hari: semua entri hari itu di sumbu jam WIB. */
-export function MoodDayChart({ label, entries }: DayChartProps) {
-  const [ref, width] = useWidth();
-  const innerWidth = width - MARGIN.left - MARGIN.right;
-  const xScale = (minutes: number) => MARGIN.left + (innerWidth * minutes) / 1440;
-
-  const path = entries
-    .map((entry, index) => `${index === 0 ? 'M' : 'L'} ${xScale(entry.minutes).toFixed(1)},${yScale(entry.mood).toFixed(1)}`)
-    .join(' ');
-
-  return (
-    <figure className="m-0">
-      <div ref={ref} className="w-full">
-        <svg width={width} height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} aria-hidden="true" focusable="false">
-          <Grid width={width} />
-          {DAY_TICKS.map((hour) => (
-            <text
-              key={hour}
-              x={xScale(hour * 60)}
-              y={HEIGHT - 8}
-              textAnchor={hour === 0 ? 'start' : hour === 24 ? 'end' : 'middle'}
-              fontSize={11}
-              className="fill-text-secondary"
-            >
-              {`${String(hour === 24 ? 0 : hour).padStart(2, '0')}.00`}
-            </text>
-          ))}
-          {entries.length > 1 ? (
-            <path d={path} fill="none" className="stroke-brand-strong" strokeWidth={2} strokeLinejoin="round" />
-          ) : null}
-          {entries.map((entry) => (
-            <circle
-              key={entry.id}
-              cx={xScale(entry.minutes)}
-              cy={yScale(entry.mood)}
-              r={6}
-              className={`${DOT_FILL[entry.mood] ?? 'fill-brand-strong'} stroke-primary`}
-              strokeWidth={1.75}
-            />
-          ))}
-        </svg>
-      </div>
-      <figcaption className="mt-1 text-xs text-text-secondary">
-        Semua catatan {label} sesuai jam (WIB). Skala 1 sampai 5.
-      </figcaption>
-      <div className="sr-only">
-        <table>
-          <caption>Catatan mood {label}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Jam</th>
-              <th scope="col">Mood</th>
-            </tr>
-          </thead>
-          <tbody>
-            {entries.map((entry) => (
-              <tr key={entry.id}>
-                <th scope="row">{entry.time}</th>
-                <td>{`${entry.mood_label} (${entry.mood})`}</td>
               </tr>
             ))}
           </tbody>

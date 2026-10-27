@@ -1,11 +1,11 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, ArrowUpRight, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile, type LucideIcon } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import ActionTile from '@/Components/shared/ActionTile';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
-import { NotchCorner } from '@/Components/ui/notch-corner';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
 
 type LastMood = {
   mood: number;
@@ -26,51 +26,6 @@ type DashboardProps = {
   last_mood: LastMood | null;
   last_attempt: LastAttempt | null;
 };
-
-type CardTone = 'lavender' | 'sky' | 'mint' | 'peach';
-
-type ActionTileProps = {
-  icon: LucideIcon;
-  title: string;
-  description: string;
-  href: string;
-  /** Warna pastel kartu (teks di atasnya selalu --text, RULE-052). */
-  tone: CardTone;
-};
-
-/**
- * Kartu aksi menuju fitur (shadcn Card), satu bahasa dengan kartu fitur Beranda: pastel, sudut
- * membulat besar, dan sudut kanan bawah dipotong takik (kelas `notch-cut`) dengan cakram panah biru gelap (NotchCorner).
- * Seluruh kartu adalah satu tautan.
- */
-function ActionTile({ icon: Icon, title, description, href, tone }: ActionTileProps) {
-  return (
-    <Link
-      href={href}
-      data-load
-      data-lift
-      data-press
-      className="group relative block"
-    >
-      <div className="drop-lift group-hover:drop-lift-hover">
-        <Card tone={tone} className="notch-cut min-h-36 gap-1 p-4 pr-16 shadow-none!">
-          <CardHeader className="gap-0">
-            <span className="grid size-10 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
-              <Icon className="size-5" />
-            </span>
-            <CardTitle className="mt-3 text-base font-bold">{title}</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <CardDescription className="text-[0.8125rem] leading-relaxed">{description}</CardDescription>
-          </CardContent>
-        </Card>
-      </div>
-      <NotchCorner>
-        <ArrowUpRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </NotchCorner>
-    </Link>
-  );
-}
 
 /** Gambar blob per tingkat mood (1 sampai 5). Di luar rentang jatuh ke "Biasa". */
 function moodImage(mood: number): string {
