@@ -1,6 +1,6 @@
 import { useEffect, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
-import { CheckCircle, CircleAlert, FileText, Gauge, ListChecks, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { CircleAlert, FileText, Gauge, ListChecks, ShieldCheck, SlidersHorizontal } from 'lucide-react';
 import AssessmentOptionsEditor from '@/Components/shared/AssessmentOptionsEditor';
 import AssessmentQuestionsEditor from '@/Components/shared/AssessmentQuestionsEditor';
 import AssessmentRulesEditor from '@/Components/shared/AssessmentRulesEditor';
@@ -14,7 +14,6 @@ import { Badge } from '@/Components/ui/badge';
 import { Input } from '@/Components/ui/input';
 import { Textarea } from '@/Components/ui/textarea';
 import {
-  STATUS_TEXT,
   scoreRange,
   subScalesOf,
   toNumberOrEmpty,
@@ -26,7 +25,6 @@ import { cn } from '@/lib/utils';
 
 type AssessmentFormProps = {
   definition: AssessmentFormData;
-  status: string | null;
 };
 
 const SECTION_LINKS = [
@@ -43,7 +41,7 @@ const NOTE_ALERT = 'rounded-2xl border-transparent border-l-4 px-4 py-3 shadow-c
  * SCR-020: formulir Instrumen (API-017 membuat, API-018 mengubah). Admin hanya mengelola definisi Instrumen,
  * tidak pernah melihat jawaban atau hasil pengguna (RULE-042).
  */
-export default function AssessmentForm({ definition, status }: AssessmentFormProps) {
+export default function AssessmentForm({ definition }: AssessmentFormProps) {
   const form = useForm<AssessmentFormValues>(definition.values);
   const errors = form.errors as FormErrors;
   const errorCount = Object.keys(errors).length;
@@ -93,17 +91,8 @@ export default function AssessmentForm({ definition, status }: AssessmentFormPro
         description="Atur info, skala jawaban, butir, aturan skor, dan sumber Instrumen."
       />
 
-      {(status && STATUS_TEXT[status]) || definition.has_attempts || errorCount > 0 ? (
+      {definition.has_attempts || errorCount > 0 ? (
         <div data-load className="mb-6 space-y-3">
-          {status && STATUS_TEXT[status] ? (
-            <Alert className={cn(NOTE_ALERT, 'border-l-success')}>
-              <CheckCircle className="text-success!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-                {STATUS_TEXT[status]}
-              </AlertDescription>
-            </Alert>
-          ) : null}
-
           {definition.has_attempts ? (
             <InlineNote tone="warning">Asesmen ini sudah dikerjakan {definition.attempts} kali, jadi mengubah pilihan, pengali, atau butir membuat jawaban lama tak lagi sebanding.</InlineNote>
           ) : null}

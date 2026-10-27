@@ -11,6 +11,7 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react';
+import Toaster from '@/Components/shared/Toaster';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -90,6 +91,7 @@ export default function AppShell({
   return (
     <>
       <Head title={`${title} | RelaxBoss`} />
+      <Toaster />
       <div
         className={`bg-background pb-16 md:pb-0 md:pl-28 ${
           fill ? 'relative flex h-dvh min-h-144 flex-col overflow-hidden' : 'min-h-screen'

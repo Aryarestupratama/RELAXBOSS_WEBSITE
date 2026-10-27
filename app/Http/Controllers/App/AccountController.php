@@ -32,7 +32,6 @@ final class AccountController extends Controller
                 ? '/app/akun/foto?v='.$user->avatar_updated_at->getTimestamp()
                 : null,
             'is_only_admin' => $deleteAccount->isOnlyAdmin($user),
-            'status' => session('status'),
         ]);
     }
 

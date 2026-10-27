@@ -30,14 +30,6 @@ type IndexProps = {
   };
   avatar_url: string | null;
   is_only_admin: boolean;
-  status: string | null;
-};
-
-const STATUS_TEXT: Record<string, string> = {
-  'profile-updated': 'Profilmu tersimpan.',
-  'password-updated': 'Kata sandi diganti. Perangkat lain otomatis keluar.',
-  'avatar-updated': 'Foto profil diganti.',
-  'avatar-removed': 'Foto profil dihapus.',
 };
 
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
@@ -61,7 +53,7 @@ function statusText(choice: Choice | null, answered: boolean): string {
 }
 
 /** SCR-018 */
-export default function Index({ profile, avatar_url, is_only_admin, status }: IndexProps) {
+export default function Index({ profile, avatar_url, is_only_admin }: IndexProps) {
   const { consent } = usePage<SharedConsentProps>().props;
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -85,8 +77,6 @@ export default function Index({ profile, avatar_url, is_only_admin, status }: In
 
   const passwordForm = useForm({ current_password: '', password: '', password_confirmation: '' });
   const passwordErrors = passwordForm.errors as Partial<Record<string, string>>;
-
-  const flashText = status ? STATUS_TEXT[status] : undefined;
 
   const submitProfile = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -198,13 +188,6 @@ export default function Index({ profile, avatar_url, is_only_admin, status }: In
         <PageHeader title="Akun" description="Data akunmu dan pengaturan privasi." />
 
         <div className="min-w-0 space-y-4">
-          {flashText ? (
-            <Alert role="status" data-load>
-              <CircleCheck className="text-success!" aria-hidden="true" />
-              <AlertDescription>{flashText}</AlertDescription>
-            </Alert>
-          ) : null}
-
           <Card data-load role="region" aria-labelledby="judul-profil" className="gap-5 p-5">
             <CardHeader className="flex-row items-center justify-between gap-3">
               <CardTitle id="judul-profil" role="heading" aria-level={2} className="text-base">

@@ -2,7 +2,6 @@ import { useEffect, useState, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
 import {
   CalendarClock,
-  CheckCircle,
   CircleAlert,
   ExternalLink,
   Eye,
@@ -25,7 +24,6 @@ import { Textarea } from '@/Components/ui/textarea';
 import { postJson } from '@/lib/http';
 import {
   ARTICLE_PROSE_CLASS,
-  STATUS_TEXT,
   type ArticleFormData,
   type ArticleFormValues,
   type FormErrors,
@@ -34,7 +32,6 @@ import { cn } from '@/lib/utils';
 
 type ArticleFormProps = {
   definition: ArticleFormData;
-  status: string | null;
 };
 
 const NOTE_ALERT = 'rounded-2xl border-transparent border-l-4 px-4 py-3 shadow-card';
@@ -47,7 +44,7 @@ const SECTION_LINKS = [
 ];
 
 /** SCR-026: formulir artikel (API-022 membuat, API-023 mengubah, API-024 pratinjau). Konten publik tanpa data pengguna. */
-export default function ArticleForm({ definition, status }: ArticleFormProps) {
+export default function ArticleForm({ definition }: ArticleFormProps) {
   const form = useForm<ArticleFormValues>(definition.values);
   const errors = form.errors as FormErrors;
   const errorCount = Object.keys(errors).length;
@@ -122,17 +119,8 @@ export default function ArticleForm({ definition, status }: ArticleFormProps) {
         }
       />
 
-      {(status && STATUS_TEXT[status]) || definition.is_demo || errorCount > 0 ? (
+      {definition.is_demo || errorCount > 0 ? (
         <div data-load className="mb-6 space-y-3">
-          {status && STATUS_TEXT[status] ? (
-            <Alert className={cn(NOTE_ALERT, 'border-l-success')}>
-              <CheckCircle className="text-success!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-                {STATUS_TEXT[status]}
-              </AlertDescription>
-            </Alert>
-          ) : null}
-
           {definition.is_demo ? (
             <InlineNote tone="warning" icon={FlaskConical}>Ini artikel contoh (slug berawalan demo-), jadi tidak tampil dan tidak boleh terbit di produksi.</InlineNote>
           ) : null}

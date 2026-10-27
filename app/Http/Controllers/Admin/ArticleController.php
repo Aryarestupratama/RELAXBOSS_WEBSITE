@@ -31,7 +31,6 @@ final class ArticleController extends Controller
             'articles' => $presenter->rows($articles),
             'prev_page_url' => $articles->previousPageUrl(),
             'next_page_url' => $articles->nextPageUrl(),
-            'status' => session('status'),
         ]);
     }
 
@@ -39,7 +38,6 @@ final class ArticleController extends Controller
     {
         return Inertia::render('Admin/Artikel/Form', [
             'form' => $presenter->form(null),
-            'status' => null,
         ]);
     }
 
@@ -54,7 +52,6 @@ final class ArticleController extends Controller
     {
         return Inertia::render('Admin/Artikel/Form', [
             'form' => $presenter->form($article),
-            'status' => session('status'),
         ]);
     }
 

@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import Logo from '@/Components/shared/Logo';
 import LogoutButton from '@/Components/shared/LogoutButton';
+import Toaster from '@/Components/shared/Toaster';
 import { Badge } from '@/Components/ui/badge';
 import { Card } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
@@ -69,6 +70,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
   return (
     <>
       <Head title={`${title} | Admin RelaxBoss`} />
+      <Toaster />
       <div className="min-h-screen bg-background pb-16 md:pb-0 md:pl-28">
         <a
           href="#konten"

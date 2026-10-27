@@ -68,11 +68,6 @@ export const SEVERITY_LABELS: Record<string, string> = {
   severe: 'Berat',
 };
 
-export const STATUS_TEXT: Record<string, string> = {
-  'assessment-created': 'Asesmen dibuat. Kamu bisa melanjutkan mengubahnya di sini.',
-  'assessment-updated': 'Perubahan disimpan.',
-};
-
 export const EMPTY_QUESTION: QuestionRow = { id: null, text: '', sub_scale: '', is_reversed: false };
 
 export const EMPTY_RULE: RuleRow = {

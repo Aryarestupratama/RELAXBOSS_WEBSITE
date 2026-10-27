@@ -3,6 +3,7 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Inertia\Middleware;
 
 class HandleInertiaRequests extends Middleware
@@ -43,7 +44,25 @@ class HandleInertiaRequests extends Middleware
             'consent' => fn (): ?array => $this->consent($request),
             // Hanya penanda peran (tanpa identitas), untuk tautan "Admin" di AppShell.
             'auth' => fn (): ?array => $request->user() === null ? null : ['is_admin' => $request->user()->isAdmin()],
+            // Kode `->with('status', ...)` dari redirect, untuk toast (CMP-013). Teksnya ada di resources/js/lib/toastMessages.ts.
+            'flash' => fn (): ?array => $this->flash($request),
         ];
+    }
+
+    /**
+     * `id` unik per respons agar dua status yang sama berturut-turut (mis. catat mood dua kali) tetap memunculkan toast.
+     *
+     * @return array{id: string, status: string}|null
+     */
+    private function flash(Request $request): ?array
+    {
+        $status = $request->hasSession() ? $request->session()->get('status') : null;
+
+        if (! is_string($status) || $status === '') {
+            return null;
+        }
+
+        return ['id' => Str::random(8), 'status' => $status];
     }
 
     /**

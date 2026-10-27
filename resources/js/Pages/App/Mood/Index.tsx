@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { useForm } from '@inertiajs/react';
-import { CircleAlert, CircleCheck, Info } from 'lucide-react';
+import { CircleAlert, Info } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import PageHeader from '@/Components/shared/PageHeader';
 import FormField from '@/Components/shared/FormField';
@@ -21,7 +21,6 @@ type IndexProps = {
   remaining: number;
   days: MoodDay[];
   note_max_chars: number;
-  saved: boolean;
 };
 
 type FormData = {
@@ -61,7 +60,7 @@ function WeekFaces({ days }: { days: MoodDay[] }) {
 }
 
 /** SCR-016 */
-export default function Index({ limit, remaining, days, note_max_chars, saved }: IndexProps) {
+export default function Index({ limit, remaining, days, note_max_chars }: IndexProps) {
   const form = useForm<FormData>({ mood: null, arousal_input: null, note: '' });
   const errors = form.errors as Partial<Record<string, string>>;
 
@@ -111,13 +110,6 @@ export default function Index({ limit, remaining, days, note_max_chars, saved }:
   return (
     <AppShell title="Mood Tracker" wide staggered>
       <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu." />
-
-      {saved ? (
-        <Alert data-load className="mb-4">
-          <CircleCheck className="text-success!" aria-hidden="true" />
-          <AlertDescription>Catatanmu tersimpan.</AlertDescription>
-        </Alert>
-      ) : null}
 
       <div className="grid gap-4 lg:grid-cols-12 lg:items-stretch">
         <div className="flex flex-col lg:col-span-5">

@@ -24,7 +24,6 @@ final class AssessmentController extends Controller
     {
         return Inertia::render('Admin/Asesmen/Index', [
             'assessments' => $presenter->list(),
-            'status' => session('status'),
         ]);
     }
 
@@ -32,7 +31,6 @@ final class AssessmentController extends Controller
     {
         return Inertia::render('Admin/Asesmen/Form', [
             'form' => $presenter->form(null),
-            'status' => null,
         ]);
     }
 
@@ -55,7 +53,6 @@ final class AssessmentController extends Controller
     {
         return Inertia::render('Admin/Asesmen/Form', [
             'form' => $presenter->form($assessment),
-            'status' => session('status'),
         ]);
     }
 

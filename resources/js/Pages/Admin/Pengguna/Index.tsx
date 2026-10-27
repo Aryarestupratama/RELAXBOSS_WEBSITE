@@ -3,7 +3,6 @@ import { Link, router, usePage } from '@inertiajs/react';
 import {
   ChevronLeft,
   ChevronRight,
-  CheckCircle,
   CircleAlert,
   CircleCheck,
   CircleOff,
@@ -46,13 +45,6 @@ type IndexProps = {
   search: string;
   prev_page_url: string | null;
   next_page_url: string | null;
-  status: string | null;
-};
-
-const STATUS_TEXT: Record<string, string> = {
-  'user-activated': 'Akun diaktifkan kembali.',
-  'user-deactivated': 'Akun dinonaktifkan. Sesinya langsung diakhiri.',
-  'admin-created': 'Akun admin dibuat. Tautan atur kata sandi dikirim ke emailnya.',
 };
 
 const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
@@ -121,7 +113,7 @@ function ActiveBadge({ user }: { user: UserRow }) {
 }
 
 /** SCR-021: daftar Pengguna terbatas (email, tanggal daftar, verifikasi, aktif) dan nonaktifkan akun. */
-export default function Index({ users, search, prev_page_url, next_page_url, status }: IndexProps) {
+export default function Index({ users, search, prev_page_url, next_page_url }: IndexProps) {
   const { errors } = usePage().props as { errors: Partial<Record<string, string>> };
   const [query, setQuery] = useState(search);
   const [target, setTarget] = useState<UserRow | null>(null);
@@ -147,8 +139,6 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
       },
     );
   };
-
-  const statusText = status ? STATUS_TEXT[status] : undefined;
 
   const renderAction = (user: UserRow) => {
     if (user.is_self) {
@@ -202,15 +192,6 @@ export default function Index({ users, search, prev_page_url, next_page_url, sta
       />
 
       <div className="flex flex-col gap-6">
-        {statusText ? (
-          <div data-load>
-            <Alert className="rounded-2xl border-transparent border-l-4 border-l-success px-4 py-3 shadow-card">
-              <CheckCircle className="text-success!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">{statusText}</AlertDescription>
-            </Alert>
-          </div>
-        ) : null}
-
         {errors.user_status ? (
           <div data-load>
             <Alert

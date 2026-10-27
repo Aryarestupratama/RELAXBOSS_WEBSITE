@@ -3,6 +3,7 @@ import { Head } from '@inertiajs/react';
 import AuthShowcase from '@/Components/shared/AuthShowcase';
 import AuthTabs from '@/Components/shared/AuthTabs';
 import Logo from '@/Components/shared/Logo';
+import Toaster from '@/Components/shared/Toaster';
 import { Card } from '@/Components/ui/card';
 import { useEnter, useFloat } from '@/lib/useMotion';
 
@@ -39,6 +40,7 @@ export default function GuestLayout({ title, illustration = 'masuk', tab, wide =
   return (
     <>
       <Head title={`${title} | RelaxBoss`} />
+      <Toaster />
       <div className="flex min-h-screen items-center justify-center bg-surface-alt px-4 py-6 sm:py-10">
         <Card
           className={`grid w-full gap-0 p-2 motion-safe:animate-in motion-safe:fade-in motion-safe:zoom-in-98 motion-safe:duration-700 lg:min-h-[34rem] lg:max-w-[60rem] lg:grid-cols-[0.9fr_1.1fr] lg:p-2.5 max-lg:max-w-md`}

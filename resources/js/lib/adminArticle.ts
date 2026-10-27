@@ -26,11 +26,6 @@ export type ArticleFormData = {
 
 export type FormErrors = Partial<Record<string, string>>;
 
-export const STATUS_TEXT: Record<string, string> = {
-  'article-created': 'Artikel dibuat. Kamu bisa melanjutkan mengubahnya di sini.',
-  'article-updated': 'Perubahan disimpan.',
-};
-
 export const STATE_LABEL: Record<string, string> = {
   draft: 'Draf',
   scheduled: 'Terjadwal',

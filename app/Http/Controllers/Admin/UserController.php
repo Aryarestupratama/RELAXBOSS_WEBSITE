@@ -35,7 +35,6 @@ final class UserController extends Controller
             'search' => $search,
             'prev_page_url' => $users->previousPageUrl(),
             'next_page_url' => $users->nextPageUrl(),
-            'status' => session('status'),
         ]);
     }
 

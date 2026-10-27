@@ -10,18 +10,16 @@ import {
   Pencil,
   PenLine,
   Plus,
-  CheckCircle,
   type LucideIcon,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
 import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
-import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
 import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
-import { STATE_LABEL, STATUS_TEXT } from '@/lib/adminArticle';
+import { STATE_LABEL } from '@/lib/adminArticle';
 
 type ArticleState = 'draft' | 'scheduled' | 'live';
 
@@ -41,7 +39,6 @@ type IndexProps = {
   articles: ArticleRow[];
   prev_page_url: string | null;
   next_page_url: string | null;
-  status: string | null;
 };
 
 const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
@@ -118,7 +115,7 @@ function Actions({ article }: { article: ArticleRow }) {
 }
 
 /** SCR-026: daftar artikel. Konten publik; tidak ada data pengguna. */
-export default function Index({ articles, prev_page_url, next_page_url, status }: IndexProps) {
+export default function Index({ articles, prev_page_url, next_page_url }: IndexProps) {
   return (
     <AdminShell title="Artikel" staggered>
       <PageHeader
@@ -135,17 +132,6 @@ export default function Index({ articles, prev_page_url, next_page_url, status }
       />
 
       <div className="flex flex-col gap-6">
-        {status && STATUS_TEXT[status] ? (
-          <div data-load>
-            <Alert className="rounded-2xl border-transparent border-l-4 border-l-success px-4 py-3 shadow-card">
-              <CheckCircle className="text-success!" aria-hidden="true" />
-              <AlertDescription className="text-[0.8125rem] leading-relaxed text-text">
-                {STATUS_TEXT[status]}
-              </AlertDescription>
-            </Alert>
-          </div>
-        ) : null}
-
         <div data-load>
           <InlineNote>Artikel tidak dihapus (kembalikan ke draf), dan sebelum terbit pastikan tidak ada klaim diagnosis, UMB, atau validasi psikolog yang belum terkonfirmasi.</InlineNote>
         </div>

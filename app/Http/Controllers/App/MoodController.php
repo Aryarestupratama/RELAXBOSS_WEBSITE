@@ -24,7 +24,6 @@ final class MoodController extends Controller
         return Inertia::render('App/Mood/Index', [
             ...$presenter->page($request->user()),
             'note_max_chars' => (int) config('relaxboss.limits.mood_note_max_chars'),
-            'saved' => session('status') === 'mood-saved',
         ]);
     }
 

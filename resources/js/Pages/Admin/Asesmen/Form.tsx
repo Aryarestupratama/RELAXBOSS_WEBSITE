@@ -4,14 +4,13 @@ import type { AssessmentFormData } from '@/lib/adminAssessment';
 
 type FormProps = {
   form: AssessmentFormData;
-  status: string | null;
 };
 
 /** SCR-020: buat dan ubah Asesmen. `key` memuat ulang formulir setelah simpan agar ID butir baru ikut terbaca. */
-export default function Form({ form, status }: FormProps) {
+export default function Form({ form }: FormProps) {
   return (
     <AdminShell title={form.mode === 'create' ? 'Asesmen baru' : 'Ubah Asesmen'} staggered>
-      <AssessmentForm key={`${form.mode}-${form.id ?? 'new'}-${form.version}`} definition={form} status={status} />
+      <AssessmentForm key={`${form.mode}-${form.id ?? 'new'}-${form.version}`} definition={form} />
     </AdminShell>
   );
 }
