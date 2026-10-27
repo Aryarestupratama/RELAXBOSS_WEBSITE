@@ -8,7 +8,8 @@ import path from 'node:path';
 export default defineConfig({
   plugins: [
     laravel({ input: ['resources/css/app.css', 'resources/js/app.tsx', 'resources/js/public.ts'], refresh: true }),
-    inertia(),
+    // RelaxBoss tidak memakai SSR Node (Architecture ADR-002); tanpa ini plugin mengevaluasi app.tsx di Node saat dev.
+    inertia({ ssr: false }),
     react(),
     tailwindcss(),
   ],
