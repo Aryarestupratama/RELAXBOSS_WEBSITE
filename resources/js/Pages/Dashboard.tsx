@@ -5,6 +5,7 @@ import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
+import { NotchCorner } from '@/Components/ui/notch-corner';
 
 type LastMood = {
   mood: number;
@@ -39,7 +40,7 @@ type ActionTileProps = {
 
 /**
  * Kartu aksi menuju fitur (shadcn Card), satu bahasa dengan kartu fitur Beranda: pastel, sudut
- * membulat besar, dan "tab" panah di pojok kanan bawah yang berbalik warna saat disorot.
+ * membulat besar, dan sudut kanan bawah bertakik dengan cakram panah (NotchCorner) yang berbalik warna saat disorot.
  * Seluruh kartu adalah satu tautan.
  */
 function ActionTile({ icon: Icon, title, description, href, tone }: ActionTileProps) {
@@ -62,12 +63,9 @@ function ActionTile({ icon: Icon, title, description, href, tone }: ActionTilePr
           <CardDescription className="text-[0.8125rem] leading-relaxed">{description}</CardDescription>
         </CardContent>
       </Card>
-      <span
-        className="absolute right-0 bottom-0 grid h-11 w-12 place-items-center rounded-tl-[18px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-primary group-hover:text-on-primary"
-        aria-hidden="true"
-      >
-        <ArrowUpRight className="size-4.5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-      </span>
+      <NotchCorner>
+        <ArrowUpRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+      </NotchCorner>
     </Link>
   );
 }

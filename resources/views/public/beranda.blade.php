@@ -122,10 +122,7 @@
                                 <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
                                 <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
                             </x-ui.card.header>
-                            <a href="{{ $feature['href'] }}" aria-label="Coba {{ $feature['name'] }}"
-                               class="absolute right-0 bottom-0 grid h-12 w-14 place-items-center rounded-tl-[20px] rounded-br-3xl bg-background text-primary transition-colors duration-200 group-hover:bg-nav-hover group-hover:text-on-primary">
-                                <x-icon name="arrow-up-right" class="size-5 transition-transform duration-200 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
-                            </a>
+                            <x-ui.notch-corner :href="$feature['href']" :label="'Coba '.$feature['name']" />
                         </x-ui.card>
                     </div>
                 @endforeach
