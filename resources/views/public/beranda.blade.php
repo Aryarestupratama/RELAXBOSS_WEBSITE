@@ -6,10 +6,10 @@
 @php
     // Kartu emosi (bagian 2). `image` kosong = sementara memakai ikon Lucide sampai ilustrasinya ada.
     $emotions = [
-        ['name' => 'Gangguan Kecemasan', 'text' => 'Pikiran sulit berhenti berputar dan cemas pada hal yang belum terjadi.', 'tone' => 'lavender', 'offset' => 'lg:mt-8', 'image' => 'emosi-kecemasan.webp', 'width' => 720, 'height' => 647, 'alt' => 'Ilustrasi mahasiswa yang cemas memeluk lutut, dengan coretan pikiran di atas kepalanya.', 'icon' => null],
-        ['name' => 'Depresi', 'text' => 'Rasa sedih dan hampa yang berlangsung lama, hingga minat pada hal yang disukai hilang.', 'tone' => 'sky', 'offset' => 'lg:mt-0', 'image' => 'emosi-depresi.webp', 'width' => 720, 'height' => 557, 'alt' => 'Ilustrasi mahasiswa yang murung duduk di tepi tempat tidur, dengan awan kecil di atas kepalanya.', 'icon' => null],
-        ['name' => 'Insomnia', 'text' => 'Sulit tidur atau sering terbangun, sehingga tubuh tidak sempat pulih.', 'tone' => 'mint', 'offset' => 'lg:mt-5', 'image' => 'emosi-insomnia.webp', 'width' => 720, 'height' => 476, 'alt' => 'Ilustrasi mahasiswa yang terjaga di tempat tidur pada malam hari, dengan bulan, bintang, dan jam weker di samping.', 'icon' => null],
-        ['name' => 'Stres Akademik', 'text' => 'Tugas, ujian, dan tenggat menumpuk sampai terasa tak ada habisnya.', 'tone' => 'peach', 'offset' => 'lg:mt-1', 'image' => 'emosi-stres-akademik.webp', 'width' => 720, 'height' => 554, 'alt' => 'Ilustrasi mahasiswa yang kewalahan di meja belajar dengan tumpukan buku, laptop, dan kertas berterbangan.', 'icon' => null],
+        ['name' => 'Gangguan Kecemasan', 'text' => 'Pikiran sulit berhenti berputar dan cemas pada hal yang belum terjadi.', 'image' => 'emosi-kecemasan.webp', 'width' => 720, 'height' => 647, 'alt' => 'Ilustrasi mahasiswa yang cemas memeluk lutut, dengan coretan pikiran di atas kepalanya.', 'icon' => null],
+        ['name' => 'Depresi', 'text' => 'Rasa sedih dan hampa yang berlangsung lama, hingga minat pada hal yang disukai hilang.', 'image' => 'emosi-depresi.webp', 'width' => 720, 'height' => 557, 'alt' => 'Ilustrasi mahasiswa yang murung duduk di tepi tempat tidur, dengan awan kecil di atas kepalanya.', 'icon' => null],
+        ['name' => 'Insomnia', 'text' => 'Sulit tidur atau sering terbangun, sehingga tubuh tidak sempat pulih.', 'image' => 'emosi-insomnia.webp', 'width' => 720, 'height' => 476, 'alt' => 'Ilustrasi mahasiswa yang terjaga di tempat tidur pada malam hari, dengan bulan, bintang, dan jam weker di samping.', 'icon' => null],
+        ['name' => 'Stres Akademik', 'text' => 'Tugas, ujian, dan tenggat menumpuk sampai terasa tak ada habisnya.', 'image' => 'emosi-stres-akademik.webp', 'width' => 720, 'height' => 554, 'alt' => 'Ilustrasi mahasiswa yang kewalahan di meja belajar dengan tumpukan buku, laptop, dan kertas berterbangan.', 'icon' => null],
     ];
 
     // Kartu fitur (bagian 4). Tamu diarahkan ke pendaftaran untuk fitur yang butuh akun.
@@ -48,26 +48,24 @@
         </div>
     </section>
 
-    {{-- 2. Masalah umum: kartu arsip bertingkat (tanpa judul bagian) --}}
+    {{-- 2. Masalah umum: kartu sama besar, ilustrasi di atas cahaya ungu, label dan deskripsi di panel bawah --}}
     <section class="bg-background" aria-label="Kondisi yang umum dialami">
         <div class="mx-auto max-w-6xl px-4 pb-10 md:pb-14">
-            <div data-stagger class="grid items-start gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <div data-stagger class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($emotions as $emotion)
-                    <div data-item class="{{ $emotion['offset'] }}">
-                        <x-ui.card tag="article" :tone="$emotion['tone']" data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
-                            <x-ui.card.header class="px-0! gap-2">
-                                <x-ui.card.title tag="h2">{{ $emotion['name'] }}</x-ui.card.title>
-                                <x-ui.card.description class="text-[0.8125rem]">{{ $emotion['text'] }}</x-ui.card.description>
-                            </x-ui.card.header>
-                            <x-ui.card.content class="px-0!">
+                    <div data-item class="h-full">
+                        <x-ui.card tag="article" radius="rounded-3xl" flush data-lift class="h-full p-2 transition-shadow duration-300 hover:shadow-lift-hover">
+                            <div class="relative z-10 grid h-52 place-items-end justify-items-center rounded-[20px] bg-[radial-gradient(ellipse_at_50%_55%,var(--soft-lavender),transparent_72%)]">
                                 @if ($emotion['image'])
-                                    <img src="{{ asset('images/landing/'.$emotion['image']) }}" width="{{ $emotion['width'] }}" height="{{ $emotion['height'] }}" alt="{{ $emotion['alt'] }}" loading="lazy" class="mt-1 h-36 w-full object-contain">
+                                    <img src="{{ asset('images/landing/'.$emotion['image']) }}" width="{{ $emotion['width'] }}" height="{{ $emotion['height'] }}" alt="{{ $emotion['alt'] }}" loading="lazy" class="-mb-6 h-40 max-w-full object-contain">
                                 @else
-                                    <div class="mt-1 grid h-36 place-items-center" aria-hidden="true">
-                                        <span class="grid size-20 place-items-center rounded-full bg-soft-lavender text-primary"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
-                                    </div>
+                                    <span class="mb-2 grid size-20 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $emotion['icon'] }}" class="size-9" /></span>
                                 @endif
-                            </x-ui.card.content>
+                            </div>
+                            <div class="relative flex flex-1 flex-col gap-2 rounded-2xl border border-border/60 bg-card px-4 pt-9 pb-4">
+                                <h2 class="w-fit rounded-full bg-soft-lavender px-3 py-1 text-xs font-semibold tracking-wide text-text uppercase">{{ $emotion['name'] }}</h2>
+                                <p class="text-base leading-relaxed text-text">{{ $emotion['text'] }}</p>
+                            </div>
                         </x-ui.card>
                     </div>
                 @endforeach
