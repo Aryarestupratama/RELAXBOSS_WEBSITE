@@ -115,14 +115,19 @@
             <div data-stagger class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($features as $feature)
                     <div data-item>
-                        <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" data-lift class="group relative min-h-56 gap-2! px-5 pb-16 transition-shadow duration-300 hover:shadow-lift-hover">
-                            <x-ui.card.header class="px-0!">
-                                <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
-                                <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
-                                <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
-                            </x-ui.card.header>
+                        {{-- Pembungkus ber-posisi tanpa border: sisi luarnya = sisi luar kartu, jadi takik pas di pojok. --}}
+                        <div data-lift class="group relative">
+                            <div class="drop-lift group-hover:drop-lift-hover">
+                            <x-ui.card tag="article" :tone="$feature['tone']" radius="rounded-3xl" class="notch-cut min-h-56 gap-2! px-5 pb-16 shadow-none!">
+                                <x-ui.card.header class="px-0!">
+                                    <span class="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $feature['icon'] }}" class="size-5" /></span>
+                                    <x-ui.card.title class="mt-1 text-xl">{{ $feature['name'] }}</x-ui.card.title>
+                                    <x-ui.card.description class="text-[0.8125rem]">{{ $feature['text'] }}</x-ui.card.description>
+                                </x-ui.card.header>
+                            </x-ui.card>
+                            </div>
                             <x-ui.notch-corner :href="$feature['href']" :label="'Coba '.$feature['name']" />
-                        </x-ui.card>
+                        </div>
                     </div>
                 @endforeach
             </div>

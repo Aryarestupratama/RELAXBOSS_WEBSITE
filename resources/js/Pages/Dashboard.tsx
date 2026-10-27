@@ -40,7 +40,7 @@ type ActionTileProps = {
 
 /**
  * Kartu aksi menuju fitur (shadcn Card), satu bahasa dengan kartu fitur Beranda: pastel, sudut
- * membulat besar, dan sudut kanan bawah bertakik dengan cakram panah (NotchCorner) yang berbalik warna saat disorot.
+ * membulat besar, dan sudut kanan bawah dipotong takik (kelas `notch-cut`) dengan cakram panah biru gelap (NotchCorner).
  * Seluruh kartu adalah satu tautan.
  */
 function ActionTile({ icon: Icon, title, description, href, tone }: ActionTileProps) {
@@ -50,19 +50,21 @@ function ActionTile({ icon: Icon, title, description, href, tone }: ActionTilePr
       data-load
       data-lift
       data-press
-      className="group relative block rounded-3xl transition-shadow duration-300 hover:shadow-lift-hover"
+      className="group relative block"
     >
-      <Card tone={tone} className="min-h-36 gap-1 p-4 pr-16 transition-shadow duration-300 group-hover:shadow-lift-hover">
-        <CardHeader className="gap-0">
-          <span className="grid size-10 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
-            <Icon className="size-5" />
-          </span>
-          <CardTitle className="mt-3 text-base font-bold">{title}</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <CardDescription className="text-[0.8125rem] leading-relaxed">{description}</CardDescription>
-        </CardContent>
-      </Card>
+      <div className="drop-lift group-hover:drop-lift-hover">
+        <Card tone={tone} className="notch-cut min-h-36 gap-1 p-4 pr-16 shadow-none!">
+          <CardHeader className="gap-0">
+            <span className="grid size-10 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
+              <Icon className="size-5" />
+            </span>
+            <CardTitle className="mt-3 text-base font-bold">{title}</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <CardDescription className="text-[0.8125rem] leading-relaxed">{description}</CardDescription>
+          </CardContent>
+        </Card>
+      </div>
       <NotchCorner>
         <ArrowUpRight className="size-5 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
       </NotchCorner>
