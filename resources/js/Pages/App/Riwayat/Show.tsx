@@ -8,6 +8,7 @@ import ConsentDialog from '@/Components/shared/ConsentDialog';
 import CrisisBanner from '@/Components/shared/CrisisBanner';
 import InlineNote from '@/Components/shared/InlineNote';
 import FormField from '@/Components/shared/FormField';
+import InfoItem from '@/Components/shared/InfoItem';
 import ResultMeter from '@/Components/shared/ResultMeter';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
@@ -121,57 +122,65 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
     !attempt.crisis && consentDone && !pfaPending,
   );
 
+  const showAiStatus = !attempt.crisis;
+  const hasRecContent =
+    recommendations.length > 0 ||
+    (showAiStatus && ((!consentDone && consent !== null) || (consentDone && pfaPending) || ai.status === 'loading' || ai.status === 'error'));
+
   return (
-    <AppShell title="Hasil asesmen" wide staggered>
-      <PageHeader
-        back={{ href: '/app/riwayat', label: 'Riwayat' }}
-        title={`Hasil: ${attempt.assessment_name}`}
-        description={`Diselesaikan ${attempt.completed_at}`}
-      />
+    <AppShell title="Hasil asesmen" staggered>
+      <div className="mx-auto w-full max-w-3xl min-w-0">
+        <PageHeader
+          back={{ href: '/app/riwayat', label: 'Riwayat' }}
+          title={`Hasil: ${attempt.assessment_name}`}
+          description={`Diselesaikan ${attempt.completed_at}`}
+        />
 
-      {attempt.crisis ? (
-        <div data-load className="mb-4">
-          <CrisisBanner />
-        </div>
-      ) : null}
+        <div className="min-w-0 space-y-4">
+          {attempt.crisis ? (
+            <div data-load>
+              <CrisisBanner />
+            </div>
+          ) : null}
 
-      <div className="grid items-start gap-4 lg:grid-cols-12">
-        <div className="space-y-4 lg:col-span-8">
-          <ul className="grid gap-3 sm:grid-cols-2">
-            {attempt.sub_scales.map((item) => (
-              <li key={item.name} data-load>
-                <Card className="h-full gap-3 p-4">
-                  <CardHeader className="gap-1.5">
-                    <CardDescription className="text-[0.8125rem]">{item.name}</CardDescription>
-                    <h2>
-                      <Badge variant={SEVERITY_BADGE[severityOf(item.severity_level)]} className="px-3 py-1 text-sm font-bold">
-                        {item.interpretation}
-                      </Badge>
-                    </h2>
-                  </CardHeader>
-                  <CardContent>
-                    <ResultMeter
-                      subScale={item.name}
-                      score={item.score}
-                      maxScore={item.max_score}
-                      interpretation={item.interpretation}
-                      severity={item.severity_level}
-                    />
-                  </CardContent>
+          <Card data-load role="region" aria-labelledby="hasil-title" className="gap-5 p-5">
+            <CardHeader>
+              <CardTitle id="hasil-title" role="heading" aria-level={2} className="text-base">
+                Hasil per subskala
+              </CardTitle>
+              <CardDescription className="text-[0.8125rem]">Skor dan tingkat tiap bagian dari asesmen ini.</CardDescription>
+            </CardHeader>
+            <Separator />
+            <ul className="divide-y divide-border/60">
+              {attempt.sub_scales.map((item) => (
+                <li key={item.name} className="space-y-2.5 py-4 first:pt-0 last:pb-0">
+                  <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1.5">
+                    <h3 className="min-w-0 text-sm font-semibold">{item.name}</h3>
+                    <Badge variant={SEVERITY_BADGE[severityOf(item.severity_level)]} className="px-3 py-1 text-sm font-bold">
+                      {item.interpretation}
+                    </Badge>
+                  </div>
+                  <ResultMeter
+                    subScale={item.name}
+                    score={item.score}
+                    maxScore={item.max_score}
+                    interpretation={item.interpretation}
+                    severity={item.severity_level}
+                  />
                   <p className="text-[0.8125rem] leading-relaxed text-text-secondary">
                     {SEVERITY_EXPLANATION[severityOf(item.severity_level)]}
                   </p>
-                </Card>
-              </li>
-            ))}
-          </ul>
+                </li>
+              ))}
+            </ul>
+          </Card>
 
           <div data-load>
             <InlineNote>{ASSESSMENT_DISCLAIMER}</InlineNote>
           </div>
 
           {showForm ? (
-            <Card data-load role="region" aria-labelledby="pfa-title" className="gap-4 p-5">
+            <Card data-load role="region" aria-labelledby="pfa-title" className="gap-5 p-5">
               <CardHeader>
                 <CardTitle id="pfa-title" role="heading" aria-level={2} className="text-base">
                   Mau cerita sedikit tentang konteksnya?
@@ -182,7 +191,7 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
               </CardHeader>
               <Separator />
 
-              <form onSubmit={submit} noValidate className="flex flex-col gap-4">
+              <form onSubmit={submit} noValidate className="flex flex-col gap-5">
                 {errors.answers ? (
                   <Alert variant="destructive">
                     <AlertDescription>{errors.answers}</AlertDescription>
@@ -232,33 +241,36 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
           ) : null}
 
           {savedAnswers.length > 0 ? (
-            <section data-load aria-labelledby="saved-title">
-              <h2 id="saved-title" className="text-base font-semibold">
-                Jawabanmu sudah tersimpan
-              </h2>
-              <dl className="mt-2 space-y-2">
+            <Card data-load role="region" aria-labelledby="saved-title" className="gap-5 p-5">
+              <CardHeader>
+                <CardTitle id="saved-title" role="heading" aria-level={2} className="text-base">
+                  Jawabanmu sudah tersimpan
+                </CardTitle>
+              </CardHeader>
+              <Separator />
+              <dl className="grid gap-4">
                 {savedAnswers.map(([name, text]) => (
-                  <Card key={name} className="gap-0.5 rounded-2xl p-4 shadow-card">
-                    <dt className="text-[0.8125rem] text-text-secondary">{name}</dt>
-                    <dd className="text-sm whitespace-pre-wrap">{text}</dd>
-                  </Card>
+                  <InfoItem key={name} label={name} value={text ? <span className="whitespace-pre-wrap">{text}</span> : null} />
                 ))}
               </dl>
-            </section>
+            </Card>
           ) : null}
 
           {ai.status === 'ready' && !attempt.crisis ? (
             <div data-load>
               <AiRecommendationCard recommendation={ai.recommendation} summary={ai.summary} />
             </div>
-          ) : (
-            <section data-load aria-labelledby="rec-title">
-              <h2 id="rec-title" className="text-base font-semibold">
-                Rekomendasi
-              </h2>
+          ) : hasRecContent ? (
+            <Card data-load role="region" aria-labelledby="rec-title" className="gap-5 p-5">
+              <CardHeader>
+                <CardTitle id="rec-title" role="heading" aria-level={2} className="text-base">
+                  Rekomendasi
+                </CardTitle>
+              </CardHeader>
+              <Separator />
 
-              {!attempt.crisis && !consentDone && consent !== null ? (
-                <p className="mt-1 text-sm text-text-secondary">
+              {showAiStatus && !consentDone && consent !== null ? (
+                <p className="text-sm text-text-secondary">
                   {AI_REC_NEEDS_CONSENT}{' '}
                   <button type="button" onClick={() => setConsentOpen(true)} className={`${linkClass} min-h-11`}>
                     {AI_REC_ENABLE}
@@ -266,19 +278,19 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
                 </p>
               ) : null}
 
-              {!attempt.crisis && consentDone && pfaPending ? (
-                <p className="mt-1 text-sm text-text-secondary">{AI_REC_WAITING_CONTEXT}</p>
+              {showAiStatus && consentDone && pfaPending ? (
+                <p className="text-sm text-text-secondary">{AI_REC_WAITING_CONTEXT}</p>
               ) : null}
 
-              {!attempt.crisis && ai.status === 'loading' ? (
-                <p role="status" className="mt-1 flex items-center gap-2 text-sm text-text-secondary">
+              {showAiStatus && ai.status === 'loading' ? (
+                <p role="status" className="flex items-center gap-2 text-sm text-text-secondary">
                   <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
                   {AI_REC_LOADING}
                 </p>
               ) : null}
 
-              {!attempt.crisis && ai.status === 'error' ? (
-                <Alert className="mt-2">
+              {showAiStatus && ai.status === 'error' ? (
+                <Alert>
                   <AlertDescription>
                     <p>{ai.message}</p>
                     {ai.retryable ? (
@@ -291,53 +303,45 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
               ) : null}
 
               {recommendations.length > 0 ? (
-                <ul className="mt-2 grid gap-2 sm:grid-cols-2">
+                <ul className="grid gap-3">
                   {recommendations.map((item) => (
-                    <li key={item.name}>
-                      <Card className="h-full gap-0.5 rounded-2xl p-4 shadow-card">
-                        <p className="text-[0.8125rem] text-text-secondary">{item.name}</p>
-                        <p className="text-sm leading-relaxed">{item.recommendation}</p>
-                      </Card>
+                    <li key={item.name} className="rounded-2xl border border-border/60 px-4 py-3">
+                      <p className="text-xs font-medium text-text-secondary">{item.name}</p>
+                      <p className="mt-1 text-sm leading-relaxed">{item.recommendation}</p>
                     </li>
                   ))}
                 </ul>
               ) : null}
-            </section>
-          )}
-        </div>
+            </Card>
+          ) : null}
 
-        <Card
-          tone="mint"
-          data-load
-          role="complementary"
-          aria-label="Langkah berikutnya"
-          className="gap-3 p-5 lg:col-span-4"
-        >
-          <CardHeader className="gap-1">
-            <CardTitle role="heading" aria-level={2} className="text-base font-bold">
-              Langkah berikutnya
-            </CardTitle>
-            <CardDescription className="text-[0.8125rem]">
-              Hasil ini gambaran awal. Bila terasa berat, kamu tidak harus menghadapinya sendirian.
-            </CardDescription>
-          </CardHeader>
-          {/* <a> biasa: Konsultasi adalah halaman Blade */}
-          <a href="/konsultasi" className={`${linkClass} inline-flex min-h-11 items-center text-[0.8125rem]`}>
-            Bicara dengan profesional
-          </a>
-          <Separator />
-          <CardFooter className="flex-col items-stretch gap-2">
-            <Button asChild className={pillButton}>
-              <Link href="/app/asesmen">Kembali ke asesmen</Link>
-            </Button>
-            <Button asChild variant="outline" className={`bg-card ${pillButton}`}>
-              <Link href="/app/riwayat">
-                <History aria-hidden="true" />
-                Lihat riwayat
-              </Link>
-            </Button>
-          </CardFooter>
-        </Card>
+          <Card data-load role="complementary" aria-label="Langkah berikutnya" className="gap-4 p-5">
+            <CardHeader>
+              <CardTitle role="heading" aria-level={2} className="text-base">
+                Langkah berikutnya
+              </CardTitle>
+              <CardDescription className="text-[0.8125rem]">
+                Hasil ini gambaran awal. Bila terasa berat, kamu tidak harus menghadapinya sendirian.
+              </CardDescription>
+            </CardHeader>
+            {/* <a> biasa: Konsultasi adalah halaman Blade */}
+            <a href="/konsultasi" className={`${linkClass} inline-flex min-h-11 items-center self-start text-[0.8125rem]`}>
+              Bicara dengan profesional
+            </a>
+            <Separator />
+            <CardFooter className="flex-col items-stretch gap-2 sm:flex-row sm:justify-end">
+              <Button asChild variant="outline" className={pillButton}>
+                <Link href="/app/riwayat">
+                  <History aria-hidden="true" />
+                  Lihat riwayat
+                </Link>
+              </Button>
+              <Button asChild className={pillButton}>
+                <Link href="/app/asesmen">Kembali ke asesmen</Link>
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
       </div>
 
       <ConsentDialog
