@@ -111,7 +111,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
             id="major"
             label="Jurusan (opsional)"
             compact
-            hint="Membantu RelaxMate memahami konteksmu."
+            hint="Untuk konteks RelaxMate."
             error={errors.major}
           >
             {(control) => (
@@ -130,7 +130,7 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
             id="institution_name"
             label="Kampus (opsional)"
             compact
-            hint="Hanya untuk profilmu, tidak dikirim ke AI."
+            hint="Tidak dikirim ke AI."
             error={errors.institution_name}
           >
             {(control) => (
@@ -153,10 +153,10 @@ export default function Daftar({ minPasswordLength }: DaftarProps) {
           onChange={(checked) => form.setData('terms', checked)}
           error={errors.terms}
           label={
-            <span className="text-[0.8125rem] leading-snug text-text-secondary">
+            <span className="text-[0.8125rem] leading-snug text-text-secondary lg:whitespace-nowrap">
               Saya telah membaca{' '}
               <a href="/ketentuan" target="_blank" rel="noopener noreferrer" className={AUTH_LINK}>
-                Ketentuan penggunaan
+                Ketentuan
               </a>{' '}
               dan{' '}
               <span className="whitespace-nowrap">

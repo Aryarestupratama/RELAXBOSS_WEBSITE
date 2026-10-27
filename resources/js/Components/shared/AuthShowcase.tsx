@@ -16,7 +16,7 @@ const SLIDES = [
   },
   {
     title: 'Bukan diagnosis.',
-    text: 'Hasil asesmen adalah gambaran awal untuk membantumu mengenali kondisi, bukan penilaian medis.',
+    text: 'Hasil asesmen hanya gambaran awal, bukan penilaian medis.',
   },
 ] as const;
 
