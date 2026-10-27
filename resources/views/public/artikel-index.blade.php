@@ -46,18 +46,14 @@
     <section class="bg-background" aria-label="Daftar artikel">
         <div class="mx-auto max-w-6xl px-4 pb-8 md:pb-10">
             @if ($articles->isEmpty())
-                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-8 text-center">
-                    <img src="{{ asset('images/landing/robot-wave.webp') }}" width="800" height="800" loading="lazy" alt="" class="size-32 object-contain">
-                    <p class="mt-3 text-lg font-semibold text-text">
-                        {{ $activeCategory ? 'Belum ada artikel untuk kategori ini.' : 'Artikel sedang disiapkan.' }}
-                    </p>
-                    <div class="mt-5">
+                <div data-reveal="pop" class="mx-auto max-w-xl rounded-3xl bg-card shadow-lift px-5 py-8">
+                    <x-empty-state icon="newspaper" :title="$activeCategory ? 'Belum ada artikel untuk kategori ini.' : 'Artikel sedang disiapkan.'">
                         @if ($activeCategory)
                             <x-button-link href="{{ url('/artikel') }}" class="rounded-full! px-6 text-sm">Lihat semua artikel</x-button-link>
                         @else
                             <x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link>
                         @endif
-                    </div>
+                    </x-empty-state>
                 </div>
             @else
                 <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">

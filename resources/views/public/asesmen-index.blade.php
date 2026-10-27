@@ -47,10 +47,10 @@
             <h2 id="judul-daftar-asesmen" data-reveal class="mb-6 text-center text-2xl leading-tight font-bold tracking-tight md:mb-8 md:text-[2rem]">Daftar asesmen kami</h2>
 
             @if ($assessments->isEmpty())
-                <div data-reveal="pop" class="mx-auto flex max-w-xl flex-col items-center rounded-3xl bg-card shadow-lift px-5 py-10 text-center">
-                    <span class="grid size-16 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="clipboard-check" class="size-7" /></span>
-                    <p class="mt-4 text-lg font-semibold text-text">Daftar asesmen sedang disiapkan.</p>
-                    <div class="mt-5"><x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link></div>
+                <div data-reveal="pop" class="mx-auto max-w-xl rounded-3xl bg-card shadow-lift px-5 py-8">
+                    <x-empty-state icon="clipboard-list" title="Daftar asesmen sedang disiapkan.">
+                        <x-button-link href="{{ url('/') }}" class="rounded-full! px-6 text-sm">Kembali ke Beranda</x-button-link>
+                    </x-empty-state>
                 </div>
             @else
                 <ul data-stagger class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">

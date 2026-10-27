@@ -1,6 +1,7 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, ClipboardCheck } from 'lucide-react';
+import { ArrowRight, ClipboardCheck, ClipboardList } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
+import EmptyState from '@/Components/shared/EmptyState';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -45,14 +46,17 @@ export default function Index({ attempts, prev_page_url, next_page_url }: IndexP
 
       <div>
         {attempts.length === 0 ? (
-          <Card data-load="pop" className="mx-auto max-w-md items-center gap-3 p-6 text-center">
-            <img src="/images/asesmen/asesmen-kosong.webp" width={160} height={160} alt="" className="size-28 object-contain" />
-            <p className="max-w-sm text-sm text-text-secondary">
-              Belum ada hasil. Mulai Asesmen pertamamu untuk mengenali kondisimu.
-            </p>
-            <Button asChild className={pillButton}>
-              <Link href="/app/asesmen">Mulai asesmen</Link>
-            </Button>
+          <Card data-load="pop" className="mx-auto max-w-md px-6 py-8">
+            <EmptyState
+              icon={ClipboardList}
+              title="Belum ada riwayat"
+              message="Belum ada hasil. Mulai Asesmen pertamamu untuk mengenali kondisimu."
+              action={
+                <Button asChild className={pillButton}>
+                  <Link href="/app/asesmen">Mulai asesmen</Link>
+                </Button>
+              }
+            />
           </Card>
         ) : (
           <>

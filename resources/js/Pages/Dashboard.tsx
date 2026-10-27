@@ -1,5 +1,5 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, BookOpen, ClipboardCheck, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
+import { ArrowRight, BookOpen, ClipboardCheck, ClipboardList, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import ActionTile from '@/Components/shared/ActionTile';
 import PageHeader from '@/Components/shared/PageHeader';
@@ -128,13 +128,12 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
                 </CardContent>
               ) : (
                 <CardContent className="flex flex-col items-center gap-3 rounded-xl border border-border/60 bg-card p-4 sm:flex-row">
-                  <img
-                    src="/images/asesmen/asesmen-kosong.webp"
-                    width={96}
-                    height={96}
-                    alt=""
-                    className="size-16 shrink-0 object-contain"
-                  />
+                  <span
+                    className="grid size-14 shrink-0 place-items-center rounded-full border border-primary/15 bg-soft-lavender text-primary"
+                    aria-hidden="true"
+                  >
+                    <ClipboardList className="size-6" strokeWidth={1.75} />
+                  </span>
                   <p className="flex-1 text-center text-sm text-text-secondary sm:text-left">
                     Belum ada hasil. Mulai Asesmen pertamamu untuk mengenali kondisimu.
                   </p>

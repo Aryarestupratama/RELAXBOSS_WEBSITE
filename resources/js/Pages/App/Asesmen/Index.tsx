@@ -1,7 +1,8 @@
 import { Link } from '@inertiajs/react';
-import { ClipboardCheck, Clock, History, ListChecks } from 'lucide-react';
+import { ClipboardCheck, ClipboardList, Clock, History, ListChecks } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import ActionTile from '@/Components/shared/ActionTile';
+import EmptyState from '@/Components/shared/EmptyState';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -42,20 +43,17 @@ export default function Index({ assessments }: IndexProps) {
 
       <div>
         {assessments.length === 0 ? (
-          <Card data-load="pop" className="mx-auto max-w-md items-center gap-3 p-6 text-center">
-            <img
-              src="/images/asesmen/asesmen-kosong.webp"
-              width={160}
-              height={160}
-              alt=""
-              className="size-28 object-contain"
+          <Card data-load="pop" className="mx-auto max-w-md px-6 py-8">
+            <EmptyState
+              icon={ClipboardList}
+              title="Belum ada asesmen"
+              message="Belum ada asesmen yang tersedia. Coba lagi nanti, ya."
+              action={
+                <Button asChild variant="outline" data-press className="rounded-full! px-5 text-sm">
+                  <Link href="/dashboard">Ke Dashboard</Link>
+                </Button>
+              }
             />
-            <p className="max-w-sm text-sm text-text-secondary">
-              Belum ada asesmen yang tersedia. Coba lagi nanti, ya.
-            </p>
-            <Button asChild variant="outline" data-press className="rounded-full! px-5 text-sm">
-              <Link href="/dashboard">Ke Dashboard</Link>
-            </Button>
           </Card>
         ) : (
           <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
