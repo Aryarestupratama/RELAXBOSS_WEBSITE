@@ -22,7 +22,7 @@
                   active="ketentuan"
                   updated="19 Oktober 2026">
         <x-legal-section id="layanan" :title="$toc['layanan']" icon="heart" tone="peach">
-            <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
+            <div role="note" class="rounded-xl border-l-4 border-primary bg-surface-alt p-5 text-text">
                 <p>
                     RelaxBoss adalah alat bantu mengenali dan mencatat kondisimu. RelaxBoss bukan psikolog, bukan layanan medis, dan tidak memberi diagnosis.
                     Hasil Asesmen adalah gambaran awal. Untuk penilaian yang tepat, bicarakan dengan tenaga profesional.
@@ -45,7 +45,7 @@
                     'Kamu bertanggung jawab atas aktivitas yang terjadi lewat akunmu.',
                     'Akun dapat dinonaktifkan bila dipakai untuk menyalahgunakan layanan.',
                 ] as $item)
-                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-strong" aria-hidden="true"></span><span>{{ $item }}</span></li>
+                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span><span>{{ $item }}</span></li>
                 @endforeach
             </ul>
         </x-legal-section>
@@ -57,7 +57,7 @@
                     'Jangan memasukkan data pribadi orang lain tanpa izin mereka.',
                     'Ada batas jumlah percobaan dan pesan untuk menjaga layanan tetap tersedia bagi semua.',
                 ] as $item)
-                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-strong" aria-hidden="true"></span><span>{{ $item }}</span></li>
+                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span><span>{{ $item }}</span></li>
                 @endforeach
             </ul>
         </x-legal-section>

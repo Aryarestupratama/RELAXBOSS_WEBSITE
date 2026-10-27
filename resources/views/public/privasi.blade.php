@@ -30,7 +30,7 @@
                     'Jawaban dan hasil Asesmen, termasuk jawaban pertanyaan konteks bila kamu mengisinya.',
                     'Percakapan dengan RelaxMate.',
                 ] as $item)
-                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-brand-strong" aria-hidden="true"></span><span>{{ $item }}</span></li>
+                    <li class="flex gap-3"><span class="mt-2.5 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span><span>{{ $item }}</span></li>
                 @endforeach
             </ul>
         </x-legal-section>
@@ -63,7 +63,7 @@
         </x-legal-section>
 
         <x-legal-section id="pelatihan" :title="$toc['pelatihan']" icon="clipboard-check" tone="mint">
-            <div role="note" class="rounded-xl border-l-4 border-brand-strong bg-surface-alt p-5 text-text">
+            <div role="note" class="rounded-xl border-l-4 border-primary bg-surface-alt p-5 text-text">
                 <p>
                     Kami menanyakan secara terpisah apakah percakapan dan hasil asesmenmu boleh dipakai untuk melatih model AI di masa depan.
                     Kamu harus memilih sendiri, tanpa pilihan awal. Menolak tidak memengaruhi akses ke fitur apa pun, dan pilihanmu bisa diubah kapan saja di pengaturan akun.

@@ -11,8 +11,8 @@ type ResultMeterProps = {
 // Kelas ditulis utuh agar terdeteksi Tailwind. Tingkat tertinggi memakai --warning (Design SCR-014).
 const FILL: Record<SeverityLevel, string> = {
   normal: 'fill-success',
-  mild: 'fill-brand-strong',
-  moderate: 'fill-brand-strong',
+  mild: 'fill-primary',
+  moderate: 'fill-primary',
   severe: 'fill-warning',
 };
 

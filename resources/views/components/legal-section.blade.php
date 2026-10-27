@@ -8,7 +8,7 @@
         <span class="grid size-11 shrink-0 place-items-center rounded-full {{ $circle }}" aria-hidden="true"><x-icon name="{{ $icon }}" class="size-5" /></span>
         <h2 id="{{ $id }}-judul" class="text-xl leading-snug font-bold tracking-tight md:text-2xl">{{ $title }}</h2>
     </div>
-    <div class="mt-4 space-y-3 leading-relaxed text-text-secondary [&_a]:font-medium [&_a]:text-brand-strong [&_a]:underline [&_a]:decoration-brand-strong/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a:hover]:text-nav-hover [&_a:hover]:decoration-nav-hover">
+    <div class="mt-4 space-y-3 leading-relaxed text-text-secondary [&_a]:font-medium [&_a]:text-primary [&_a]:underline [&_a]:decoration-primary/40 [&_a]:underline-offset-4 [&_a]:transition-colors [&_a:hover]:text-nav-hover [&_a:hover]:decoration-nav-hover">
         {{ $slot }}
     </div>
 </x-ui.card>

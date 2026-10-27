@@ -3,7 +3,8 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/lib/utils';
 
 /**
- * Badge bergaya shadcn. Warna hanya dari token; teks di atas pastel selalu --text (RULE-052).
+ * Badge bergaya shadcn. Warna hanya dari token. Bawaan `secondary`: mist + teks navy + garis tepi tipis; penanda khusus
+ * memakai pastel (`lavender`) dengan teks --text (RULE-052).
  * `crisis` memakai pasangan --crisis-bg dan --crisis-text.
  */
 const badgeVariants = cva(
@@ -11,7 +12,7 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        secondary: 'bg-soft-lavender text-text',
+        secondary: 'border border-primary/15 bg-surface-alt text-primary',
         outline: 'border border-border bg-card text-text',
         lavender: 'bg-soft-lavender text-text',
         sky: 'bg-soft-sky text-text',

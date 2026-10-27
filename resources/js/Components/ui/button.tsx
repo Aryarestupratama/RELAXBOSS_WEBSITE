@@ -7,7 +7,7 @@ import { Slot } from "radix-ui"
  * Tombol RelaxBoss (Design bagian 2, CMP-001).
  * - Varian: default, outline, ghost, destructive. `secondary` dan `link` tidak dibawa.
  * - Ukuran: default dan icon (44 x 44). Target sentuh minimal 44px.
- * - Cincin fokus: outline 2px --brand-strong, offset 3px (aturan global di app.css).
+ * - Cincin fokus: outline 2px --focus-ring (navy), offset 3px (aturan global di app.css).
  */
 const buttonVariants = cva(
   "group/button inline-flex shrink-0 items-center justify-center gap-2 rounded-lg border-[1.5px] border-transparent text-base font-medium whitespace-nowrap transition duration-150 ease-out select-none disabled:pointer-events-none disabled:opacity-50 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-5",

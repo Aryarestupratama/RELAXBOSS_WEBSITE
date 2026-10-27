@@ -9,7 +9,7 @@ type SuggestionCardProps = {
   onDismiss?: () => void;
 };
 
-const linkClass = 'inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-2';
+const linkClass = 'inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-2';
 
 /**
  * CMP-019. Saran tindakan di bawah balasan sesuai prioritas intent (FR-029).

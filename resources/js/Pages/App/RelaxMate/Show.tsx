@@ -374,7 +374,7 @@ export default function Show({
                     <p>{RELAXMATE_DAILY_LIMIT}</p>
                     <a
                       href="/konsultasi"
-                      className="mt-1 inline-flex min-h-11 items-center font-medium text-brand-strong underline underline-offset-2"
+                      className="mt-1 inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-2"
                     >
                       Konsultasi Profesional
                     </a>
@@ -393,7 +393,7 @@ export default function Show({
 
               <p className="text-center text-xs text-text-secondary">
                 {RELAXMATE_NOTE} Butuh bantuan sekarang?{' '}
-                <a href="/konsultasi" className="font-medium text-brand-strong underline underline-offset-2">
+                <a href="/konsultasi" className="font-medium text-primary underline underline-offset-2">
                   Konsultasi Profesional
                 </a>
               </p>

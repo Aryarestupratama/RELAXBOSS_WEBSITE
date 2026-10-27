@@ -18,7 +18,7 @@ export default function AiRecommendationCard({ recommendation, summary }: AiReco
     <Card tone="lavender" role="region" aria-labelledby="ai-rec-title" className="gap-3 p-5">
       <CardHeader className="items-start gap-2">
         <Badge variant="outline">
-          <Sparkles className="text-brand-strong" aria-hidden="true" />
+          <Sparkles className="text-primary" aria-hidden="true" />
           {AI_REC_LABEL}
         </Badge>
         <CardTitle id="ai-rec-title" role="heading" aria-level={2} className="text-base font-bold">

@@ -106,10 +106,10 @@
 
                                 <x-ui.card.content class="flex flex-col">
                                     @if (filled($phone))
-                                        <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-semibold text-brand-strong underline underline-offset-4">{{ $phone }}</a>
+                                        <a href="tel:{{ preg_replace('/[^0-9+,]/', '', preg_replace('/\s*(?:ext\.?|ekstensi)\s*(\d+)/i', ',$1', $phone)) }}" class="inline-flex min-h-11 items-center font-semibold text-primary underline underline-offset-4">{{ $phone }}</a>
                                     @endif
                                     @if (is_string($link) && str_starts_with($link, 'https://'))
-                                        <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm font-medium break-all text-brand-strong underline underline-offset-4">{{ $link }}</a>
+                                        <a href="{{ $link }}" rel="noopener noreferrer" class="inline-flex min-h-11 items-center text-sm font-medium break-all text-primary underline underline-offset-4">{{ $link }}</a>
                                     @endif
                                 </x-ui.card.content>
 

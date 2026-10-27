@@ -51,7 +51,6 @@
     --color-input-border: var(--input-border);
     --color-on-primary: var(--on-primary);
     --color-brand: var(--brand);
-    --color-brand-strong: var(--brand-strong);
     --color-brand-soft: var(--brand-soft);
     --color-mood-blue: var(--mood-blue);
     --color-mood-purple: var(--mood-purple);
@@ -69,7 +68,6 @@
     --color-danger: var(--danger);
     --color-crisis-bg: var(--crisis-bg);
     --color-crisis-text: var(--crisis-text);
-    --color-neutral-soft: var(--neutral-soft);
     --color-surface-alt: var(--surface-alt);
     --color-nav-hover: var(--nav-hover);
     --color-soft-lavender: var(--soft-lavender);
@@ -98,19 +96,19 @@
     /* Token desain (Design.md bagian 2). Satu-satunya sumber warna. */
     --page-bg: #FFFFFF;
     --card: #FFFFFF;
-    --text: #232524;
-    --text-secondary: #4D4F4C;
-    --text-muted: #63655F;
-    --border: #D9D5CB;
-    --input-border: #797B75;
-    --primary: #192338;
+    /* Satu navy (warna logo) untuk tiga peran: tombol, tautan, dan teks. Netral lainnya satu keluarga biru-abu dingin. */
+    --primary: #0A2244;
+    --text: var(--primary);
+    --text-secondary: #42506A;
+    --text-muted: #555B72;
+    --border: #D5DCE8;
+    --input-border: #76819A;
     --on-primary: #FFFFFF;
-    /* Keputusan founder (TASK-028AB): warna warni hanya untuk label mood. Aksen merek (tautan, ikon, grafik, progres)
-       kini memakai biru RelaxBoss (--primary); satu-satunya ungu yang tersisa adalah cincin fokus dan pastel ungu muda. */
+    /* Warna warni hanya untuk label mood. Aksen merek (tautan, ikon, grafik, progres) memakai --primary langsung;
+       ungu hanya tersisa sebagai pastel (--soft-lavender, --brand-soft) dan skala mood. */
     --brand: var(--primary);
-    --brand-strong: var(--primary);
-    /* Cincin fokus tetap berwarna agar terlihat di atas putih maupun navy (WCAG 2.4.7); ungu #6A38EE, 6,15:1 dengan putih. */
-    --focus-ring: #6A38EE;
+    /* Cincin fokus navy dengan jarak 3px dari elemen, jadi tetap terlihat di atas putih, mist, dan pastel (kontras >= 11:1). */
+    --focus-ring: var(--primary);
     /* Ungu muda untuk lencana di atas permukaan gelap (mis. "Admin" di rail navy) dan tint transparan (penanda aktif navigasi).
        Untuk kartu dan lingkaran hias pakai --soft-lavender. Teks di atasnya --text (bukan putih) */
     --brand-soft: #C3B1FF;
@@ -133,13 +131,14 @@
     --danger: #DC2626;
     --crisis-bg: #FEF2F2;
     --crisis-text: #991B1B;
-    --neutral-soft: #F5F3EE;
     /* TASK-028Q: latar bagian selang-seling dan empat pastel kartu (turunan lebih terang dari
        --brand-soft, --mood-blue, --mood-green, --mood-peach). Dipakai di semua halaman: kartu, kotak ikon, penanda terpilih
        (--soft-lavender). Teks di atasnya --text. */
-    --surface-alt: #F7F9FC;
-    /* Warna hover semua tombol dan tautan bernavy, publik maupun aplikasi (navy sedikit lebih biru dari --primary; --primary tetap untuk keadaan diam dan terpilih). Teks putih di atasnya 16,6:1. */
-    --nav-hover: #0A2244;
+    /* Mist: satu-satunya netral berlatar (bagian selang-seling, Footer, hover, kepala tabel, lencana). Menggantikan
+       --neutral-soft (krem) dan --surface-alt lama (#F7F9FC). Nama lama dipertahankan agar tidak bentrok dengan palet bawaan Tailwind (`mist`). */
+    --surface-alt: #EEF2F8;
+    /* Warna hover semua tombol dan tautan bernavy, publik maupun aplikasi (navy lebih terang dari --primary; --primary tetap untuk keadaan diam dan terpilih). Teks putih di atasnya 11,34:1. */
+    --nav-hover: #163A6B;
     --soft-lavender: #DED4FF;
     /* TASK-028AB: satu-satunya warna isian di dalam kartu adalah ungu muda. Sky, mint, dan peach dialiaskan ke --soft-lavender
        agar semua pemakai lama (kotak ikon, lencana, lingkaran hias) ikut tanpa mengubah tiap berkas. Hapus ketiganya
@@ -155,11 +154,11 @@
     --popover: var(--card);
     --popover-foreground: var(--text);
     --primary-foreground: var(--on-primary);
-    --secondary: var(--neutral-soft);
+    --secondary: var(--surface-alt);
     --secondary-foreground: var(--text);
-    --muted: var(--neutral-soft);
+    --muted: var(--surface-alt);
     --muted-foreground: var(--text-muted);
-    --accent: var(--neutral-soft);
+    --accent: var(--surface-alt);
     --accent-foreground: var(--text);
     --destructive: var(--danger);
     --input: var(--input-border);

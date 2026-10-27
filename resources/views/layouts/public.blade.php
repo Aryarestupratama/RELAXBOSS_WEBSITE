@@ -38,7 +38,7 @@
         $navLink = 'group relative isolate inline-flex h-9 items-center rounded-full px-3.5 text-sm font-medium text-text-secondary transition-colors duration-300 '.$ease
             .' before:absolute before:inset-0 before:-z-10 before:scale-75 before:rounded-full before:bg-nav-hover/[0.07] before:opacity-0 before:transition-all before:duration-300 before:ease-[cubic-bezier(0.2,0.7,0.2,1)]'
             .' after:absolute after:inset-x-0 after:-inset-y-1 hover:text-nav-hover hover:before:scale-100 hover:before:opacity-100'
-            .' aria-[current=page]:text-brand-strong aria-[current=page]:before:scale-100 aria-[current=page]:before:bg-brand-soft/30 aria-[current=page]:before:opacity-100';
+            .' aria-[current=page]:text-primary aria-[current=page]:before:scale-100 aria-[current=page]:before:bg-brand-soft/30 aria-[current=page]:before:opacity-100';
         $btnBase = 'inline-flex h-10 items-center justify-center rounded-lg border-[1.5px] px-4 text-sm font-medium transition-all duration-300 '.$ease;
         $btnOutline = $btnBase.' border-primary text-primary hover:border-nav-hover hover:bg-nav-hover hover:text-on-primary hover:shadow-lift';
         $btnSolid = $btnBase.' border-primary bg-primary text-on-primary hover:-translate-y-px hover:border-nav-hover hover:bg-nav-hover hover:shadow-lift-hover';
@@ -102,7 +102,7 @@
                 <nav aria-label="Jelajahi">
                     <ul class="flex flex-wrap justify-center gap-x-7">
                         @foreach ($navLinks as $label => $link)
-                            <li><a href="{{ url($link['href']) }}" class="inline-flex min-h-11 items-center text-sm font-medium text-text-secondary transition-colors hover:text-brand-strong">{{ $label }}</a></li>
+                            <li><a href="{{ url($link['href']) }}" class="inline-flex min-h-11 items-center text-sm font-medium text-text-secondary transition-colors hover:text-primary">{{ $label }}</a></li>
                         @endforeach
                     </ul>
                 </nav>
@@ -110,8 +110,8 @@
 
             <div class="mt-6 flex flex-wrap items-center justify-center gap-x-6 border-t border-border pt-5 text-sm text-text-muted">
                 <p>&copy; {{ date('Y') }} RelaxBoss</p>
-                <a href="{{ url('/privasi') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-brand-strong">Privasi</a>
-                <a href="{{ url('/ketentuan') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-brand-strong">Ketentuan</a>
+                <a href="{{ url('/privasi') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-primary">Privasi</a>
+                <a href="{{ url('/ketentuan') }}" class="inline-flex min-h-11 items-center underline underline-offset-4 transition-colors hover:text-primary">Ketentuan</a>
             </div>
         </div>
     </footer>

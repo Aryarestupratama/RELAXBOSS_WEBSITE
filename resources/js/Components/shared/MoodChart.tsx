@@ -112,7 +112,7 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
         <svg width={width} height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} aria-hidden="true" focusable="false">
           <Grid width={width} />
           {segments.map((path) => (
-            <path key={path} d={path} fill="none" className="stroke-brand-strong" strokeWidth={2} strokeLinejoin="round" />
+            <path key={path} d={path} fill="none" className="stroke-primary" strokeWidth={2} strokeLinejoin="round" />
           ))}
           {visible.map((day, index) => {
             const showLabel = index % labelEvery === 0 || index === visible.length - 1;

@@ -57,7 +57,7 @@ type ShowProps = {
   max_answer_chars: number;
 };
 
-const linkClass = 'font-medium text-brand-strong underline underline-offset-4';
+const linkClass = 'font-medium text-primary underline underline-offset-4';
 
 /** Tingkat hasil ke varian Badge (teks di atas pastel selalu `--text`, RULE-052). Teks tingkat selalu ikut tampil, bukan hanya warna. */
 const SEVERITY_BADGE: Record<SeverityLevel, 'mint' | 'sky' | 'lavender' | 'peach'> = {

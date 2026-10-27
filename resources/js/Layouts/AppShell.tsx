@@ -215,7 +215,7 @@ export default function AppShell({
                     data-press
                     aria-current={active ? 'page' : undefined}
                     className={`group flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors duration-300 ${EASE} ${
-                      active ? 'text-brand-strong' : 'text-text-secondary hover:text-nav-hover'
+                      active ? 'text-primary' : 'text-text-secondary hover:text-nav-hover'
                     }`}
                   >
                     <span

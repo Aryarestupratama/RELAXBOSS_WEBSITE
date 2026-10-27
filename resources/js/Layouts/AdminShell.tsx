@@ -128,7 +128,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
             <div className="flex items-center gap-1">
               <Link
                 href="/dashboard"
-                className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-brand-strong"
+                className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-primary"
               >
                 Aplikasi
               </Link>
@@ -159,7 +159,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
                     data-press
                     aria-current={active ? 'page' : undefined}
                     className={`group flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors duration-300 ${EASE} ${
-                      active ? 'text-brand-strong' : 'text-text-secondary hover:text-nav-hover'
+                      active ? 'text-primary' : 'text-text-secondary hover:text-nav-hover'
                     }`}
                   >
                     <span

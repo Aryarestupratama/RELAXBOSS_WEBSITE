@@ -3,7 +3,7 @@ import { Progress as ProgressPrimitive } from "radix-ui"
 import { cn } from "cn"
 
 /**
- * Progress gaya shadcn (Radix). Jalur memakai --border, isi --brand-strong (6,15:1 dengan putih).
+ * Progress gaya shadcn (Radix). Jalur memakai --border, isi --primary (15,85:1 dengan putih).
  * Wajib diberi `aria-label`. Posisi isi lewat atribut `style` (diizinkan CSP: style-src-attr).
  */
 function Progress({
@@ -24,7 +24,7 @@ function Progress({
     >
       <ProgressPrimitive.Indicator
         data-slot="progress-indicator"
-        className="h-full w-full rounded-full bg-brand-strong transition-transform duration-300 ease-out motion-reduce:transition-none"
+        className="h-full w-full rounded-full bg-primary transition-transform duration-300 ease-out motion-reduce:transition-none"
         style={{ transform: `translateX(-${100 - percent}%)` }}
       />
     </ProgressPrimitive.Root>

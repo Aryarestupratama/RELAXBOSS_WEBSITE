@@ -29,7 +29,7 @@ export default function AuthCheckbox({ id, label, checked, onChange, error, requ
           aria-required={required || undefined}
           aria-invalid={Boolean(error)}
           aria-describedby={errorId}
-          className="mt-[0.15rem] size-[1.125rem] cursor-pointer after:absolute after:-inset-3 after:content-[''] hover:border-primary focus-visible:border-brand-strong focus-visible:shadow-[0_0_0_4px_var(--soft-lavender)]"
+          className="mt-[0.15rem] size-[1.125rem] cursor-pointer after:absolute after:-inset-3 after:content-[''] hover:border-primary focus-visible:border-primary focus-visible:shadow-[0_0_0_4px_var(--soft-lavender)]"
         />
         <label htmlFor={id} className="cursor-pointer">
           {label}

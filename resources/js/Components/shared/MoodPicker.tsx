@@ -127,7 +127,7 @@ export default function MoodPicker({
                 )}
               >
                 <RadioGroupItem id={id} value={value} className="sr-only" />
-                <Icon className="size-5 shrink-0 text-brand-strong" aria-hidden="true" />
+                <Icon className="size-5 shrink-0 text-primary" aria-hidden="true" />
                 <span>{AROUSAL_LABELS[value]}</span>
                 {selected ? <SelectedMark className="top-1/2 right-3 -translate-y-1/2" /> : null}
               </label>

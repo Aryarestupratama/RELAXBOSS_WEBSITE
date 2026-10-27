@@ -26,7 +26,7 @@
         </nav>
 
         <nav data-load aria-label="Dokumen hukum" class="mt-1">
-            <ul class="inline-flex items-center gap-1 rounded-full border border-border bg-neutral-soft p-1">
+            <ul class="inline-flex items-center gap-1 rounded-full border border-border bg-surface-alt p-1">
                 @foreach ($docs as $key => $doc)
                     <li>
                         <a href="{{ url($doc['href']) }}"
