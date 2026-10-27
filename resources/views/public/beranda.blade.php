@@ -20,12 +20,13 @@
         ['name' => 'Artikel', 'text' => 'Bacaan ringan tentang menjaga kesehatan mental sehari-hari.', 'tone' => 'lavender', 'icon' => 'file-text', 'href' => url('/artikel')],
     ];
 
-    // Panduan (bagian 5): urutan nyata, jadi daftar bernomor.
+    // Panduan (bagian 5): urutan nyata, jadi daftar bernomor. Di layar lebar kartu "disematkan" zig-zag di papan;
+    // posisi dan kemiringan per kartu ada di `pos` (kelas lengkap agar terbaca Tailwind).
     $steps = [
-        ['name' => 'Kenali perasaan', 'text' => 'Catat suasana hatimu hari ini.'],
-        ['name' => 'Pahami polanya', 'text' => 'Lihat grafik mood dan hasil asesmenmu.'],
-        ['name' => 'Tenangkan diri', 'text' => 'Bicara dengan RelaxMate dan coba saran kecilnya.'],
-        ['name' => 'Cari dukungan', 'text' => 'Hubungi tenaga profesional bila terasa berat.'],
+        ['name' => 'Kenali perasaan', 'text' => 'Catat suasana hatimu hari ini.', 'icon' => 'smile', 'pos' => 'rotate-3 lg:absolute lg:top-0 lg:left-[12%] lg:rotate-6'],
+        ['name' => 'Pahami polanya', 'text' => 'Lihat grafik mood dan hasil asesmenmu.', 'icon' => 'chart-line', 'pos' => '-rotate-3 lg:absolute lg:top-[140px] lg:right-[12%] lg:-rotate-6'],
+        ['name' => 'Tenangkan diri', 'text' => 'Bicara dengan RelaxMate dan coba saran kecilnya.', 'icon' => 'message-circle', 'pos' => 'rotate-3 lg:absolute lg:top-[400px] lg:left-[12%] lg:rotate-6'],
+        ['name' => 'Cari dukungan', 'text' => 'Hubungi tenaga profesional bila terasa berat.', 'icon' => 'life-buoy', 'pos' => '-rotate-3 lg:absolute lg:top-[540px] lg:right-[12%] lg:-rotate-6'],
     ];
 @endphp
 
@@ -131,28 +132,46 @@
     </section>
 
     {{-- 5. Panduan --}}
-    <section class="bg-surface-alt" aria-labelledby="judul-panduan">
-        <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
-            <div class="grid items-start gap-8 lg:grid-cols-2 lg:gap-14">
-                <div data-reveal class="max-w-md">
-                    <h2 id="judul-panduan" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Empat langkah menuju perasaan lebih baik</h2>
-                    <p class="mt-3 text-base text-text-secondary">Tidak perlu terburu-buru. Ikuti satu per satu, sesuai kecepatan Anda.</p>
-                    <div class="mt-5">
-                        <x-account-cta label="Langkah Pertama" class="rounded-full! px-6 text-sm" />
-                    </div>
-                </div>
-                <ol data-stagger class="relative space-y-6">
-                    <span class="absolute top-5 bottom-5 left-[17px] w-px bg-border" aria-hidden="true"></span>
+    <section class="relative overflow-hidden bg-surface-alt" aria-labelledby="judul-panduan">
+        {{-- Garis buku tulis tipis dari token --border, memudar ke tepi --}}
+        <div class="pointer-events-none absolute inset-0 bg-[linear-gradient(color-mix(in_srgb,var(--border)_45%,transparent)_1px,transparent_1px)] bg-size-[100%_32px]" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-y-0 left-0 w-1/4 bg-linear-to-r from-surface-alt to-transparent" aria-hidden="true"></div>
+        <div class="pointer-events-none absolute inset-y-0 right-0 w-1/4 bg-linear-to-l from-surface-alt to-transparent" aria-hidden="true"></div>
+
+        <div class="relative mx-auto max-w-6xl px-4 py-10 md:py-14">
+            <div data-reveal class="mx-auto max-w-xl text-center">
+                <h2 id="judul-panduan" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Empat langkah menuju perasaan lebih baik</h2>
+                <p class="mt-3 text-base text-text-secondary">Ikuti jalurnya dari kartu pertama. Tidak perlu terburu-buru, sesuai kecepatan Anda.</p>
+            </div>
+
+            <div class="relative mx-auto mt-10 max-w-[1000px] lg:h-[830px]">
+                {{-- Jalur putus-putus penghubung kartu (hanya layar lebar, dekoratif) --}}
+                <svg class="pointer-events-none absolute inset-0 hidden size-full lg:block" viewBox="0 0 1000 830" preserveAspectRatio="none" aria-hidden="true">
+                    <path d="M 260 140 C 520 140, 480 270, 740 270 C 990 270, 500 420, 260 535 C 20 650, 500 675, 740 675"
+                          class="animate-dash-flow stroke-border" fill="none" stroke-width="2" stroke-dasharray="8 6" stroke-linecap="round" vector-effect="non-scaling-stroke" />
+                </svg>
+
+                <ol role="list" data-stagger class="relative z-10 flex flex-col items-center gap-8 lg:block">
                     @foreach ($steps as $step)
-                        <li data-item class="relative grid grid-cols-[2.25rem_1fr] gap-4">
-                            <span class="relative z-10 grid size-9 place-items-center rounded-full border-[1.5px] border-primary bg-card text-sm font-bold" aria-hidden="true">{{ $loop->iteration }}</span>
-                            <div>
-                                <h3 class="text-base font-semibold">{{ $step['name'] }}</h3>
-                                <p class="mt-0.5 text-sm text-text-secondary">{{ $step['text'] }}</p>
+                        <li data-item class="relative w-full max-w-[280px] transition-[scale] duration-300 hover:z-30 hover:scale-105 lg:w-[280px] {{ $step['pos'] }}">
+                            <div class="rounded-[25px] border border-border/60 bg-card p-2 shadow-lift">
+                                <x-icon name="pin" class="mx-auto mb-4 size-8 fill-current text-primary" />
+                                <div class="flex min-h-40 flex-col rounded-[15px] border border-primary/15 bg-soft-lavender p-4">
+                                    <div class="flex items-start justify-between">
+                                        <span class="text-4xl leading-none font-bold text-primary" aria-hidden="true">{{ sprintf('%02d', $loop->iteration) }}</span>
+                                        <span class="grid size-11 place-items-center rounded-full bg-card text-primary" aria-hidden="true"><x-icon name="{{ $step['icon'] }}" class="size-5" /></span>
+                                    </div>
+                                    <h3 class="mt-4 text-xl leading-tight font-semibold">{{ $step['name'] }}</h3>
+                                    <p class="mt-1 text-sm text-text-secondary">{{ $step['text'] }}</p>
+                                </div>
                             </div>
                         </li>
                     @endforeach
                 </ol>
+            </div>
+
+            <div data-reveal class="mt-10 text-center lg:mt-4">
+                <x-account-cta label="Mulai dari Langkah 1" class="rounded-full! px-6 text-sm" />
             </div>
         </div>
     </section>

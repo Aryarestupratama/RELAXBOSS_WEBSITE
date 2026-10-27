@@ -167,6 +167,16 @@
     --radius: 0.5rem;
 }
 
+/* Garis putus-putus penghubung langkah di Beranda: mengalir pelan. Pengguna yang meminta pengurangan gerak
+   mendapat satu iterasi 0,01 ms lewat aturan global di bawah, jadi garis diam. */
+@theme {
+    --animate-dash-flow: dash-flow 0.7s linear infinite;
+
+    @keyframes dash-flow {
+        to { stroke-dashoffset: -14; }
+    }
+}
+
 @layer base {
     * {
         @apply border-border outline-ring/50;
