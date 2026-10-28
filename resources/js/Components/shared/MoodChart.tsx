@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { formatAverage, moodImage, moodLevel, MOOD_LABELS, type MoodDay } from '@/lib/mood';
 
-const HEIGHT = 200;
+const DEFAULT_HEIGHT = 200;
 const MARGIN = { top: 12, right: 14, bottom: 28, left: 40 };
 
 /** Warna titik per tingkat mood (token skala `--mood-1` sampai `--mood-5`), selaras dengan blob; garis tepi gelap agar titik jelas di atas kartu putih. */
@@ -34,12 +34,12 @@ function useWidth(): [React.RefObject<HTMLDivElement | null>, number] {
   return [ref, width];
 }
 
-function yScale(value: number): number {
-  const inner = HEIGHT - MARGIN.top - MARGIN.bottom;
+function yScale(value: number, height: number): number {
+  const inner = height - MARGIN.top - MARGIN.bottom;
   return MARGIN.top + (inner * (5 - value)) / 4;
 }
 
-function Grid({ width }: { width: number }) {
+function Grid({ width, height }: { width: number; height: number }) {
   return (
     <>
       {Y_VALUES.map((value) => (
@@ -47,12 +47,12 @@ function Grid({ width }: { width: number }) {
           <line
             x1={MARGIN.left}
             x2={width - MARGIN.right}
-            y1={yScale(value)}
-            y2={yScale(value)}
+            y1={yScale(value, height)}
+            y2={yScale(value, height)}
             className="stroke-border"
             strokeWidth={1}
           />
-          <image href={moodImage(value)} x={6} y={yScale(value) - 11} width={22} height={22} />
+          <image href={moodImage(value)} x={6} y={yScale(value, height) - 11} width={22} height={22} />
         </g>
       ))}
     </>
@@ -76,10 +76,14 @@ function Tooltip({ x, y, width, text }: { x: number; y: number; width: number; t
 type RangeChartProps = {
   days: MoodDay[];
   range: 7 | 30;
+  /** Keterangan skala di bawah grafik; dimatikan bila grafik lain di kartu yang sama sudah memuatnya. */
+  showCaption?: boolean;
+  /** Tinggi grafik (px). Bawaan 200; kartu yang memuat dua grafik memakai lebih pendek agar ringkas. */
+  height?: number;
 };
 
 /** Mode 7 atau 30 hari: satu titik per hari (rata-rata). Hari tanpa entri menjadi celah. */
-export function MoodRangeChart({ days, range }: RangeChartProps) {
+export function MoodRangeChart({ days, range, showCaption = true, height = DEFAULT_HEIGHT }: RangeChartProps) {
   const [ref, width] = useWidth();
   const [hover, setHover] = useState<number | null>(null);
   const visible = days.slice(-range);
@@ -97,7 +101,7 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
       }
       return;
     }
-    const point = `${xScale(index).toFixed(1)},${yScale(day.average).toFixed(1)}`;
+    const point = `${xScale(index).toFixed(1)},${yScale(day.average, height).toFixed(1)}`;
     current = current ? `${current} L ${point}` : `M ${point}`;
   });
   if (current) {
@@ -109,8 +113,8 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
   return (
     <figure className="m-0">
       <div ref={ref} className="w-full">
-        <svg width={width} height={HEIGHT} viewBox={`0 0 ${width} ${HEIGHT}`} aria-hidden="true" focusable="false">
-          <Grid width={width} />
+        <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} aria-hidden="true" focusable="false">
+          <Grid width={width} height={height} />
           {segments.map((path) => (
             <path key={path} d={path} fill="none" className="stroke-primary" strokeWidth={2} strokeLinejoin="round" />
           ))}
@@ -121,7 +125,7 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
                 {showLabel ? (
                   <text
                     x={xScale(index)}
-                    y={HEIGHT - 8}
+                    y={height - 8}
                     textAnchor={index === 0 ? 'start' : index === visible.length - 1 ? 'end' : 'middle'}
                     fontSize={11}
                     className="fill-text-secondary"
@@ -134,10 +138,10 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
                     onMouseEnter={() => setHover(index)}
                     onMouseLeave={() => setHover(null)}
                   >
-                    <circle cx={xScale(index)} cy={yScale(day.average)} r={14} fill="transparent" />
+                    <circle cx={xScale(index)} cy={yScale(day.average, height)} r={14} fill="transparent" />
                     <circle
                       cx={xScale(index)}
-                      cy={yScale(day.average)}
+                      cy={yScale(day.average, height)}
                       r={hover === index ? 7 : 5.5}
                       className={`${DOT_FILL[moodLevel(day.average)]} stroke-primary`}
                       strokeWidth={1.75}
@@ -150,16 +154,18 @@ export function MoodRangeChart({ days, range }: RangeChartProps) {
           {hover !== null && visible[hover]?.average != null ? (
             <Tooltip
               x={xScale(hover)}
-              y={yScale(visible[hover].average as number)}
+              y={yScale(visible[hover].average as number, height)}
               width={width}
               text={`${visible[hover].label} · ${MOOD_LABELS[moodLevel(visible[hover].average as number)]}`}
             />
           ) : null}
         </svg>
       </div>
-      <figcaption className="mt-1 text-xs text-text-secondary">
-        Skala 1 ({MOOD_LABELS[1]}) sampai 5 ({MOOD_LABELS[5]}). Satu titik per hari adalah rata-rata catatanmu.
-      </figcaption>
+      {showCaption ? (
+        <figcaption className="mt-1 text-xs text-text-secondary">
+          Skala 1 ({MOOD_LABELS[1]}) sampai 5 ({MOOD_LABELS[5]}). Satu titik per hari adalah rata-rata catatanmu.
+        </figcaption>
+      ) : null}
       <div className="sr-only">
         <table>
           <caption>Rata-rata mood per hari, {range} hari terakhir</caption>

@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, type FormEvent, type ReactNode } from 'react';
 import { useForm } from '@inertiajs/react';
 import { CircleAlert, Info } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
@@ -10,7 +10,6 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/Components/ui/tabs';
 import { Textarea } from '@/Components/ui/textarea';
 import { moodImage, moodLevel, MOOD_LABELS, weekdayShort } from '@/lib/mood';
 import type { ArousalValue, MoodDay, MoodEntryItem, MoodValue } from '@/lib/mood';
@@ -28,8 +27,6 @@ type FormData = {
   arousal_input: ArousalValue | null;
   note: string;
 };
-
-type Range = 7 | 30;
 
 const cardPadding = 'gap-4 p-5';
 
@@ -59,12 +56,22 @@ function WeekFaces({ days }: { days: MoodDay[] }) {
   );
 }
 
+/** Satu bagian rentang di kartu Polamu (7 dan 30 hari tampil bersamaan, tanpa tab). */
+function RangeSection({ id, title, children }: { id: string; title: string; children: ReactNode }) {
+  return (
+    <section aria-labelledby={id} className="space-y-3">
+      <h3 id={id} className="text-sm font-semibold text-text">
+        {title}
+      </h3>
+      {children}
+    </section>
+  );
+}
+
 /** SCR-016 */
 export default function Index({ limit, remaining, days, note_max_chars }: IndexProps) {
   const form = useForm<FormData>({ mood: null, arousal_input: null, note: '' });
   const errors = form.errors as Partial<Record<string, string>>;
-
-  const [range, setRange] = useState<Range>(7);
 
   useEffect(() => {
     if (errors.note) {
@@ -82,38 +89,17 @@ export default function Index({ limit, remaining, days, note_max_chars }: IndexP
 
   const limitReached = remaining <= 0;
 
-  const renderRange = (value: Range) => {
-    const visibleDays = days.slice(-value);
-    const hasData = visibleDays.some((day) => day.entries.length > 0);
-
-    if (!hasData) {
-      return (
-        <div className="flex flex-col items-center rounded-2xl bg-soft-lavender px-4 py-6 text-center">
-          <img src="/images/mood/mood-row.webp" width={240} height={40} alt="" className="h-auto w-full max-w-52" />
-          <p className="mt-3 max-w-sm text-sm text-text">
-            {value === 7
-              ? 'Belum ada catatan minggu ini. Bagaimana perasaanmu hari ini?'
-              : 'Belum ada catatan dalam 30 hari terakhir. Bagaimana perasaanmu hari ini?'}
-          </p>
-        </div>
-      );
-    }
-
-    return (
-      <div className="space-y-3">
-        {value === 7 ? <WeekFaces days={visibleDays} /> : null}
-        <MoodRangeChart days={days} range={value} />
-      </div>
-    );
-  };
+  const weekDays = days.slice(-7);
+  const weekHasData = weekDays.some((day) => day.entries.length > 0);
+  const monthHasData = days.some((day) => day.entries.length > 0);
 
   return (
     <AppShell title="Mood Tracker" wide staggered>
-      <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu." />
+      <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu dan sebulan." />
 
-      <div className="grid gap-4 lg:grid-cols-12 lg:items-stretch">
+      <div className="grid gap-4 lg:grid-cols-12 lg:items-start">
         <div className="flex flex-col lg:col-span-5">
-          <Card data-load role="region" aria-labelledby="mood-form-title" className={`${cardPadding} lg:h-full`}>
+          <Card data-load role="region" aria-labelledby="mood-form-title" className={cardPadding}>
             <CardHeader>
               <CardTitle id="mood-form-title" role="heading" aria-level={2} className="text-base">
                 Catat mood
@@ -191,23 +177,42 @@ export default function Index({ limit, remaining, days, note_max_chars }: IndexP
         </div>
 
         <div className="flex flex-col lg:col-span-7">
-          <Card data-load role="region" aria-labelledby="mood-chart-title" className={`${cardPadding} lg:h-full`}>
-            <Tabs value={String(range)} onValueChange={(value) => setRange(value === '30' ? 30 : 7)} className="gap-4">
-              <CardHeader className="flex-row flex-wrap items-center justify-between gap-3">
-                <div>
-                  <CardTitle id="mood-chart-title" role="heading" aria-level={2} className="text-base">
-                    Polamu
-                  </CardTitle>
-                  <CardDescription className="mt-1 text-[0.8125rem]">Satu titik per hari, dari rata-rata catatanmu.</CardDescription>
+          <Card data-load role="region" aria-labelledby="mood-chart-title" className={cardPadding}>
+            <CardHeader>
+              <CardTitle id="mood-chart-title" role="heading" aria-level={2} className="text-base">
+                Polamu
+              </CardTitle>
+              <CardDescription className="text-[0.8125rem]">Satu titik per hari, dari rata-rata catatanmu.</CardDescription>
+            </CardHeader>
+
+            {monthHasData ? (
+              <CardContent className="flex flex-col gap-6">
+                <RangeSection id="mood-range-7" title="7 hari terakhir">
+                  {weekHasData ? (
+                    <>
+                      <WeekFaces days={weekDays} />
+                      <MoodRangeChart days={days} range={7} height={180} />
+                    </>
+                  ) : (
+                    <p className="rounded-2xl bg-soft-lavender px-4 py-3 text-sm text-text">
+                      Belum ada catatan minggu ini. Bagaimana perasaanmu hari ini?
+                    </p>
+                  )}
+                </RangeSection>
+                <RangeSection id="mood-range-30" title="30 hari terakhir">
+                  <MoodRangeChart days={days} range={30} showCaption={false} height={150} />
+                </RangeSection>
+              </CardContent>
+            ) : (
+              <CardContent>
+                <div className="flex flex-col items-center rounded-2xl bg-soft-lavender px-4 py-6 text-center">
+                  <img src="/images/mood/mood-row.webp" width={240} height={40} alt="" className="h-auto w-full max-w-52" />
+                  <p className="mt-3 max-w-sm text-sm text-text">
+                    Belum ada catatan dalam 30 hari terakhir. Bagaimana perasaanmu hari ini?
+                  </p>
                 </div>
-                <TabsList aria-label="Rentang grafik">
-                  <TabsTrigger value="7">7 hari</TabsTrigger>
-                  <TabsTrigger value="30">30 hari</TabsTrigger>
-                </TabsList>
-              </CardHeader>
-              <TabsContent value="7">{renderRange(7)}</TabsContent>
-              <TabsContent value="30">{renderRange(30)}</TabsContent>
-            </Tabs>
+              </CardContent>
+            )}
           </Card>
         </div>
       </div>
