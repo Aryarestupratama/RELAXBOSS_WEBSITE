@@ -3,7 +3,6 @@ import { Head, Link, router, usePage } from '@inertiajs/react';
 import {
   ClipboardCheck,
   LayoutDashboard,
-  LifeBuoy,
   LogOut,
   MessageCircle,
   ShieldCheck,
@@ -11,6 +10,7 @@ import {
   User,
   type LucideIcon,
 } from 'lucide-react';
+import HelpIcon from '@/Components/shared/HelpIcon';
 import Toaster from '@/Components/shared/Toaster';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
@@ -68,6 +68,9 @@ const railItem =
   'aria-[current=page]:bg-soft-lavender aria-[current=page]:text-text aria-[current=page]:shadow-lift aria-[current=page]:before:opacity-0';
 
 const iconMotion = `size-5 transition-transform duration-300 ${EASE} group-hover:-translate-y-0.5 group-hover:scale-110 group-aria-[current=page]:scale-110`;
+
+// Ikon HELP lebih lebar dari ikon Lucide, jadi kotaknya dibesarkan agar terbaca.
+const helpIconMotion = iconMotion.replace('size-5', 'size-7');
 
 /**
  * Kerangka area pengguna. Layar >= 768px: rail ikon ringkas di kiri (navy, melayang) dengan hover pil dan penanda aktif.
@@ -137,7 +140,7 @@ export default function AppShell({
               ) : null}
               {showHelp ? (
                 <a href="/konsultasi" data-press className={railItem}>
-                  <LifeBuoy className={iconMotion} aria-hidden="true" />
+                  <HelpIcon className={helpIconMotion} />
                   Bantuan
                 </a>
               ) : null}
@@ -175,7 +178,7 @@ export default function AppShell({
                 aria-label="Butuh bantuan sekarang?"
                 className="inline-flex size-11 items-center justify-center rounded-lg text-crisis-text"
               >
-                <LifeBuoy className="size-5" aria-hidden="true" />
+                <HelpIcon className="size-7" />
               </a>
               <Button
                 type="button"

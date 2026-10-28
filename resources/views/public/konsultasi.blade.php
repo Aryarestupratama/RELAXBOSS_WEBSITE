@@ -30,10 +30,11 @@
     {{-- 2. Kotak darurat: tetap tampil karena ini inti halaman (warna krisis dari token) --}}
     <section class="bg-background" aria-labelledby="darurat">
         <div class="mx-auto max-w-6xl px-4 pb-10 md:pb-14">
-            <div data-reveal class="flex flex-col items-start justify-between gap-4 rounded-2xl border border-crisis-text/30 bg-crisis-bg p-5 text-crisis-text md:flex-row md:items-center md:p-6">
-                <div>
-                    <h2 id="darurat" class="text-lg font-bold md:text-xl">Kalau kamu sedang dalam bahaya</h2>
-                    <p class="mt-1.5 max-w-2xl text-sm leading-relaxed">Kalau kamu berpikir menyakiti dirimu sendiri, hubungi bantuan sekarang atau minta seseorang menemanimu.</p>
+            <div data-reveal class="flex flex-col items-start gap-2 rounded-2xl border border-crisis-text/30 bg-crisis-bg px-4 py-3 text-crisis-text md:flex-row md:items-center md:gap-4 md:px-5">
+                <x-help-icon class="size-9 shrink-0" />
+                <div class="min-w-0 flex-1">
+                    <h2 id="darurat" class="text-base leading-snug font-bold">Kalau kamu sedang dalam bahaya</h2>
+                    <p class="mt-0.5 text-sm leading-snug">Kalau kamu berpikir menyakiti dirimu sendiri, hubungi bantuan sekarang atau minta seseorang menemanimu.</p>
                 </div>
                 <a href="#kontak-bantuan" class="inline-flex min-h-11 shrink-0 items-center text-sm font-semibold underline underline-offset-4">Lihat kontak bantuan</a>
             </div>

@@ -1,5 +1,6 @@
 import { Link } from '@inertiajs/react';
-import { HeartHandshake, LifeBuoy, Sparkles, X } from 'lucide-react';
+import { HeartHandshake, Sparkles, X } from 'lucide-react';
+import HelpIcon from '@/Components/shared/HelpIcon';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { SUGGESTION_TEXT, type ChatSuggestion } from '@/lib/relaxmate';
@@ -18,14 +19,14 @@ const linkClass = 'inline-flex min-h-11 items-center font-medium text-primary un
 export default function SuggestionCard({ suggestion, onDismiss }: SuggestionCardProps) {
   const { type } = suggestion;
   const crisis = type === 'escalate_crisis';
-  const Icon = crisis ? LifeBuoy : type === 'recommend_professional' ? HeartHandshake : Sparkles;
+  const Icon = type === 'recommend_professional' ? HeartHandshake : Sparkles;
 
   return (
     <Alert
       role={crisis ? 'alert' : 'status'}
       className={crisis ? 'border-crisis-text/30 bg-crisis-bg text-crisis-text' : undefined}
     >
-      <Icon aria-hidden="true" />
+      {crisis ? <HelpIcon className="size-6" /> : <Icon aria-hidden="true" />}
       <AlertDescription className={crisis ? 'text-crisis-text' : undefined}>
         <p>{SUGGESTION_TEXT[type]}</p>
         <div className="flex flex-wrap gap-x-4">

@@ -1,7 +1,8 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, BookOpen, ClipboardCheck, ClipboardList, History, LifeBuoy, MessageCircle, Smile } from 'lucide-react';
+import { ArrowRight, BookOpen, ClipboardCheck, ClipboardList, History, MessageCircle, Smile } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import ActionTile from '@/Components/shared/ActionTile';
+import HelpIcon from '@/Components/shared/HelpIcon';
 import PageHeader from '@/Components/shared/PageHeader';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
@@ -194,22 +195,22 @@ export default function Dashboard({ first_name, last_mood, last_attempt }: Dashb
           </section>
 
           <section aria-label="Bantuan" data-load>
-            <Card className="gap-1 rounded-2xl border-crisis-text/30 bg-crisis-bg p-4 text-crisis-text">
-              <CardHeader className="flex-row items-center gap-2">
-                <LifeBuoy className="size-4.5 shrink-0" aria-hidden="true" />
-                <CardTitle className="text-[0.9375rem]">
-                  <h2>Butuh bantuan sekarang?</h2>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-[0.8125rem]">
-                <p>Kamu tidak harus menghadapi ini sendirian.</p>
-                <a
-                  href="/konsultasi"
-                  className="mt-0.5 inline-flex min-h-11 items-center font-medium underline underline-offset-4"
-                >
-                  Lihat halaman Konsultasi Profesional
-                </a>
-              </CardContent>
+            <Card className="gap-0 rounded-2xl border-crisis-text/30 bg-crisis-bg px-4 py-3 text-crisis-text">
+              <div className="flex items-center gap-3">
+                <HelpIcon className="size-9 shrink-0" />
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center justify-between gap-x-4">
+                    <h2 className="text-[0.9375rem] leading-snug font-semibold whitespace-nowrap">Butuh bantuan sekarang?</h2>
+                    <a
+                      href="/konsultasi"
+                      className="-my-2 inline-flex min-h-11 items-center text-[0.8125rem] font-medium whitespace-nowrap underline underline-offset-4"
+                    >
+                      Konsultasi Profesional
+                    </a>
+                  </div>
+                  <p className="text-[0.8125rem] leading-snug">Kamu tidak harus menghadapi ini sendirian.</p>
+                </div>
+              </div>
             </Card>
           </section>
         </div>

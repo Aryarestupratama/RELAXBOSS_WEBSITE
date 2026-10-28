@@ -1,5 +1,6 @@
 import { usePage } from '@inertiajs/react';
-import { LifeBuoy, Phone } from 'lucide-react';
+import { Phone } from 'lucide-react';
+import HelpIcon from '@/Components/shared/HelpIcon';
 import { Alert, AlertDescription, AlertTitle } from '@/Components/ui/alert';
 import {
   CRISIS_DUMMY_LABEL,
@@ -24,7 +25,7 @@ export default function CrisisBanner() {
 
   return (
     <Alert role="alert" className="border-crisis-text/30 bg-crisis-bg text-crisis-text">
-      <LifeBuoy aria-hidden="true" />
+      <HelpIcon className="size-6" />
       <AlertTitle>Butuh bantuan sekarang?</AlertTitle>
       <AlertDescription className="text-crisis-text">
         <p>{CRISIS_RESPONSE_TEXT}</p>
