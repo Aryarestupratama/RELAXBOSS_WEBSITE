@@ -24,6 +24,7 @@ class PublicPageController extends Controller
     {
         return view('public.tentang', [
             'about' => (array) config('relaxboss.about'),
+            'team' => (array) config('relaxboss.team'),
         ]);
     }
 

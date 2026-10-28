@@ -11,11 +11,13 @@
         $awardText = filled($award['title'] ?? null)
             ? trim((string) preg_replace('/\s+/', ' ', $award['title'].' '.(filled($award['event'] ?? null) ? 'di '.$award['event'] : '').' '.($award['year'] ?? '')))
             : '';
-        $supervisors = array_values(array_filter((array) ($about['supervisors'] ?? []), 'filled'));
+        // Kelompok tim: hanya yang punya anggota (RULE-049). Config: relaxboss.about via controller, relaxboss.team.
+        $teamGroups = array_values(array_filter($team, fn ($group): bool => count((array) ($group['members'] ?? [])) > 0));
+        // Acara yang pernah diikuti: hanya entri berjudul, dari config (RULE-049).
+        $events = array_values(array_filter((array) ($about['events'] ?? []), fn ($event): bool => filled($event['title'] ?? null)));
         $campusCards = array_values(array_filter([
             filled($collaboration) ? ['icon' => 'users', 'tone' => 'sky', 'title' => 'Kolaborasi dua fakultas', 'text' => $collaboration] : null,
             filled($awardText) ? ['icon' => 'graduation-cap', 'tone' => 'peach', 'title' => 'Penghargaan', 'text' => $awardText.'.'] : null,
-            count($supervisors) > 0 ? ['icon' => 'shield-check', 'tone' => 'mint', 'title' => 'Didampingi dan dipantau', 'list' => $supervisors] : null,
         ]));
     @endphp
 
@@ -68,7 +70,7 @@
                     <h2 id="judul-kampus" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Dibangun bersama kampus</h2>
                     <p class="mt-3 text-base text-text-secondary">RelaxBoss dikembangkan di lingkungan Universitas Mercu Buana.</p>
                 </div>
-                <div data-stagger class="mt-8 grid gap-4 md:grid-cols-3">
+                <div data-stagger class="mt-8 grid gap-4 {{ count($campusCards) > 1 ? 'md:grid-cols-2' : 'mx-auto max-w-md' }}">
                     @foreach ($campusCards as $card)
                         <x-ui.card tag="article" :tone="$card['tone']" radius="rounded-3xl" data-item data-lift class="gap-2! px-5 transition-shadow duration-300 hover:shadow-lift-hover">
                             <x-ui.card.header class="px-0!">
@@ -76,20 +78,53 @@
                                 <x-ui.card.title class="mt-1 text-xl">{{ $card['title'] }}</x-ui.card.title>
                             </x-ui.card.header>
                             <x-ui.card.content class="px-0!">
-                                @isset($card['list'])
-                                    <p class="text-[0.8125rem] leading-relaxed text-text-secondary">Dalam pengembangannya, RelaxBoss didampingi dan dipantau oleh:</p>
-                                    <ul class="mt-2 space-y-1.5 text-sm font-medium">
-                                        @foreach ($card['list'] as $role)
-                                            <li class="flex items-start gap-2"><span class="mt-2 size-1.5 shrink-0 rounded-full bg-primary" aria-hidden="true"></span>{{ $role }}</li>
-                                        @endforeach
-                                    </ul>
-                                @else
-                                    <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $card['text'] }}</p>
-                                @endisset
+                                <p class="text-[0.8125rem] leading-relaxed text-text-secondary">{{ $card['text'] }}</p>
                             </x-ui.card.content>
                         </x-ui.card>
                     @endforeach
                 </div>
+            </div>
+        </section>
+    @endif
+
+    {{-- 3b. Jejak RelaxBoss: acara yang pernah diikuti, kartu sejajar dua kolom. Dari config (RULE-049). --}}
+    @if (count($events) > 0)
+        <section class="bg-background" aria-labelledby="judul-jejak">
+            <div class="mx-auto max-w-6xl px-4 pt-2 pb-10 md:pb-14">
+                <div data-reveal class="mx-auto max-w-xl text-center">
+                    <h2 id="judul-jejak" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Jejak RelaxBoss</h2>
+                    <p class="mt-3 text-base text-text-secondary">Acara-acara tempat RelaxBoss ikut hadir dan dikenalkan.</p>
+                </div>
+
+                <ul data-stagger class="mt-8 grid gap-4 md:grid-cols-2">
+                    @foreach ($events as $event)
+                        <li data-item class="flex">
+                            <x-ui.card tag="article" radius="rounded-3xl" class="w-full gap-4! px-5">
+                                <x-ui.card.header class="px-0!">
+                                    <div class="flex flex-wrap items-center gap-x-3 gap-y-1.5">
+                                        <x-ui.badge variant="soft" tone="lavender">{{ $event['type'] }}</x-ui.badge>
+                                        @if (filled($event['date'] ?? null))
+                                            <span class="inline-flex items-center gap-1.5 text-xs font-medium text-text-secondary"><x-icon name="calendar" class="size-4 shrink-0" />{{ $event['date'] }}</span>
+                                        @endif
+                                    </div>
+                                    <x-ui.card.title tag="h3" class="mt-3 text-xl">{{ $event['title'] }}</x-ui.card.title>
+                                    @if (filled($event['place'] ?? null))
+                                        <p class="mt-1 flex items-start gap-1.5 text-[0.8125rem] text-text-secondary"><x-icon name="map-pin" class="mt-0.5 size-4 shrink-0" />{{ $event['place'] }}</p>
+                                    @endif
+                                    @if (filled($event['description'] ?? null))
+                                        <x-ui.card.description class="mt-3">{{ $event['description'] }}</x-ui.card.description>
+                                    @endif
+                                </x-ui.card.header>
+                                @if (filled($event['role'] ?? null))
+                                    <x-ui.card.footer class="flex-col gap-3 px-0!">
+                                        <x-ui.separator />
+                                        <p class="text-sm leading-relaxed text-text"><span class="font-semibold text-primary">Peran RelaxBoss:</span> {{ $event['role'] }}</p>
+                                    </x-ui.card.footer>
+                                @endif
+                            </x-ui.card>
+                        </li>
+                    @endforeach
+                </ul>
             </div>
         </section>
     @endif
@@ -113,6 +148,8 @@
                     </x-ui.card>
                 @endforeach
             </div>
+
+            <x-inline-note data-reveal class="mt-8">Mood Tracker terinspirasi dari model Circumplex (Russell, 1980), yang menggambarkan perasaan lewat suasana hati dan tingkat tenaga.</x-inline-note>
         </div>
     </section>
 
@@ -162,4 +199,39 @@
             <x-inline-note data-reveal class="mt-8">RelaxBoss bukan psikolog atau layanan medis, jadi untuk penilaian yang tepat <a href="{{ url('/konsultasi') }}">bicarakan dengan profesional</a>.</x-inline-note>
         </div>
     </section>
+
+    {{-- 7. Orang-orang di balik RelaxBoss: tiga kelompok sejajar (bukan bagan), tanpa foto. Hanya dari config (RULE-049). --}}
+    @if (count($teamGroups) > 0)
+        <section class="bg-background" aria-labelledby="judul-tim">
+            <div class="mx-auto max-w-6xl px-4 py-10 md:py-14">
+                <div data-reveal class="mx-auto max-w-xl text-center">
+                    <h2 id="judul-tim" class="text-2xl leading-tight font-bold tracking-tight md:text-[2rem]">Orang-orang di balik RelaxBoss</h2>
+                    <p class="mt-3 text-base text-text-secondary">Dikembangkan bersama mahasiswa dan dosen lintas fakultas, dari ilmu komputer sampai psikologi.</p>
+                </div>
+
+                {{-- Tiga kelompok sejajar sebagai daftar kredit: judul kelompok di kiri, nama dan peran di kanan. Tanpa kartu, foto, atau inisial. --}}
+                <div class="mx-auto mt-10 max-w-5xl divide-y divide-border border-y border-border">
+                    @foreach ($teamGroups as $group)
+                        <section data-reveal class="grid gap-5 py-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10 md:py-10">
+                            <div>
+                                <span class="grid size-11 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true"><x-icon name="{{ $group['icon'] ?? 'users' }}" class="size-5" /></span>
+                                <h3 class="mt-4 text-xl leading-snug font-bold">{{ $group['title'] }}</h3>
+                                @if (filled($group['description'] ?? null))
+                                    <p class="mt-1.5 max-w-xs text-[0.8125rem] leading-relaxed text-text-secondary">{{ $group['description'] }}</p>
+                                @endif
+                            </div>
+                            <ul class="divide-y divide-border/60 self-center">
+                                @foreach ($group['members'] as $member)
+                                    <li class="flex flex-col gap-0.5 py-3 first:pt-0 last:pb-0 sm:flex-row sm:items-baseline sm:justify-between sm:gap-6">
+                                        <span class="text-base font-semibold text-text">{{ $member['name'] }}</span>
+                                        <span class="text-sm text-text-secondary sm:text-right">{{ $member['role'] }}</span>
+                                    </li>
+                                @endforeach
+                            </ul>
+                        </section>
+                    @endforeach
+                </div>
+            </div>
+        </section>
+    @endif
 @endsection
