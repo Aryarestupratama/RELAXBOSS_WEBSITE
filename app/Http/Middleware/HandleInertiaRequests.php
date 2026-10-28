@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\Notification\NotificationFeed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Inertia\Middleware;
@@ -44,9 +45,25 @@ class HandleInertiaRequests extends Middleware
             'consent' => fn (): ?array => $this->consent($request),
             // Hanya penanda peran (tanpa identitas), untuk tautan "Admin" di AppShell.
             'auth' => fn (): ?array => $request->user() === null ? null : ['is_admin' => $request->user()->isAdmin()],
+            // Hitungan lonceng (CMP-045): satu angka, tanpa isi notifikasi (ADR-019). Hanya untuk pengguna yang sudah masuk.
+            'notifications' => fn (): ?array => $this->notifications($request),
             // Kode `->with('status', ...)` dari redirect, untuk toast (CMP-013). Teksnya ada di resources/js/lib/toastMessages.ts.
             'flash' => fn (): ?array => $this->flash($request),
         ];
+    }
+
+    /**
+     * @return array{unread: int}|null
+     */
+    private function notifications(Request $request): ?array
+    {
+        $user = $request->user();
+
+        if ($user === null) {
+            return null;
+        }
+
+        return ['unread' => app(NotificationFeed::class)->unreadCount($user)];
     }
 
     /**

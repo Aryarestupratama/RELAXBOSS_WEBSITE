@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import HelpIcon from '@/Components/shared/HelpIcon';
+import NotificationBell from '@/Components/shared/NotificationBell';
 import Toaster from '@/Components/shared/Toaster';
 import { Button } from '@/Components/ui/button';
 import { Card } from '@/Components/ui/card';
@@ -86,6 +87,7 @@ export default function AppShell({
 }: AppShellProps) {
   const { url, props } = usePage();
   const isAdmin = (props as { auth?: { is_admin: boolean } | null }).auth?.is_admin === true;
+  const onNotifications = isActive(url, '/app/notifikasi');
 
   useEffect(() => {
     initMotion();
@@ -132,6 +134,7 @@ export default function AppShell({
             </div>
             <div className="flex w-full flex-col items-center gap-2 px-2.5">
               <Separator className="mb-1 w-10" />
+              <NotificationBell variant="rail" active={onNotifications} className={railItem} iconClassName={iconMotion} />
               {isAdmin ? (
                 <Link href="/admin" data-press className={railItem}>
                   <ShieldCheck className={iconMotion} aria-hidden="true" />
@@ -164,6 +167,7 @@ export default function AppShell({
               RelaxBoss
             </a>
             <div className="flex items-center gap-1">
+              <NotificationBell variant="bar" active={onNotifications} />
               {isAdmin ? (
                 <Link
                   href="/admin"

@@ -6,6 +6,7 @@ import PageHeader from '@/Components/shared/PageHeader';
 import DeleteAccountDialog from '@/Components/shared/DeleteAccountDialog';
 import FormField from '@/Components/shared/FormField';
 import InfoItem from '@/Components/shared/InfoItem';
+import NotificationSettingsCard from '@/Components/shared/NotificationSettingsCard';
 import PasswordInput from '@/Components/shared/PasswordInput';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Avatar, AvatarFallback, AvatarImage } from '@/Components/ui/avatar';
@@ -20,6 +21,7 @@ import {
   CONSENT_TRAINING_TEXT,
   type SharedConsentProps,
 } from '@/lib/consent';
+import type { NotificationPreferences } from '@/lib/notification';
 
 type IndexProps = {
   profile: {
@@ -30,6 +32,7 @@ type IndexProps = {
   };
   avatar_url: string | null;
   is_only_admin: boolean;
+  notification_preferences: NotificationPreferences;
 };
 
 const AVATAR_MAX_BYTES = 2 * 1024 * 1024;
@@ -53,7 +56,7 @@ function statusText(choice: Choice | null, answered: boolean): string {
 }
 
 /** SCR-018 */
-export default function Index({ profile, avatar_url, is_only_admin }: IndexProps) {
+export default function Index({ profile, avatar_url, is_only_admin, notification_preferences }: IndexProps) {
   const { consent } = usePage<SharedConsentProps>().props;
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -383,6 +386,8 @@ export default function Index({ profile, avatar_url, is_only_admin }: IndexProps
               </form>
             ) : null}
           </Card>
+
+          <NotificationSettingsCard preferences={notification_preferences} />
 
           <Card data-load role="region" aria-labelledby="judul-persetujuan" className="gap-4 p-5">
             <CardHeader className="flex-row flex-wrap items-center justify-between gap-2">

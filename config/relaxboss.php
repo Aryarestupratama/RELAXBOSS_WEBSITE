@@ -40,6 +40,20 @@ return [
         'articles_search_max_terms' => 5,
     ],
 
+    // Notifikasi dalam aplikasi (FR-036, FR-037, ADR-019). Semua angka asumsi (RULE-026).
+    'notifications' => [
+        // Jam WIB bawaan pengingat mood, dan batas pilihan jam di halaman Akun.
+        'default_mood_hour' => 20,
+        'mood_hour_min' => 6,
+        'mood_hour_max' => 23,
+        // Nudge Asesmen: tampil bila belum pernah mengerjakan atau terakhir lebih dari sekian hari lalu.
+        'assessment_idle_days' => 30,
+        // Nudge artikel: tampil bila ada artikel terbit dalam sekian hari terakhir.
+        'article_recent_days' => 7,
+        // Jumlah pengumuman terbaru yang tampil di halaman Notifikasi.
+        'max_visible' => 5,
+    ],
+
     'admin' => [
         // Kelompok di bawah angka ini disamarkan di semua statistik admin (RULE-042).
         'min_group_size' => 5,
@@ -52,6 +66,13 @@ return [
             'per_page' => 25,
             // Batas panjang isi Markdown (karakter).
             'body_max_chars' => 100000,
+        ],
+
+        // Admin Pengumuman (FR-038, SCR-028). Angka asumsi (RULE-026).
+        'announcements' => [
+            'per_page' => 25,
+            // Batas panjang isi Markdown (karakter); pengumuman dibaca di lonceng, jadi singkat.
+            'body_max_chars' => 2000,
         ],
 
         // Tinjauan admin tanpa identitas (FR-031, SCR-022). Angka asumsi (RULE-026).

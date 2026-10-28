@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use App\Http\Controllers\Admin\AnnouncementController as AdminAnnouncementController;
 use App\Http\Controllers\Admin\ArticleController as AdminArticleController;
 use App\Http\Controllers\Admin\AssessmentController as AdminAssessmentController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
@@ -16,6 +17,8 @@ use App\Http\Controllers\App\ChatMessageController;
 use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\MoodController;
+use App\Http\Controllers\App\NotificationController;
+use App\Http\Controllers\App\NotificationPreferenceController;
 use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\RelaxMateController;
 use App\Http\Controllers\App\TrainingConsentController;
@@ -71,6 +74,17 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
         ->whereUuid('conversation')
         ->middleware(['ai.consent', 'throttle:chat'])
         ->name('relaxmate.messages.store');
+    // Notifikasi dalam aplikasi (SCR-027, FR-036, FR-037). Dihitung saat dibuka, tanpa tabel notifikasi (ADR-019).
+    Route::get('/notifikasi', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifikasi/tutup', [NotificationController::class, 'dismiss'])
+        ->middleware('throttle:30,1')
+        ->name('notifications.dismiss');
+    Route::post('/notifikasi/dibaca', [NotificationController::class, 'markRead'])
+        ->middleware('throttle:30,1')
+        ->name('notifications.read');
+    Route::patch('/akun/notifikasi', [NotificationPreferenceController::class, 'update'])
+        ->middleware('throttle:30,1')
+        ->name('account.notifications.update');
     Route::post('/akun/persetujuan-pelatihan', TrainingConsentController::class)->name('account.training-consent');
     // Akun (SCR-018). Hapus akun (API-016) meminta kata sandi; Action membatasi percobaan dan menolak admin terakhir.
     Route::get('/akun', [AccountController::class, 'show'])->name('account.show');
@@ -109,6 +123,19 @@ Route::middleware(['auth', 'verified', 'active', 'admin'])->prefix('admin')->nam
     Route::put('/artikel/{article}', [AdminArticleController::class, 'update'])
         ->whereNumber('article')
         ->name('articles.update');
+    // Kelola pengumuman pembaruan website (SCR-028, FR-038). Konten global tanpa data pengguna; tanpa hapus (kembalikan ke draf).
+    Route::get('/pengumuman', [AdminAnnouncementController::class, 'index'])->name('announcements.index');
+    Route::get('/pengumuman/baru', [AdminAnnouncementController::class, 'create'])->name('announcements.create');
+    Route::post('/pengumuman', [AdminAnnouncementController::class, 'store'])->name('announcements.store');
+    Route::post('/pengumuman/pratinjau', [AdminAnnouncementController::class, 'preview'])
+        ->middleware('throttle:60,1')
+        ->name('announcements.preview');
+    Route::get('/pengumuman/{announcement}/ubah', [AdminAnnouncementController::class, 'edit'])
+        ->whereNumber('announcement')
+        ->name('announcements.edit');
+    Route::put('/pengumuman/{announcement}', [AdminAnnouncementController::class, 'update'])
+        ->whereNumber('announcement')
+        ->name('announcements.update');
     // Daftar Pengguna terbatas dan nonaktifkan akun (SCR-021, API-019). Tanpa hapus dan tanpa detail pengguna.
     Route::get('/pengguna', [AdminUserController::class, 'index'])->name('users.index');
     Route::post('/pengguna/admin', [AdminUserController::class, 'storeAdmin'])

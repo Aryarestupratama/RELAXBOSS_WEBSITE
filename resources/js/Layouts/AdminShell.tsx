@@ -7,6 +7,7 @@ import {
   ClipboardCheck,
   LayoutDashboard,
   LogOut,
+  Megaphone,
   Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -28,6 +29,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: 'Ringkasan', href: '/admin', icon: LayoutDashboard },
   { label: 'Asesmen', href: '/admin/asesmen', icon: ClipboardCheck },
   { label: 'Artikel', href: '/admin/artikel', icon: BookOpen },
+  { label: 'Info', href: '/admin/pengumuman', icon: Megaphone },
   { label: 'Pengguna', href: '/admin/pengguna', icon: Users },
   { label: 'Monitoring', href: '/admin/monitoring', icon: Activity },
 ];
@@ -151,7 +153,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
           aria-label="Navigasi admin bawah"
           className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/90 backdrop-blur md:hidden"
         >
-          <ul className="grid grid-cols-5">
+          <ul className="grid grid-cols-6">
             {NAV_ITEMS.map(({ label, href, icon: Icon }) => {
               const active = isActive(url, href);
               return (
