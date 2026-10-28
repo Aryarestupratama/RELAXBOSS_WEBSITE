@@ -5,10 +5,11 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Enums\ArticleCategory;
+use App\Http\Requests\PublicArticleIndexRequest;
 use App\Models\Article;
+use App\Services\Article\ArticleSearch;
 use App\Services\Article\PublicArticlePresenter;
 use Illuminate\Contracts\View\View;
-use Illuminate\Http\Request;
 
 /**
  * Artikel edukasi Publik (Blade, dirender di server). FR-021, SCR-024, SCR-025.
@@ -16,16 +17,18 @@ use Illuminate\Http\Request;
  */
 class PublicArticleController extends Controller
 {
-    public function index(Request $request, PublicArticlePresenter $presenter): View
+    public function index(PublicArticleIndexRequest $request, PublicArticlePresenter $presenter, ArticleSearch $search): View
     {
-        $category = ArticleCategory::tryFrom((string) $request->query('kategori'));
+        $category = $request->category();
+        $term = $request->searchTerm();
 
         $articles = Article::query()
             ->published()
             ->when($category !== null, fn ($query) => $query->where('category', $category?->value))
+            ->when($term !== '', fn ($query) => $search->apply($query, $term))
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->simplePaginate((int) config('relaxboss.limits.articles_per_page'))
+            ->paginate((int) config('relaxboss.limits.articles_per_page'))
             ->withQueryString();
 
         // Pil kategori hanya untuk kategori yang punya artikel terbit.
@@ -45,6 +48,7 @@ class PublicArticleController extends Controller
             'categories' => $categories,
             'activeCategory' => $category?->value,
             'activeCategoryLabel' => $category?->label(),
+            'searchTerm' => $term,
         ]);
     }
 

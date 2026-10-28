@@ -35,6 +35,9 @@ return [
         'articles_per_page' => 9,
         // Artikel terkait di bawah artikel (tautan internal). Angka asumsi.
         'articles_related' => 3,
+        // Pencarian artikel Publik (/artikel?q=). Angka asumsi (RULE-026): panjang kata kunci dan jumlah kata yang dipakai.
+        'articles_search_max_chars' => 100,
+        'articles_search_max_terms' => 5,
     ],
 
     'admin' => [
@@ -172,8 +175,7 @@ return [
     ],
 
     // Cerita di halaman Tentang (SCR-004). Klaim publik (RULE-049): isi hanya yang sudah terkonfirmasi.
-    // Kosongkan sebuah bagian (atau seluruh blok) untuk menyembunyikannya. Jabatan tanpa nama pribadi;
-    // tambahkan nama hanya dengan izin yang bersangkutan.
+    // Kosongkan sebuah bagian (atau seluruh blok) untuk menyembunyikannya.
     'about' => [
         'collaboration' => 'RelaxBoss adalah hasil kolaborasi Fakultas Psikologi dan Fakultas Ilmu Komputer Universitas Mercu Buana.',
         'award' => [
@@ -181,10 +183,81 @@ return [
             'event' => 'Pekan Inovasi Universitas Mercu Buana',
             'year' => '2025',
         ],
-        'supervisors' => [
-            'Dekan Fakultas Ilmu Komputer',
-            'Dekan Fakultas Psikologi',
-            'Kepala Laboratorium Psikologi Terapan',
+        // Acara yang pernah diikuti RelaxBoss (Tentang, "Jejak RelaxBoss"). Urut seperti tampil. `date` dan `place`
+        // boleh null (tidak ditampilkan); isi hanya yang pasti benar (RULE-049). Kosongkan array untuk menyembunyikan bagian.
+        'events' => [
+            [
+                'type' => 'Pameran karya',
+                'title' => 'Open House Universitas Mercu Buana Menteng',
+                'date' => null,
+                'place' => 'Universitas Mercu Buana, Menteng',
+                'description' => 'Pameran karya mahasiswa Fakultas Ilmu Komputer untuk calon mahasiswa dan pengunjung.',
+                'role' => 'Memamerkan RelaxBoss sebagai karya Fakultas Ilmu Komputer.',
+            ],
+            [
+                'type' => 'Expo pendidikan',
+                'title' => 'Indonesia International Education & Training Expo (IIETE) 2026',
+                'date' => null,
+                'place' => null,
+                'description' => 'Pameran pendidikan dan pelatihan, tempat Universitas Mercu Buana membuka stan.',
+                'role' => 'Mengisi stan Universitas Mercu Buana sebagai proyek hasil kolaborasi Fakultas Psikologi dan Fakultas Ilmu Komputer.',
+            ],
+            [
+                'type' => 'Seminar',
+                'title' => 'Why We Stay: Membongkar Alasan Mengapa Sulit Keluar dari Hubungan Toxic',
+                'date' => '20 April 2026',
+                'place' => 'Aula Gedung Rektorat Lantai 2, Universitas Mercu Buana',
+                'description' => 'Seminar dalam rangka HUT ke-106 RS Soeharto Heerdjan bersama Fakultas Psikologi Universitas Mercu Buana.',
+                'role' => 'Mengisi stan pameran karya.',
+            ],
+            [
+                'type' => 'Asesmen lapangan',
+                'title' => 'Asesmen Lapangan Program Studi S1 Psikologi Universitas Mercu Buana',
+                'date' => '17–19 Mei 2026',
+                'place' => null,
+                'description' => 'Rangkaian asesmen lapangan akreditasi Program Studi S1 Psikologi.',
+                'role' => 'Mengisi ruang FGD Fakultas Psikologi.',
+            ],
+        ],
+    ],
+
+    // Tim dan pihak yang berperan di halaman Tentang (SCR-004). Klaim publik (RULE-049): semua nama ada
+    // izinnya (OQ-2, dikonfirmasi founder). Bukan bagan organisasi: tiga kelompok sejajar, tanpa foto.
+    // Kosongkan array untuk menyembunyikan bagian ini. Peran fitur yang tidak ada di rilis ini sengaja
+    // tidak ditulis (Komunitas, Program, Todolist).
+    'team' => [
+        [
+            'title' => 'Pembimbing dan penasihat',
+            'description' => 'Mendampingi dan memantau pengembangan RelaxBoss.',
+            'icon' => 'graduation-cap',
+            'members' => [
+                ['name' => 'Dr. Bambang Jokonowo, S.Si., M.T.I.', 'role' => 'Dekan Fakultas Ilmu Komputer dan Supervisor'],
+                ['name' => 'Laila Meiliyandrie Indah Wardani, S.Psi, MA., M.Psi., Ph.D, Psikolog', 'role' => 'Dekan Fakultas Psikologi dan Ahli Klinis'],
+                ['name' => 'Irma Himmatul Aliyyah, S.Psi., M.Psi., Psikolog', 'role' => 'Penasihat Metodologi'],
+            ],
+        ],
+        [
+            'title' => 'Tim pengembang',
+            'description' => 'Mahasiswa Fakultas Ilmu Komputer yang membangun RelaxBoss.',
+            'icon' => 'code',
+            'members' => [
+                ['name' => 'Arya Restu Pratama', 'role' => 'Founder dan Full-Stack'],
+                ['name' => 'Rezky Budiawan', 'role' => 'Co-Founder'],
+                ['name' => 'Krisna Septiawan', 'role' => 'Co-Founder'],
+                ['name' => 'M. Rifqi Abdillah', 'role' => 'Co-Founder'],
+                ['name' => 'Ersa Ahmad Yassin', 'role' => 'Pengembang Fitur Asesmen'],
+                ['name' => 'Adika Faris M.H', 'role' => 'Pengembang (versi awal)'],
+            ],
+        ],
+        [
+            'title' => 'Kontributor psikologi',
+            'description' => 'Magang dan mahasiswa psikologi yang ikut berkontribusi.',
+            'icon' => 'heart',
+            'members' => [
+                ['name' => 'Felicia Ivana', 'role' => 'Magang Psikologi dan Penghubung Fasilkom–Psikologi'],
+                ['name' => 'Kayla Arlynthia', 'role' => 'Magang Psikologi'],
+                ['name' => 'Salsabila Amanda Rahmawati', 'role' => 'Magang Psikologi'],
+            ],
         ],
     ],
 
