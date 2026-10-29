@@ -21,7 +21,7 @@
     <meta property="og:title" content="@yield('title', 'RelaxBoss')">
     <meta property="og:description" content="@yield('description', $defaultDescription)">
     <meta property="og:url" content="@yield('canonical', url()->current())">
-    <link rel="icon" type="image/png" href="{{ asset('images/logo-relaxboss.png') }}">
+    @include('layouts.partials.head-icons')
     @stack('head')
     @vite(['resources/css/app.css', 'resources/js/public.ts'])
 </head>
