@@ -13,6 +13,7 @@ const DOT_FILL: Record<number, string> = {
   5: 'fill-mood-5',
 };
 const Y_VALUES = [1, 2, 3, 4, 5];
+const MIN_LABEL_GAP = 64;
 
 /** Lebar wadah, agar teks SVG tidak ikut mengecil atau membesar saat layar berubah. */
 function useWidth(): [React.RefObject<HTMLDivElement | null>, number] {
@@ -108,7 +109,10 @@ export function MoodRangeChart({ days, range, showCaption = true, height = DEFAU
     segments.push(current);
   }
 
-  const labelEvery = range === 7 ? 1 : 5;
+  // Jarak antar-label dijaga >= MIN_LABEL_GAP px agar tanggal tidak saling menimpa di layar sempit.
+  const step = innerWidth / Math.max(1, visible.length - 1);
+  const lastIndex = visible.length - 1;
+  const labelEvery = Math.max(range === 7 ? 1 : 5, Math.ceil(MIN_LABEL_GAP / Math.max(step, 1)));
 
   return (
     <figure className="m-0">
@@ -119,7 +123,7 @@ export function MoodRangeChart({ days, range, showCaption = true, height = DEFAU
             <path key={path} d={path} fill="none" className="stroke-primary" strokeWidth={2} strokeLinejoin="round" />
           ))}
           {visible.map((day, index) => {
-            const showLabel = index % labelEvery === 0 || index === visible.length - 1;
+            const showLabel = index === lastIndex || (index % labelEvery === 0 && (lastIndex - index) * step >= MIN_LABEL_GAP);
             return (
               <g key={day.date}>
                 {showLabel ? (

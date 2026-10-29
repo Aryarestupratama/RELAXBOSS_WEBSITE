@@ -44,7 +44,7 @@ function WeekFaces({ days }: { days: MoodDay[] }) {
                 <span className="sr-only">{day.label}: Tidak ada catatan</span>
               </span>
             ) : (
-              <span role="img" aria-label={`${day.label}: ${MOOD_LABELS[level]}, ${day.entries.length} catatan`} className="grid size-11 place-items-center">
+              <span role="img" aria-label={`${day.label}: ${MOOD_LABELS[level]}, ${day.entries.length} catatan`} className="grid size-9 place-items-center sm:size-11">
                 <img src={moodImage(level)} width={48} height={48} alt="" className="size-9 object-contain sm:size-10" />
               </span>
             )}
@@ -97,7 +97,7 @@ export default function Index({ limit, remaining, days, note_max_chars }: IndexP
     <AppShell title="Mood Tracker" wide staggered>
       <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu dan sebulan." />
 
-      <div className="grid gap-4 lg:grid-cols-12 lg:items-start">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
         <div className="flex flex-col lg:col-span-5">
           <Card data-load role="region" aria-labelledby="mood-form-title" className={cardPadding}>
             <CardHeader>

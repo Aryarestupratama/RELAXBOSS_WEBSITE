@@ -3,7 +3,12 @@
  * halaman Blade, dan kunjungan Inertia ke halaman Blade tampil sebagai modal
  * (Architecture bagian 11). Gambar logo sama dengan Navbar Beranda.
  */
-export default function Logo() {
+type LogoProps = {
+  /** Di layar sempit (< 26rem) tulisan disembunyikan secara visual; nama tetap terbaca pembaca layar. */
+  compact?: boolean;
+};
+
+export default function Logo({ compact = false }: LogoProps) {
   return (
     <a
       href="/"
@@ -11,7 +16,7 @@ export default function Logo() {
       className="inline-flex min-h-11 items-center gap-2 text-xl font-semibold text-text"
     >
       <img src="/images/logo-relaxboss.png" width={32} height={32} alt="" className="size-8 rounded-lg" />
-      RelaxBoss
+      <span className={compact ? 'sr-only min-[26rem]:not-sr-only' : undefined}>RelaxBoss</span>
     </a>
   );
 }

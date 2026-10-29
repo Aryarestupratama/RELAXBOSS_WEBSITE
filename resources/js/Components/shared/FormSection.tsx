@@ -96,11 +96,11 @@ export function FormSaveBar({ statusText, hasErrors, processing, cancelHref, sub
         <p aria-live="polite" className={cn('text-sm font-medium', hasErrors ? 'text-destructive' : 'text-text-secondary')}>
           {statusText}
         </p>
-        <div className="flex items-center gap-2">
-          <Button type="button" variant="ghost" className="rounded-full! px-5 text-sm" asChild>
+        <div className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto">
+          <Button type="button" variant="ghost" className="rounded-full! px-3 text-sm sm:px-5" asChild>
             <Link href={cancelHref}>Batal</Link>
           </Button>
-          <Button type="submit" disabled={processing} className="rounded-full! px-6 text-sm">
+          <Button type="submit" disabled={processing} className="rounded-full! px-4 text-sm sm:px-6">
             {processing ? (
               <LoaderCircle className="animate-spin motion-reduce:animate-none" aria-hidden="true" />
             ) : (

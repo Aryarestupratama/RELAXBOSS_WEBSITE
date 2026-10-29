@@ -145,15 +145,15 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
         ) : null}
 
         <Section id="pengguna" title="Pengguna">
-          <dl className="grid gap-4 sm:grid-cols-2">
+          <dl className="grid grid-cols-1 gap-4 sm:grid-cols-2">
             <StatCard label="Akun terdaftar" value={users.registered} icon={Users} tone="lavender" />
             <StatCard label="Akun terverifikasi" value={users.verified} icon={UserCheck} tone="sky" />
           </dl>
         </Section>
 
         <Section id="pemakaian" title="Pemakaian fitur">
-          <div className="grid items-start gap-4 lg:grid-cols-12">
-            <dl className="grid gap-4 sm:grid-cols-3 lg:col-span-5 lg:grid-cols-1">
+          <div className="grid grid-cols-1 items-start gap-4 lg:grid-cols-12">
+            <dl className="grid grid-cols-1 gap-4 sm:grid-cols-3 lg:col-span-5 lg:grid-cols-1">
               <StatCard label="Asesmen selesai" value={usage.assessments_total} icon={ClipboardCheck} tone="peach" />
               <StatCard label="Mood Entry dibuat" value={usage.mood_entries} icon={Smile} tone="mint" />
               <StatCard label="Percakapan dimulai" value={usage.conversations} icon={MessageCircle} tone="lavender" />
@@ -196,7 +196,7 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
         </Section>
 
         <Section id="kpi" title="Indikator keberhasilan">
-          <ul className="grid gap-4 md:grid-cols-3">
+          <ul className="grid grid-cols-1 gap-4 md:grid-cols-3">
             {kpi.map((item) => (
               <li key={item.code} className="flex">
                 <Card className="w-full gap-4 p-5">
@@ -244,7 +244,7 @@ export default function Dashboard({ stats, min_group_size }: DashboardProps) {
           title="Pemakaian AI"
           note="Hari dihitung dalam UTC. Token adalah jumlah token prompt dan jawaban."
         >
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
             <AiTable caption="Hari ini" rows={ai.today} />
             <AiTable caption="30 hari terakhir" rows={ai.last_30_days} />
           </div>

@@ -124,19 +124,19 @@ export default function AdminShell({ title, staggered = false, children }: Admin
 
         {/* Bar atas (HP) */}
         <header className="border-b border-border bg-card md:hidden">
-          <div className="flex items-center justify-between gap-3 px-4 py-1.5">
-            <div className="flex items-center gap-2">
-              <Logo />
+          <div className="flex items-center justify-between gap-2 px-3 py-1.5 min-[26rem]:gap-3 min-[26rem]:px-4">
+            <div className="flex min-w-0 items-center gap-2">
+              <Logo compact />
               <Badge variant="lavender">Admin</Badge>
             </div>
             <div className="flex items-center gap-1">
               <Link
                 href="/dashboard"
-                className="inline-flex min-h-11 items-center rounded-lg px-3 text-sm font-medium text-primary"
+                className="inline-flex min-h-11 items-center rounded-lg px-2 text-sm font-medium text-primary"
               >
                 Aplikasi
               </Link>
-              <LogoutButton />
+              <LogoutButton className="px-2" />
             </div>
           </div>
         </header>
@@ -162,7 +162,7 @@ export default function AdminShell({ title, staggered = false, children }: Admin
                     href={href}
                     data-press
                     aria-current={active ? 'page' : undefined}
-                    className={`group flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.6875rem] font-medium transition-colors duration-300 ${EASE} ${
+                    className={`group flex min-h-14 flex-col items-center justify-center gap-0.5 text-[0.625rem] font-medium tracking-tight transition-colors min-[360px]:text-[0.6875rem] duration-300 ${EASE} ${
                       active ? 'text-primary' : 'text-text-secondary hover:text-nav-hover'
                     }`}
                   >

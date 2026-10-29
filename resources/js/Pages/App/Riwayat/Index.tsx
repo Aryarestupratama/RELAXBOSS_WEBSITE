@@ -60,7 +60,7 @@ export default function Index({ attempts, prev_page_url, next_page_url }: IndexP
           </Card>
         ) : (
           <>
-            <ul className="grid gap-3 lg:grid-cols-2">
+            <ul className="grid grid-cols-1 gap-3 lg:grid-cols-2">
               {attempts.map((attempt, index) => (
                 <li key={attempt.id} data-load>
                   <Link
