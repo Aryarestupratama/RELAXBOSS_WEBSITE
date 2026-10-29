@@ -1,34 +1,31 @@
-import { useState, type FormEvent } from 'react';
-import { Link, router, usePage } from '@inertiajs/react';
+import { useState } from 'react';
+import { router, usePage } from '@inertiajs/react';
 import {
-  ChevronLeft,
-  ChevronRight,
   CircleAlert,
   CircleCheck,
   CircleOff,
   LoaderCircle,
   MailCheck,
   MailQuestion,
-  Search,
   ShieldCheck,
   UserCheck,
   UserPlus,
   UserX,
   Users,
-  X,
 } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
 import CreateAdminDialog from '@/Components/shared/CreateAdminDialog';
 import ConfirmLeaveDialog from '@/Components/shared/ConfirmLeaveDialog';
+import DataTable, { type DataTableColumn } from '@/Components/shared/DataTable';
+import DataTableCard from '@/Components/shared/DataTableCard';
 import InlineNote from '@/Components/shared/InlineNote';
 import PageHeader from '@/Components/shared/PageHeader';
+import TableSearch from '@/Components/shared/TableSearch';
+import TableToolbar from '@/Components/shared/TableToolbar';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { Card } from '@/Components/ui/card';
-import { Input } from '@/Components/ui/input';
-import { Label } from '@/Components/ui/label';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
+import { ROW_BUTTON } from '@/lib/adminTable';
 
 type UserRow = {
   id: number;
@@ -47,7 +44,6 @@ type IndexProps = {
   next_page_url: string | null;
 };
 
-const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
 const PILL_BUTTON = 'rounded-full! px-5 text-sm';
 
 /** Tanggal WIB (Y-m-d) dari server menjadi "5 Okt 2026". Hanya tanggal, tanpa jam. */
@@ -61,7 +57,7 @@ function EmailCell({ user }: { user: UserRow }) {
   return (
     <span className="flex items-center gap-3">
       <span
-        className="grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender text-sm font-bold text-text uppercase"
+        className="grid size-10 shrink-0 place-items-center rounded-full bg-soft-lavender text-sm font-bold text-text uppercase md:size-9"
         aria-hidden="true"
       >
         {user.email.charAt(0)}
@@ -120,8 +116,7 @@ export default function Index({ users, search, prev_page_url, next_page_url }: I
   const [busyId, setBusyId] = useState<number | null>(null);
   const [createOpen, setCreateOpen] = useState(false);
 
-  const submitSearch = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
+  const submitSearch = () => {
     router.get('/admin/pengguna', query.trim() === '' ? {} : { q: query.trim() }, { preserveScroll: true });
   };
 
@@ -149,7 +144,7 @@ export default function Index({ users, search, prev_page_url, next_page_url }: I
       return (
         <Button
           variant="destructive"
-          className={PILL_BUTTON}
+          className={ROW_BUTTON}
           disabled={busyId !== null}
           onClick={() => setTarget(user)}
           aria-label={`Nonaktifkan ${user.email}`}
@@ -163,7 +158,7 @@ export default function Index({ users, search, prev_page_url, next_page_url }: I
     return (
       <Button
         variant="outline"
-        className={PILL_BUTTON}
+        className={ROW_BUTTON}
         disabled={busyId !== null}
         onClick={() => setActive(user, true)}
         aria-label={`Aktifkan ${user.email}`}
@@ -177,6 +172,19 @@ export default function Index({ users, search, prev_page_url, next_page_url }: I
       </Button>
     );
   };
+
+  const columns: DataTableColumn<UserRow>[] = [
+    { id: 'email', header: 'Email', rowHeader: true, cell: (user) => <EmailCell user={user} /> },
+    {
+      id: 'registered',
+      header: 'Terdaftar',
+      className: 'whitespace-nowrap text-text-secondary',
+      cell: (user) => formatDate(user.registered_on),
+    },
+    { id: 'verified', header: 'Verifikasi', cell: (user) => <VerifiedBadge user={user} /> },
+    { id: 'status', header: 'Status', cell: (user) => <ActiveBadge user={user} /> },
+    { id: 'action', header: 'Aksi', hideHeader: true, align: 'right', cell: renderAction },
+  ];
 
   return (
     <AdminShell title="Pengguna" staggered>
@@ -208,138 +216,44 @@ export default function Index({ users, search, prev_page_url, next_page_url }: I
           <InlineNote>Hanya data terbatas yang tampil, dan akun nonaktif tidak bisa masuk tetapi datanya tidak dihapus.</InlineNote>
         </div>
 
-        <Card data-load className="p-4 md:p-5">
-          <form onSubmit={submitSearch} role="search" className="flex flex-wrap items-end gap-3">
-            <div className="min-w-0 flex-1 basis-64">
-              <Label htmlFor="cari-email">Cari email</Label>
-              <div className="relative mt-1.5">
-                <Search
-                  className="pointer-events-none absolute top-1/2 left-4 size-4 -translate-y-1/2 text-text-secondary"
-                  aria-hidden="true"
-                />
-                <Input
-                  id="cari-email"
-                  type="search"
-                  name="q"
-                  maxLength={100}
-                  autoComplete="off"
-                  value={query}
-                  onChange={(event) => setQuery(event.target.value)}
-                  className="rounded-full pl-10"
-                />
-              </div>
-            </div>
-            <Button type="submit" className={PILL_BUTTON}>
-              <Search aria-hidden="true" />
-              Cari
-            </Button>
-            {search !== '' ? (
-              <Button asChild variant="ghost" className={PILL_BUTTON}>
-                <Link href="/admin/pengguna">
-                  <X aria-hidden="true" />
-                  Hapus pencarian
-                </Link>
-              </Button>
-            ) : null}
-          </form>
-        </Card>
-
-        {users.length === 0 ? (
-          <Card tone="lavender" data-load className="items-center gap-3 px-6 py-10 text-center">
-            <span className="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
-              <Users className="size-6" />
-            </span>
-            <p className="max-w-sm text-sm text-text">
-              {search !== '' ? 'Tidak ada akun dengan email itu.' : 'Belum ada akun terdaftar.'}
-            </p>
-          </Card>
-        ) : (
-          <section aria-labelledby="daftar-akun" data-load className="flex flex-col gap-3">
-            <div className="flex items-center justify-between gap-3">
-              <h2 id="daftar-akun" className="text-lg leading-snug font-bold tracking-tight">
-                Daftar akun
-              </h2>
-              <Badge variant="outline">{users.length} di halaman ini</Badge>
-            </div>
-
-            {/* >= 768px: tabel */}
-            <Card className="hidden gap-0 p-3 md:flex">
-              <Table className="min-w-[40rem]">
-                <TableCaption className="sr-only">Daftar akun pengguna</TableCaption>
-                <TableHeader>
-                  <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
-                    <TableHead>Email</TableHead>
-                    <TableHead>Terdaftar</TableHead>
-                    <TableHead>Verifikasi</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Aksi</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users.map((user) => (
-                    <TableRow key={user.id}>
-                      <TableHead scope="row" className={ROW_HEAD}>
-                        <EmailCell user={user} />
-                      </TableHead>
-                      <TableCell className="whitespace-nowrap text-text-secondary">
-                        {formatDate(user.registered_on)}
-                      </TableCell>
-                      <TableCell>
-                        <VerifiedBadge user={user} />
-                      </TableCell>
-                      <TableCell>
-                        <ActiveBadge user={user} />
-                      </TableCell>
-                      <TableCell className="text-right">{renderAction(user)}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-
-            {/* < 768px: kartu */}
-            <ul className="grid gap-3 md:hidden">
-              {users.map((user) => (
-                <li key={user.id}>
-                  <Card className="gap-3 p-4">
-                    <EmailCell user={user} />
-                    <span className="flex flex-wrap gap-1.5">
-                      <VerifiedBadge user={user} />
-                      <ActiveBadge user={user} />
-                    </span>
-                    <p className="text-sm text-text-secondary">Terdaftar: {formatDate(user.registered_on)}</p>
-                    <div>{renderAction(user)}</div>
-                  </Card>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        {prev_page_url || next_page_url ? (
-          <nav aria-label="Halaman pengguna" data-load className="flex justify-between gap-3">
-            {prev_page_url ? (
-              <Button asChild variant="outline" className={PILL_BUTTON}>
-                <Link href={prev_page_url}>
-                  <ChevronLeft aria-hidden="true" />
-                  Sebelumnya
-                </Link>
-              </Button>
-            ) : (
-              <span />
+        <DataTableCard
+          id="daftar-akun"
+          title="Daftar akun"
+          countLabel={users.length > 0 ? `${users.length} di halaman ini` : undefined}
+          toolbar={
+            <TableToolbar>
+              <TableSearch
+                id="cari-email"
+                label="Cari email"
+                value={query}
+                onChange={setQuery}
+                onSubmit={submitSearch}
+                clearHref={search !== '' ? '/admin/pengguna' : undefined}
+              />
+            </TableToolbar>
+          }
+          isEmpty={users.length === 0}
+          empty={{ icon: Users, message: search !== '' ? 'Tidak ada akun dengan email itu.' : 'Belum ada akun terdaftar.' }}
+          pager={{ label: 'Halaman pengguna', prevUrl: prev_page_url, nextUrl: next_page_url }}
+        >
+          <DataTable
+            caption="Daftar akun pengguna"
+            columns={columns}
+            rows={users}
+            getRowKey={(user) => user.id}
+            mobileCard={(user) => (
+              <>
+                <EmailCell user={user} />
+                <span className="flex flex-wrap gap-1.5">
+                  <VerifiedBadge user={user} />
+                  <ActiveBadge user={user} />
+                </span>
+                <p className="text-sm text-text-secondary">Terdaftar: {formatDate(user.registered_on)}</p>
+                <div>{renderAction(user)}</div>
+              </>
             )}
-            {next_page_url ? (
-              <Button asChild variant="outline" className={PILL_BUTTON}>
-                <Link href={next_page_url}>
-                  Berikutnya
-                  <ChevronRight aria-hidden="true" />
-                </Link>
-              </Button>
-            ) : null}
-          </nav>
-        ) : null}
+          />
+        </DataTableCard>
       </div>
 
       <ConfirmLeaveDialog

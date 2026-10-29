@@ -1,15 +1,16 @@
 import { Link } from '@inertiajs/react';
-import { ArrowRight, CalendarDays, Shuffle, MessagesSquare, TriangleAlert } from 'lucide-react';
+import { ArrowRight, CalendarDays, MessagesSquare, Shuffle, TriangleAlert } from 'lucide-react';
 import AdminShell from '@/Layouts/AdminShell';
-import MonitoringFilter from '@/Components/shared/MonitoringFilter';
+import DataTable, { type DataTableColumn } from '@/Components/shared/DataTable';
+import DataTableCard from '@/Components/shared/DataTableCard';
 import MonitoringHeader from '@/Components/shared/MonitoringHeader';
-import MonitoringPager from '@/Components/shared/MonitoringPager';
 import MonitoringPseudoId from '@/Components/shared/MonitoringPseudoId';
+import TableFilterTabs from '@/Components/shared/TableFilterTabs';
+import TableToolbar from '@/Components/shared/TableToolbar';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
-import { Card } from '@/Components/ui/card';
-import { Table, TableBody, TableCaption, TableCell, TableHead, TableHeader, TableRow } from '@/Components/ui/table';
 import { formatDate, type ChatFilter, type ConversationRow } from '@/lib/adminMonitoring';
+import { ROW_BUTTON } from '@/lib/adminTable';
 
 type ChatIndexProps = {
   filter: ChatFilter;
@@ -29,9 +30,6 @@ const EMPTY: Record<ChatFilter, string> = {
   rendah: 'Belum ada balasan dengan keyakinan rendah.',
   acak: 'Belum ada Percakapan untuk disampel.',
 };
-
-const ROW_HEAD = 'h-auto px-3 py-3 text-sm font-normal tracking-normal whitespace-normal text-text';
-const PILL_BUTTON = 'rounded-full! px-5 text-sm';
 
 function Flags({ row }: { row: ConversationRow }) {
   if (!row.has_crisis && !row.low_confidence) {
@@ -55,7 +53,7 @@ function Flags({ row }: { row: ConversationRow }) {
 
 function OpenButton({ row }: { row: ConversationRow }) {
   return (
-    <Button asChild variant="outline" className={PILL_BUTTON}>
+    <Button asChild variant="outline" className={ROW_BUTTON}>
       <Link href={`/admin/monitoring/chat/${row.id}`} aria-label={`Buka Percakapan ${row.pseudo_id}`}>
         Buka
         <ArrowRight aria-hidden="true" />
@@ -64,105 +62,71 @@ function OpenButton({ row }: { row: ConversationRow }) {
   );
 }
 
+const COLUMNS: DataTableColumn<ConversationRow>[] = [
+  { id: 'pseudo', header: 'ID semu', rowHeader: true, cell: (row) => <MonitoringPseudoId value={row.pseudo_id} /> },
+  { id: 'date', header: 'Tanggal', className: 'whitespace-nowrap text-text-secondary', cell: (row) => formatDate(row.date) },
+  { id: 'turns', header: 'Giliran', cell: (row) => row.total_turns },
+  {
+    id: 'intent',
+    header: 'Intent awal',
+    cell: (row) =>
+      row.initial_intent ? <Badge variant="outline">{row.initial_intent}</Badge> : <span className="text-text-secondary">-</span>,
+  },
+  { id: 'flags', header: 'Penanda', cell: (row) => <Flags row={row} /> },
+  { id: 'open', header: 'Aksi', hideHeader: true, align: 'right', cell: (row) => <OpenButton row={row} /> },
+];
+
 /** SCR-022, tab Chat: daftar Percakapan tanpa isi dan tanpa pemilik. Isi dibuka lewat halaman detail (tercatat). */
 export default function ChatIndex({ filter, rows, prev_page_url, next_page_url }: ChatIndexProps) {
   return (
     <AdminShell title="Monitoring Chat" staggered>
       <MonitoringHeader current="chat" />
 
-      <div className="flex flex-col gap-6">
-        <MonitoringFilter label="Saringan Percakapan" basePath="/admin/monitoring/chat" options={FILTERS} current={filter} />
-
-        {rows.length === 0 ? (
-          <Card tone="lavender" data-load className="items-center gap-3 px-6 py-10 text-center">
-            <span className="grid size-12 place-items-center rounded-full bg-soft-lavender text-primary" aria-hidden="true">
-              <MessagesSquare className="size-6" />
+      <DataTableCard
+        id="daftar-percakapan"
+        title="Percakapan untuk ditinjau"
+        description={
+          filter === 'acak' ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Shuffle className="size-3.5" aria-hidden="true" />
+              Sampel berganti setiap halaman dimuat ulang.
             </span>
-            <p className="max-w-sm text-sm text-text">{EMPTY[filter]}</p>
-          </Card>
-        ) : (
-          <section aria-labelledby="daftar-percakapan" data-load className="flex flex-col gap-3">
-            <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-1">
+          ) : undefined
+        }
+        countLabel={rows.length > 0 ? `${rows.length} di halaman ini` : undefined}
+        toolbar={
+          <TableToolbar>
+            <TableFilterTabs label="Saringan Percakapan" basePath="/admin/monitoring/chat" options={FILTERS} current={filter} />
+          </TableToolbar>
+        }
+        isEmpty={rows.length === 0}
+        empty={{ icon: MessagesSquare, message: EMPTY[filter] }}
+        pager={{ label: 'Halaman Percakapan', prevUrl: prev_page_url, nextUrl: next_page_url }}
+      >
+        <DataTable
+          caption="Daftar Percakapan untuk ditinjau"
+          columns={COLUMNS}
+          rows={rows}
+          getRowKey={(row) => row.id}
+          mobileCard={(row) => (
+            <>
+              <MonitoringPseudoId value={row.pseudo_id} />
+              <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary">
+                <span className="inline-flex items-center gap-1.5">
+                  <CalendarDays className="size-4" aria-hidden="true" />
+                  {formatDate(row.date)}
+                </span>
+                <span>{row.total_turns} giliran</span>
+                {row.initial_intent ? <span>Intent: {row.initial_intent}</span> : null}
+              </p>
+              {row.has_crisis || row.low_confidence ? <Flags row={row} /> : null}
               <div>
-                <h2 id="daftar-percakapan" className="text-lg leading-snug font-bold tracking-tight">
-                  Percakapan untuk ditinjau
-                </h2>
-                {filter === 'acak' ? (
-                  <p className="mt-0.5 inline-flex items-center gap-1.5 text-sm text-text-secondary">
-                    <Shuffle className="size-3.5" aria-hidden="true" />
-                    Sampel berganti setiap halaman dimuat ulang.
-                  </p>
-                ) : null}
+                <OpenButton row={row} />
               </div>
-              <Badge variant="outline">{rows.length} di halaman ini</Badge>
-            </div>
-
-            {/* >= 768px: tabel */}
-            <Card className="hidden gap-0 p-3 md:flex">
-              <Table className="min-w-[40rem]">
-                <TableCaption className="sr-only">Daftar Percakapan untuk ditinjau</TableCaption>
-                <TableHeader>
-                  <TableRow className="border-0 bg-soft-lavender/40 hover:bg-soft-lavender/40 [&>th:first-child]:rounded-l-xl [&>th:last-child]:rounded-r-xl">
-                    <TableHead>ID semu</TableHead>
-                    <TableHead>Tanggal</TableHead>
-                    <TableHead>Giliran</TableHead>
-                    <TableHead>Intent awal</TableHead>
-                    <TableHead>Penanda</TableHead>
-                    <TableHead>
-                      <span className="sr-only">Aksi</span>
-                    </TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {rows.map((row) => (
-                    <TableRow key={row.id}>
-                      <TableHead scope="row" className={ROW_HEAD}>
-                        <MonitoringPseudoId value={row.pseudo_id} />
-                      </TableHead>
-                      <TableCell className="whitespace-nowrap text-text-secondary">{formatDate(row.date)}</TableCell>
-                      <TableCell>{row.total_turns}</TableCell>
-                      <TableCell>
-                        {row.initial_intent ? <Badge variant="outline">{row.initial_intent}</Badge> : <span className="text-text-secondary">-</span>}
-                      </TableCell>
-                      <TableCell>
-                        <Flags row={row} />
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <OpenButton row={row} />
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Card>
-
-            {/* < 768px: kartu */}
-            <ul className="grid gap-3 md:hidden">
-              {rows.map((row) => (
-                <li key={row.id}>
-                  <Card className="gap-3 p-4">
-                    <MonitoringPseudoId value={row.pseudo_id} />
-                    <p className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-text-secondary">
-                      <span className="inline-flex items-center gap-1.5">
-                        <CalendarDays className="size-4" aria-hidden="true" />
-                        {formatDate(row.date)}
-                      </span>
-                      <span>{row.total_turns} giliran</span>
-                      {row.initial_intent ? <span>Intent: {row.initial_intent}</span> : null}
-                    </p>
-                    {row.has_crisis || row.low_confidence ? <Flags row={row} /> : null}
-                    <div>
-                      <OpenButton row={row} />
-                    </div>
-                  </Card>
-                </li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <MonitoringPager label="Halaman Percakapan" prevUrl={prev_page_url} nextUrl={next_page_url} />
-      </div>
+            </>
+          )}
+        />
+      </DataTableCard>
     </AdminShell>
   );
 }

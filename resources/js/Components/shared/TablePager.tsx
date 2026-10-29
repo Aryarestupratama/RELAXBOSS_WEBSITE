@@ -1,25 +1,26 @@
 import { Link } from '@inertiajs/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/Components/ui/button';
+import { ROW_BUTTON } from '@/lib/adminTable';
+import { cn } from '@/lib/utils';
 
-type MonitoringPagerProps = {
+type TablePagerProps = {
   label: string;
   prevUrl: string | null;
   nextUrl: string | null;
+  className?: string;
 };
 
-const PILL = 'rounded-full! px-5 text-sm';
-
-/** Paginasi sederhana (Sebelumnya, Berikutnya) untuk daftar Monitoring. Tidak tampil bila hanya satu halaman. */
-export default function MonitoringPager({ label, prevUrl, nextUrl }: MonitoringPagerProps) {
+/** Paginasi sederhana (Sebelumnya, Berikutnya). Tidak tampil bila hanya ada satu halaman. */
+export default function TablePager({ label, prevUrl, nextUrl, className }: TablePagerProps) {
   if (!prevUrl && !nextUrl) {
     return null;
   }
 
   return (
-    <nav aria-label={label} data-load className="flex justify-between gap-3">
+    <nav aria-label={label} className={cn('flex justify-between gap-3', className)}>
       {prevUrl ? (
-        <Button asChild variant="outline" className={PILL}>
+        <Button asChild variant="outline" className={ROW_BUTTON}>
           <Link href={prevUrl}>
             <ChevronLeft aria-hidden="true" />
             Sebelumnya
@@ -29,7 +30,7 @@ export default function MonitoringPager({ label, prevUrl, nextUrl }: MonitoringP
         <span />
       )}
       {nextUrl ? (
-        <Button asChild variant="outline" className={PILL}>
+        <Button asChild variant="outline" className={ROW_BUTTON}>
           <Link href={nextUrl}>
             Berikutnya
             <ChevronRight aria-hidden="true" />
