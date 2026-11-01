@@ -9,8 +9,6 @@ import { needsConsent, type ConsentState } from '@/lib/consent';
 export function useStartConversation(
   consent: ConsentState | null,
   openConsent: () => void,
-  /** Dipanggil sebelum permintaan dikirim (mis. maskot berjalan keluar); `go` melanjutkan permintaan. */
-  beforeStart?: (go: () => void) => void,
 ) {
   const [starting, setStarting] = useState(false);
 
@@ -22,20 +20,14 @@ export function useStartConversation(
       openConsent();
       return;
     }
-    const post = (): void =>
-      router.post(
-        '/app/relaxmate/percakapan',
-        {},
-        {
-          onStart: () => setStarting(true),
-          onFinish: () => setStarting(false),
-        },
-      );
-    if (beforeStart) {
-      beforeStart(post);
-      return;
-    }
-    post();
+    router.post(
+      '/app/relaxmate/percakapan',
+      {},
+      {
+        onStart: () => setStarting(true),
+        onFinish: () => setStarting(false),
+      },
+    );
   };
 
   return { starting, start };

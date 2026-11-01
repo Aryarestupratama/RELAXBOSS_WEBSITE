@@ -1,4 +1,4 @@
-import type { ComponentProps, MouseEvent } from 'react';
+import type { ComponentProps } from 'react';
 import { Link } from '@inertiajs/react';
 import { ChevronRight, LoaderCircle, Plus } from 'lucide-react';
 import { Badge } from '@/Components/ui/badge';
@@ -40,12 +40,8 @@ type ConversationPanelProps = {
   nextUrl: string | null;
   starting: boolean;
   onStart: () => void;
-  /** Penanda untuk menyimak: dipasang ke tombol mulai (maskot menyimak saat tombol disorot). */
-  startProps?: Pick<ComponentProps<'button'>, 'onMouseEnter' | 'onMouseLeave' | 'onFocus' | 'onBlur'>;
   /** Paginasi di halaman Percakapan hanya memuat ulang daftar, bukan pesan. */
   listOnlyReload?: boolean;
-  /** Klik biasa pada baris: induk boleh menunda perpindahan (mis. animasi maskot). Klik dengan tombol pengubah tidak dicegat. */
-  onOpen?: (href: string) => void;
   className?: string;
 };
 
@@ -62,18 +58,9 @@ export default function ConversationPanel({
   nextUrl,
   starting,
   onStart,
-  startProps,
   listOnlyReload = false,
-  onOpen,
   className = '',
 }: ConversationPanelProps) {
-  const open = (event: MouseEvent, href: string): void => {
-    if (!onOpen || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) {
-      return;
-    }
-    event.preventDefault();
-    onOpen(href);
-  };
   const pagerProps = listOnlyReload ? { only: LIST_PROPS, preserveState: true, preserveScroll: true } : {};
 
   return (
@@ -88,7 +75,7 @@ export default function ConversationPanel({
       {conversations.length === 0 ? (
         <div className="flex flex-1 flex-col items-center justify-center gap-4 px-6 pb-8 pt-2 text-center">
           <p className="text-sm text-text-secondary">{RELAXMATE_EMPTY}</p>
-          <StartConversationButton starting={starting} onClick={onStart} {...startProps} />
+          <StartConversationButton starting={starting} onClick={onStart} />
         </div>
       ) : (
         <>
@@ -99,7 +86,6 @@ export default function ConversationPanel({
                 <li key={conversation.id}>
                   <Link
                     href={`/app/relaxmate/${conversation.id}`}
-                    onClick={(event) => open(event, `/app/relaxmate/${conversation.id}`)}
                     aria-current={active ? 'page' : undefined}
                     className={`group flex min-h-14 items-center justify-between gap-3 rounded-2xl px-3.5 py-2.5 text-text transition-colors duration-200 ${
                       active ? 'bg-soft-lavender' : 'hover:bg-soft-lavender/50'
@@ -146,7 +132,7 @@ export default function ConversationPanel({
           ) : null}
 
           <CardFooter className="hidden px-5 pt-3 pb-5 lg:flex">
-            <StartConversationButton starting={starting} onClick={onStart} className="w-full" {...startProps} />
+            <StartConversationButton starting={starting} onClick={onStart} className="w-full" />
           </CardFooter>
         </>
       )}

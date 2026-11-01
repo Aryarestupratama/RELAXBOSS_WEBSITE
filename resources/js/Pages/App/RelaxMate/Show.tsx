@@ -7,7 +7,7 @@ import ChatInput from '@/Components/shared/ChatInput';
 import ConsentDialog from '@/Components/shared/ConsentDialog';
 import ConversationPanel, { type ConversationItem } from '@/Components/shared/ConversationPanel';
 import CrisisBanner from '@/Components/shared/CrisisBanner';
-import Mascot from '@/Components/shared/Mascot';
+import RelaxMateAvatar from '@/Components/shared/RelaxMateAvatar';
 import SuggestionCard from '@/Components/shared/SuggestionCard';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
@@ -15,8 +15,6 @@ import { Card, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
 import { needsConsent, type SharedConsentProps } from '@/lib/consent';
 import { postJson } from '@/lib/http';
-import type { MascotName } from '@/lib/mascot';
-import { consumeMascotEntrance } from '@/lib/mascotEntrance';
 import {
   RELAXMATE_CONSENT_NEEDED,
   RELAXMATE_DAILY_LIMIT,
@@ -41,10 +39,9 @@ type ShowProps = {
 };
 
 /**
- * SCR-017 (Percakapan). Kiri: daftar Percakapan (>= 1024px). Kanan dibagi dua (>= 1280px): panel maskot besar
- * dan obrolan. Di bawah 1280px maskot jadi wajah kecil di kepala obrolan.
- * Pesan dikirim lewat fetch JSON (API-015); riwayat dari server. Maskot menyimak saat pengguna mengetik
- * dan berpikir selama balasan ditunggu.
+ * SCR-017 (Percakapan). Kiri: daftar Percakapan (>= 1024px). Kanan: satu kartu obrolan; avatar RelaxMate (gambar statis)
+ * ada di kepala kartu dan di samping balasan. Pesan dikirim lewat fetch JSON (API-015); riwayat dari server.
+ * Selama balasan ditunggu tampil tiga titik berdenyut.
  */
 export default function Show({
   conversations,
@@ -66,11 +63,8 @@ export default function Show({
   const [error, setError] = useState<string | null>(null);
   const [dismissed, setDismissed] = useState<Set<number | string>>(new Set());
   const [consentOpen, setConsentOpen] = useState(needsConsent(consent));
-  // Balasan yang sedang "diucapkan" (diketik bertahap); maskot berbicara selama ini.
+  // Balasan yang sedang diketik bertahap; saran tindakan menunggu sampai selesai.
   const [speakingId, setSpeakingId] = useState<number | string | null>(null);
-
-  // Dibuka lewat klik di daftar: maskot di panel besar masuk dulu (jalan, ambil kursi, duduk). Hanya di >= 1280px.
-  const [entrance] = useState(() => consumeMascotEntrance() && window.matchMedia('(min-width: 1280px)').matches);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
@@ -103,13 +97,6 @@ export default function Show({
   const limitReached = remaining <= 0;
   const canType = consentDone && !limitReached;
   const lastAssistantIndex = messages.map((m) => m.role).lastIndexOf('assistant');
-  const mascot: MascotName = sending
-    ? 'thinking'
-    : speakingId !== null
-      ? 'speaking'
-      : draft.trim() !== ''
-        ? 'listening'
-        : 'idle';
 
   const scrollToEnd = () => {
     const el = scrollRef.current;
@@ -235,21 +222,15 @@ export default function Show({
           />
         </div>
 
-        {/* Satu kartu: satu kepala, lalu maskot (kiri, >= 1280px) dan obrolan (kanan). Di bawah 1280px maskot jadi wajah kecil di kepala. */}
+        {/* Satu kartu: kepala berisi avatar RelaxMate, lalu obrolan. */}
         <Card
           data-load
           role="region"
           aria-label="Percakapan dengan RelaxMate"
           className="min-h-0 min-w-0 flex-1 gap-0 overflow-hidden"
         >
-          {/* Satu kepala untuk maskot dan obrolan */}
           <CardHeader className="flex-row items-center gap-3 px-4 py-3 md:px-5">
-            <span
-              aria-hidden="true"
-              className="relative size-12 shrink-0 overflow-hidden rounded-full bg-soft-lavender xl:hidden"
-            >
-              <Mascot state={mascot} className="absolute -left-2 -top-1 [--s:0.19]" />
-            </span>
+            <RelaxMateAvatar size="md" />
             <div className="min-w-0">
               <CardTitle role="heading" aria-level={1} className="text-base leading-tight font-bold md:text-lg">
                 RelaxMate
@@ -258,18 +239,6 @@ export default function Show({
             </div>
           </CardHeader>
           <Separator />
-
-          <div className="flex min-h-0 flex-1 flex-col xl:flex-row">
-            <div
-              data-mascot-stage
-              className="hidden w-80 shrink-0 items-center justify-center overflow-hidden bg-soft-lavender px-5 xl:flex"
-            >
-              <div aria-hidden="true" className="relative h-64 w-64 max-w-full">
-                <div className="absolute inset-x-2 bottom-0 h-45 rounded-[58%_42%_52%_48%/55%_50%_50%_45%] bg-card/50" />
-                <div className="absolute bottom-1.5 left-1/2 h-3.5 w-32.5 -translate-x-1/2 rounded-full bg-primary/15 blur-[2px]" />
-                <Mascot state={mascot} seated entrance={entrance} className="absolute bottom-0 left-1/2 -translate-x-1/2 [--s:0.62]" />
-              </div>
-            </div>
 
           <div className="flex min-h-0 min-w-0 flex-1 flex-col">
             {hasCrisis ? (
@@ -286,7 +255,7 @@ export default function Show({
             >
               {messages.length === 0 && !sending ? (
                 <div className="m-auto flex flex-col items-center text-center">
-                  <Mascot state={mascot} className="[--s:0.4] xl:hidden" />
+                  <RelaxMateAvatar size="lg" />
                   <p className="mt-2 max-w-xs text-sm text-text-secondary">{RELAXMATE_NEW}</p>
                 </div>
               ) : null}
@@ -307,6 +276,7 @@ export default function Show({
                       message={message}
                       animate={message.role === 'assistant' && !initialIds.current.has(message.id)}
                       typewriter={speaking}
+                      showAvatar={message.role === 'assistant' && messages[index - 1]?.role !== 'assistant'}
                       onTypingTick={scrollToEnd}
                       onTypingDone={() => setSpeakingId((current) => (current === message.id ? null : current))}
                     >
@@ -321,7 +291,8 @@ export default function Show({
                 })}
 
                 {sending ? (
-                  <li className="flex items-start motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
+                  <li className="flex items-start gap-2 motion-safe:animate-in motion-safe:fade-in motion-safe:duration-300">
+                    <RelaxMateAvatar />
                     <p
                       role="status"
                       className="flex items-center gap-3 rounded-2xl rounded-bl-md bg-card px-3.5 py-2.5 text-sm text-text-secondary shadow-card"
@@ -398,7 +369,6 @@ export default function Show({
                 </a>
               </p>
             </div>
-          </div>
           </div>
         </Card>
       </div>
