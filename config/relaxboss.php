@@ -106,6 +106,16 @@ return [
         'reset_expire_minutes' => 60,
     ],
 
+    // API mobile (Architecture-M bagian 7 dan 9). Semua angka asumsi (RULE-026).
+    'mobile' => [
+        // Token Sanctum: satu per perangkat, bernama sama, kemampuan terbatas pada fitur RelaxMate (A-MA2).
+        'token_name' => 'mobile-android',
+        'token_abilities' => ['relaxmate'],
+        'token_expiration_days' => 60,
+        // Batas kasar per IP untuk rute tamu (login, lupa sandi) sebagai pelapis batas per akun di Action.
+        'guest_per_minute' => 20,
+    ],
+
     // Foto profil (FR-033). Berkas ada di disk privat dan hanya disajikan kepada pemiliknya (RULE-042).
     'avatar' => [
         'max_kb' => 2048,

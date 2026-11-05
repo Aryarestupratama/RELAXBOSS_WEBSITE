@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Notifications\Messages\MailMessage;
 use App\Contracts\ChatCompletionClient;
 use App\Models\Assessment;
+use App\Support\ApiError;
 use App\Services\Ai\GroqClient;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
@@ -29,6 +30,9 @@ class AppServiceProvider extends ServiceProvider
         // Masa berlaku tautan dari config produk (RULE-026).
         config()->set('auth.verification.expire', (int) config('relaxboss.auth.verification_expire_minutes'));
         config()->set('auth.passwords.users.expire', (int) config('relaxboss.auth.reset_expire_minutes'));
+
+        // Masa berlaku token mobile dari config produk, dalam menit (RULE-026, Architecture-M bagian 7).
+        config()->set('sanctum.expiration', (int) config('relaxboss.mobile.token_expiration_days') * 24 * 60);
 
         // Teks email mengikuti bank teks Design (RULE-054).
         VerifyEmail::toMailUsing(function (object $notifiable, string $url): MailMessage {
@@ -78,6 +82,20 @@ class AppServiceProvider extends ServiceProvider
                         'register' => "Terlalu banyak percobaan mendaftar. Coba lagi dalam {$seconds} detik.",
                     ]);
                 });
+        });
+
+        // API-M001 (RULE-044): batas pendaftaran per IP, dikembalikan sebagai JSON `rate_limited`.
+        RateLimiter::for('api-register', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.auth.register_per_minute'))
+                ->by((string) $request->ip())
+                ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak percobaan mendaftar.'));
+        });
+
+        // API-M002, API-M004 (RULE-044): batas kasar per IP untuk rute tamu. Batas per akun+IP tetap di Action login.
+        RateLimiter::for('api-guest', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.mobile.guest_per_minute'))
+                ->by((string) $request->ip())
+                ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak percobaan.'));
         });
 
         // API-015 (RULE-044): batas pesan per menit per pengguna. Respons JSON karena chat memakai fetch.
