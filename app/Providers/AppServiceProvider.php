@@ -13,8 +13,10 @@ use App\Contracts\ChatCompletionClient;
 use App\Models\Assessment;
 use App\Support\ApiError;
 use App\Services\Ai\GroqClient;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -33,6 +35,21 @@ class AppServiceProvider extends ServiceProvider
 
         // Masa berlaku token mobile dari config produk, dalam menit (RULE-026, Architecture-M bagian 7).
         config()->set('sanctum.expiration', (int) config('relaxboss.mobile.token_expiration_days') * 24 * 60);
+
+        // Email verifikasi yang dipicu API mobile memakai rute tanpa login (OQ-MA2): pengguna membukanya di
+        // peramban HP tanpa sesi. Alur web tetap memakai rute `verification.verify` (wajib login).
+        VerifyEmail::createUrlUsing(function (object $notifiable): string {
+            $route = request()->is('api/*') ? 'verification.verify.guest' : 'verification.verify';
+
+            return URL::temporarySignedRoute(
+                $route,
+                Carbon::now()->addMinutes((int) config('auth.verification.expire', 60)),
+                [
+                    'id' => $notifiable->getKey(),
+                    'hash' => sha1($notifiable->getEmailForVerification()),
+                ],
+            );
+        });
 
         // Teks email mengikuti bank teks Design (RULE-054).
         VerifyEmail::toMailUsing(function (object $notifiable, string $url): MailMessage {

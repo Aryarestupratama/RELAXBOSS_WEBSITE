@@ -23,6 +23,7 @@ use App\Http\Controllers\App\ProfileController;
 use App\Http\Controllers\App\RelaxMateController;
 use App\Http\Controllers\App\TrainingConsentController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\GuestEmailVerificationController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\NewPasswordController;
@@ -187,5 +188,12 @@ Route::middleware('auth')->group(function (): void {
     Route::post('/verifikasi-email/kirim-ulang', [EmailVerificationController::class, 'send'])
         ->name('verification.send');
 });
+
+// Tautan verifikasi dari email yang dipicu API mobile (OQ-MA2): bertanda tangan, tanpa sesi login.
+// Tautan dari alur web tetap memakai `verification.verify` di atas (wajib login).
+Route::get('/verifikasi-email/tautan/{id}/{hash}', [GuestEmailVerificationController::class, 'verify'])
+    ->middleware(['signed', 'throttle:20,1'])
+    ->whereNumber('id')
+    ->name('verification.verify.guest');
 
 require __DIR__.'/public.php';

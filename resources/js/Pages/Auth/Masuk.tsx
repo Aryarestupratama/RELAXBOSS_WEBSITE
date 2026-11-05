@@ -46,6 +46,15 @@ export default function Masuk({ status }: MasukProps) {
           </Alert>
         ) : null}
 
+        {status === 'email-verified' ? (
+          <Alert className="px-3 py-2.5 text-[0.8125rem]">
+            <CircleCheck className="text-success!" aria-hidden="true" />
+            <AlertDescription className="text-[0.8125rem]">
+              Emailmu sudah terverifikasi. Kembali ke aplikasi RelaxMate, atau masuk di sini.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+
         {errors.login ? (
           <Alert variant="destructive" className="px-3 py-2.5 text-[0.8125rem]">
             <CircleAlert aria-hidden="true" />

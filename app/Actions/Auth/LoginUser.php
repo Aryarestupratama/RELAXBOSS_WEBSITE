@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Actions\Auth;
 
+use App\Exceptions\LoginFailedException;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,21 +15,36 @@ use Illuminate\Validation\ValidationException;
  * API-002. Batas: login_per_minute percobaan GAGAL per kombinasi akun + IP.
  * Kunci memakai sha1 agar email tidak tersimpan di tabel cache.
  * Status nonaktif baru diungkap setelah sandi terbukti benar.
+ *
+ * `verify()` memeriksa kredensial tanpa membuat sesi (dipakai API mobile, API-M002);
+ * `handle()` untuk web: memanggil `verify()` lalu membuat sesi.
  */
 final class LoginUser
 {
     public function handle(string $email, string $password, string $ip): User
+    {
+        try {
+            $user = $this->verify($email, $password, $ip);
+        } catch (LoginFailedException $e) {
+            throw ValidationException::withMessages(['login' => $e->getMessage()]);
+        }
+
+        Auth::login($user);
+
+        return $user;
+    }
+
+    /**
+     * @throws LoginFailedException
+     */
+    public function verify(string $email, string $password, string $ip): User
     {
         $key = sha1(mb_strtolower($email).'|'.$ip);
         $max = (int) config('relaxboss.auth.login_per_minute');
         $window = (int) config('relaxboss.auth.login_window_seconds');
 
         if (RateLimiter::tooManyAttempts($key, $max)) {
-            $seconds = RateLimiter::availableIn($key);
-
-            throw ValidationException::withMessages([
-                'login' => "Terlalu banyak percobaan masuk. Coba lagi dalam {$seconds} detik.",
-            ]);
+            throw LoginFailedException::throttled(RateLimiter::availableIn($key));
         }
 
         $user = User::query()->where('email', $email)->first();
@@ -44,20 +60,14 @@ final class LoginUser
         if (! $valid || $user === null) {
             RateLimiter::hit($key, $window);
 
-            throw ValidationException::withMessages([
-                'login' => 'Email atau kata sandi tidak cocok.',
-            ]);
+            throw LoginFailedException::invalidCredentials();
         }
 
         RateLimiter::clear($key);
 
         if (! $user->is_active) {
-            throw ValidationException::withMessages([
-                'login' => 'Akunmu sedang dinonaktifkan. Hubungi kami bila menurutmu ini keliru.',
-            ]);
+            throw LoginFailedException::inactive();
         }
-
-        Auth::login($user);
 
         return $user;
     }
