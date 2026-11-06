@@ -126,6 +126,9 @@ return [
         // Batas per IP untuk rute publik (`GET /config`) dan per pengguna untuk rute bertoken yang ringan (`/me`, `/consent`, dst.).
         'public_per_minute' => 60,
         'user_per_minute' => 60,
+        // Jam (WIB) pergantian "hari percakapan" untuk API mobile (FR-M004): 00.00-03.59 masih dihitung hari sebelumnya.
+        // Kuota harian `limits.chat_per_day` tetap reset 00.00 WIB (OQ-MA7, opsi A).
+        'day_cutoff_hour' => 4,
         // Versi aplikasi paling lama yang masih diizinkan (API-M007). Naikkan lewat .env bila API berubah tidak kompatibel.
         'min_app_version' => env('MOBILE_MIN_APP_VERSION', '0.0.0'),
         // Penanda fitur yang dapat dimatikan dari server tanpa rilis aplikasi (PRD-M risiko R-M4).
