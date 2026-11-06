@@ -23,6 +23,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'ai.consent' => \App\Http\Middleware\EnsureAiConsent::class,
+            // Varian API dari `verified`: 403 `unverified` dalam amplop galat seragam (TASK-M014).
+            'api.verified' => \App\Http\Middleware\EnsureEmailVerifiedApi::class,
         ]);
 
         $middleware->web(append: [

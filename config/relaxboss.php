@@ -19,6 +19,15 @@ return [
     'ai_consent_version' => 1,
     'ai_training_consent_version' => 1,
 
+    // Teks consent: sumber tunggal untuk web (prop bersama `consent.texts`) dan API mobile (`GET /consent`, OQ-MA8).
+    // Mengubah teks berarti menaikkan versi di atas (RULE-049). Bank teks Design: "Consent AI" dan "Persetujuan pelatihan".
+    'consent' => [
+        'ai_title' => 'Sebelum bercerita ke RelaxMate',
+        'ai_text' => 'RelaxMate adalah teman bicara berbasis AI, bukan psikolog atau layanan medis. Pesanmu dan jurusanmu (bila kamu isi) dikirim ke penyedia AI pihak ketiga untuk dibalas, tanpa nama, email, atau kampusmu. Pengelola RelaxBoss dapat meninjau isi percakapan tanpa identitasmu untuk menjaga kualitas dan keselamatan. Jangan bagikan data yang sangat pribadi seperti alamat atau nomor identitas. Dengan melanjutkan, kamu menyetujui hal ini.',
+        'training_question' => 'Bolehkah percakapan dan hasil asesmenmu dipakai untuk melatih model AI di masa depan?',
+        'training_text' => 'Datanya diekspor tanpa nama, email, jurusan, dan kampus, dan termasuk percakapan yang menyentuh topik sensitif seperti menyakiti diri. Pilihanmu tidak memengaruhi akses ke fitur apa pun dan bisa kamu ubah kapan saja di pengaturan akun. Data yang sudah diekspor tidak bisa ditarik kembali.',
+    ],
+
     'limits' => [
         'chat_per_day' => 20,
         'chat_per_minute' => 5,
@@ -114,6 +123,15 @@ return [
         'token_expiration_days' => 60,
         // Batas kasar per IP untuk rute tamu (login, lupa sandi) sebagai pelapis batas per akun di Action.
         'guest_per_minute' => 20,
+        // Batas per IP untuk rute publik (`GET /config`) dan per pengguna untuk rute bertoken yang ringan (`/me`, `/consent`, dst.).
+        'public_per_minute' => 60,
+        'user_per_minute' => 60,
+        // Versi aplikasi paling lama yang masih diizinkan (API-M007). Naikkan lewat .env bila API berubah tidak kompatibel.
+        'min_app_version' => env('MOBILE_MIN_APP_VERSION', '0.0.0'),
+        // Penanda fitur yang dapat dimatikan dari server tanpa rilis aplikasi (PRD-M risiko R-M4).
+        'features' => [
+            'overlay' => true,
+        ],
     ],
 
     // Foto profil (FR-033). Berkas ada di disk privat dan hanya disajikan kepada pemiliknya (RULE-042).

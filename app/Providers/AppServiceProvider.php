@@ -115,6 +115,20 @@ class AppServiceProvider extends ServiceProvider
                 ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak percobaan.'));
         });
 
+        // API-M007 (RULE-044): batas per IP untuk rute publik. Longgar karena satu IP (mis. jaringan kampus) dipakai banyak pengguna.
+        RateLimiter::for('api-public', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.mobile.public_per_minute'))
+                ->by((string) $request->ip())
+                ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak permintaan.'));
+        });
+
+        // API-M006, M008 s.d. M011 (RULE-044): batas per pengguna untuk rute bertoken yang ringan.
+        RateLimiter::for('api-user', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.mobile.user_per_minute'))
+                ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
+                ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak permintaan.'));
+        });
+
         // API-015 (RULE-044): batas pesan per menit per pengguna. Respons JSON karena chat memakai fetch.
         RateLimiter::for('chat', function (Request $request): Limit {
             return Limit::perMinute((int) config('relaxboss.limits.chat_per_minute'))

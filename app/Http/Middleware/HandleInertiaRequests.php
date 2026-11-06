@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+use App\Services\Chat\CrisisContactList;
+use App\Services\Consent\ConsentInfo;
 use App\Services\Notification\NotificationFeed;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -83,7 +85,7 @@ class HandleInertiaRequests extends Middleware
     }
 
     /**
-     * @return array{ai_granted: bool, training_choice: ?string, training_answered: bool, complete: bool}|null
+     * @return array{ai_granted: bool, training_choice: ?string, training_answered: bool, complete: bool, texts: array<string, string>}|null
      */
     private function consent(Request $request): ?array
     {
@@ -98,6 +100,8 @@ class HandleInertiaRequests extends Middleware
             'training_choice' => $user->ai_training_consent_choice?->value,
             'training_answered' => $user->hasTrainingChoice(),
             'complete' => $user->hasCompletedAiConsent(),
+            // Teks dari config (sumber tunggal bersama API mobile, OQ-MA8).
+            'texts' => app(ConsentInfo::class)->texts(),
         ];
     }
 
@@ -106,24 +110,6 @@ class HandleInertiaRequests extends Middleware
      */
     private function crisisContacts(): array
     {
-        $contacts = [];
-
-        foreach ((array) config('relaxboss.crisis_contacts') as $contact) {
-            if (! is_array($contact) || ! filled($contact['name'] ?? null)) {
-                continue;
-            }
-
-            $url = $contact['url'] ?? null;
-
-            $contacts[] = [
-                'name' => (string) $contact['name'],
-                'phone' => filled($contact['phone'] ?? null) ? (string) $contact['phone'] : null,
-                'url' => is_string($url) && str_starts_with($url, 'https://') ? $url : null,
-                'note' => filled($contact['note'] ?? null) ? (string) $contact['note'] : null,
-                'dummy' => (bool) ($contact['dummy'] ?? false),
-            ];
-        }
-
-        return $contacts;
+        return app(CrisisContactList::class)->all();
     }
 }

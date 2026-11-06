@@ -5,14 +5,7 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
 import { Button } from '@/Components/ui/button';
 import { Dialog, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/Components/ui/dialog';
-import {
-  CONSENT_AI_TEXT,
-  CONSENT_AI_TITLE,
-  CONSENT_ERROR,
-  CONSENT_TRAINING_QUESTION,
-  CONSENT_TRAINING_TEXT,
-  type SharedConsentProps,
-} from '@/lib/consent';
+import { CONSENT_ERROR, type SharedConsentProps } from '@/lib/consent';
 
 type ConsentDialogProps = {
   open: boolean;
@@ -31,6 +24,7 @@ type ConsentDialogProps = {
 export default function ConsentDialog({ open, onDecline, onComplete }: ConsentDialogProps) {
   const consent = usePage<SharedConsentProps>().props.consent ?? null;
   const step: 1 | 2 = consent?.ai_granted ? 2 : 1;
+  const texts = consent?.texts;
 
   const dialogRef = useRef<HTMLDialogElement>(null);
   const headingRef = useRef<HTMLHeadingElement>(null);
@@ -93,9 +87,9 @@ export default function ConsentDialog({ open, onDecline, onComplete }: ConsentDi
           Langkah {step} dari 2
         </Badge>
         <DialogTitle id="consent-title" ref={headingRef} tabIndex={-1}>
-          {step === 1 ? CONSENT_AI_TITLE : CONSENT_TRAINING_QUESTION}
+          {step === 1 ? texts?.ai_title : texts?.training_question}
         </DialogTitle>
-        <DialogDescription id="consent-desc">{step === 1 ? CONSENT_AI_TEXT : CONSENT_TRAINING_TEXT}</DialogDescription>
+        <DialogDescription id="consent-desc">{step === 1 ? texts?.ai_text : texts?.training_text}</DialogDescription>
       </DialogHeader>
 
       {error ? (

@@ -15,12 +15,7 @@ import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Input } from '@/Components/ui/input';
 import { Separator } from '@/Components/ui/separator';
-import {
-  CONSENT_ERROR,
-  CONSENT_TRAINING_QUESTION,
-  CONSENT_TRAINING_TEXT,
-  type SharedConsentProps,
-} from '@/lib/consent';
+import { CONSENT_ERROR, type SharedConsentProps } from '@/lib/consent';
 import type { NotificationPreferences } from '@/lib/notification';
 
 type IndexProps = {
@@ -406,8 +401,8 @@ export default function Index({ profile, avatar_url, is_only_admin, notification
             <Separator />
 
             <CardContent className="space-y-1">
-              <p className="text-sm font-semibold">{CONSENT_TRAINING_QUESTION}</p>
-              <p className="text-[0.8125rem] leading-relaxed text-text-secondary">{CONSENT_TRAINING_TEXT}</p>
+              <p className="text-sm font-semibold">{consent?.texts.training_question}</p>
+              <p className="text-[0.8125rem] leading-relaxed text-text-secondary">{consent?.texts.training_text}</p>
             </CardContent>
 
             {saved ? (
