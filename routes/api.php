@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use App\Http\Controllers\Api\V1\AiConsentController;
 use App\Http\Controllers\Api\V1\Auth as ApiAuth;
+use App\Http\Controllers\Api\V1\Chat as ApiChat;
 use App\Http\Controllers\Api\V1\ConfigController;
 use App\Http\Controllers\Api\V1\ConsentController;
 use App\Http\Controllers\Api\V1\CrisisContactsController;
@@ -54,6 +55,20 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         Route::middleware('api.verified')->group(function (): void {
             Route::post('relaxmate/consent', AiConsentController::class)->name('relaxmate.consent');
             Route::post('account/training-consent', TrainingConsentController::class)->name('account.training-consent');
+        });
+
+        // Chat (API-M012, M013, M015, M016, TASK-M015): email terverifikasi, consent AI lengkap, akun milik sendiri.
+        // Kirim pesan memakai limiter `chat` (5/menit) selain batas harian di Action; rute baca memakai `api-user`.
+        Route::middleware(['api.verified', 'ai.consent'])->prefix('relaxmate')->name('relaxmate.')->group(function (): void {
+            Route::get('today', ApiChat\TodayController::class)->name('today');
+            Route::get('days', ApiChat\DaysController::class)->name('days');
+            Route::get('conversations/{conversation}/messages', ApiChat\MessagesController::class)
+                ->whereUuid('conversation')
+                ->name('messages.index');
+            Route::post('conversations/{conversation}/messages', ApiChat\SendMessageController::class)
+                ->whereUuid('conversation')
+                ->middleware('throttle:chat')
+                ->name('messages.store');
         });
     });
 });

@@ -51,6 +51,22 @@ final class DailyConversationResolver
         return [$start->utc(), $start->addDay()->utc()];
     }
 
+    /** Kunci hari percakapan (Y-m-d, WIB) untuk $moment: sebelum jam batas masih dihitung hari sebelumnya. */
+    public function dayKey(CarbonInterface $moment): string
+    {
+        $cutoff = max(0, min(23, (int) config('relaxboss.mobile.day_cutoff_hour')));
+
+        return Wib::toWib($moment)->subHours($cutoff)->format('Y-m-d');
+    }
+
+    /** True bila Percakapan dibuat di jendela hari percakapan yang memuat $now (boleh menerima pesan baru dari mobile). */
+    public function isCurrent(Conversation $conversation, ?CarbonInterface $now = null): bool
+    {
+        [$start, $end] = $this->window($now);
+
+        return $conversation->created_at >= $start && $conversation->created_at < $end;
+    }
+
     private function find(User $user, ?CarbonInterface $now): ?Conversation
     {
         [$start, $end] = $this->window($now);

@@ -7,7 +7,7 @@ Ide dan fitur yang sengaja ditunda. Tidak dikerjakan sebelum masuk PRD dan Task 
 
 | Ide | Alasan ditunda | Catatan saat dikerjakan |
 |---|---|---|
-| Sisa API mobile: chat (TASK-M015) dan hapus akun (TASK-M016) | Dikerjakan di jalur mobile; ringkasan, consent, dan auth sudah ada | Controller API tipis di atas Service yang sama; token perangkat untuk notifikasi, platform, dan info perangkat lewat migration baru; aturan rinci di Architecture-M |
+| Sisa API mobile: hapus akun (TASK-M016) | Dikerjakan di jalur mobile; ringkasan, consent, auth, dan chat (TASK-M015) sudah ada | Controller API tipis di atas Service yang sama; token perangkat untuk notifikasi, platform, dan info perangkat lewat migration baru; aturan rinci di Architecture-M |
 | Login Google | Disederhanakan | Paket Socialite; `google_id` unik, `password` boleh kosong; jangan simpan token OAuth |
 | Ubah email akun | Mengubah email butuh verifikasi ulang; Akun hanya mengubah nama, jurusan, kampus | Alur verifikasi email baru sebelum email lama diganti |
 | Hapus akun untuk pengguna yang belum verifikasi | Halaman Akun hanya terbuka setelah verifikasi email | Putuskan lewat route khusus atau tautan di halaman verifikasi |

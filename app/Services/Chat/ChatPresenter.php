@@ -34,6 +34,20 @@ final class ChatPresenter
         ];
     }
 
+    /**
+     * Pesan untuk API mobile (OQ-MA6): bentuk web ditambah `created_at` ISO-8601 UTC (RULE-M033).
+     * Web tidak memakai method ini, jadi payload Inertia tidak berubah.
+     *
+     * @return array{id: int, role: string, content: string, time: string, is_crisis: bool, suggestion: array{type: string, priority: int, dismissible: bool}|null, created_at: string}
+     */
+    public function apiMessage(Message $message): array
+    {
+        return [
+            ...$this->message($message),
+            'created_at' => $message->created_at->toImmutable()->utc()->toIso8601ZuluString(),
+        ];
+    }
+
     /** True bila pesan terakhir adalah pesan pengguna yang belum dijawab (mis. AI gagal). */
     public function hasUnanswered(Conversation $conversation): bool
     {
