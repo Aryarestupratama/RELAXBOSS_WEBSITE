@@ -14,7 +14,7 @@ use Illuminate\Validation\ValidationException;
 /**
  * API-016 (FR-019): hapus akun dan seluruh data pribadi setelah konfirmasi kata sandi.
  *
- * Satu transaksi. `DELETE users` memicu cascade FK ke sessions, assessment_attempts, mood_entries,
+ * Satu transaksi. Token API mobile dihapus lebih dulu (tanpa FK). `DELETE users` memicu cascade FK ke sessions, assessment_attempts, mood_entries,
  * conversations, dan messages (Schema bagian 5). `crisis_events`, `ai_usage_daily`, dan
  * `admin_access_logs` tidak punya identitas pengguna sehingga tidak terpengaruh.
  *
@@ -73,6 +73,9 @@ final class DeleteUserAccount
             }
 
             $this->assertNotOnlyAdmin($user);
+
+            // Token mobile (Sanctum) tidak punya FK ke users, jadi dicabut di sini agar tidak yatim (API-M017).
+            $user->tokens()->delete();
 
             // Sengaja hapus lewat query, bukan $user->delete(): model tetap `exists = true`
             // sehingga logout (yang boleh menyimpan remember_token) tidak membuat ulang barisnya.

@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\V1\Chat as ApiChat;
 use App\Http\Controllers\Api\V1\ConfigController;
 use App\Http\Controllers\Api\V1\ConsentController;
 use App\Http\Controllers\Api\V1\CrisisContactsController;
+use App\Http\Controllers\Api\V1\DeleteAccountController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\TrainingConsentController;
 use Illuminate\Support\Facades\Route;
@@ -46,10 +47,15 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
         ->name('config');
 
     // Ringkasan akun, consent, dan kontak bantuan (API-M006, M008 s.d. M011, TASK-M014).
-    Route::middleware(['auth:sanctum', 'throttle:api-user'])->group(function (): void {
+    // `api.active` (TASK-M016): akun nonaktif dijawab 403 `account_inactive` dan token-nya dicabut.
+    Route::middleware(['auth:sanctum', 'api.active', 'throttle:api-user'])->group(function (): void {
         Route::get('me', MeController::class)->name('me');
         Route::get('consent', ConsentController::class)->name('consent');
         Route::get('crisis-contacts', CrisisContactsController::class)->name('crisis-contacts');
+
+        // Hapus akun (API-M017, TASK-M016): konfirmasi kata sandi di Action. Sengaja tanpa `api.verified`
+        // agar pengguna yang salah mengetik email tetap bisa menghapus datanya.
+        Route::delete('account', DeleteAccountController::class)->name('account.destroy');
 
         // Aksi tulis butuh email terverifikasi (403 `unverified`).
         Route::middleware('api.verified')->group(function (): void {

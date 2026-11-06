@@ -24,6 +24,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
             'ai.consent' => \App\Http\Middleware\EnsureAiConsent::class,
             // Varian API dari `verified`: 403 `unverified` dalam amplop galat seragam (TASK-M014).
+            // Varian API dari `active`: mencabut token dan 403 `account_inactive` (TASK-M016).
+            'api.active' => \App\Http\Middleware\EnsureApiUserIsActive::class,
             'api.verified' => \App\Http\Middleware\EnsureEmailVerifiedApi::class,
         ]);
 
