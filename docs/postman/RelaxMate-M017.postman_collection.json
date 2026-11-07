@@ -1,0 +1,3153 @@
+{
+  "info": {
+    "name": "RelaxMate Mobile API - TASK-M017",
+    "description": "Uji manual API /api/v1 untuk aplikasi mobile RelaxMate (TASK-M017). Ikuti panduan docs/API-Test-Guide.md. Variabel koleksi: baseUrl dan password; sisanya diisi otomatis oleh script uji.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "password",
+      "value": "Sandi-M017-aman1"
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Persiapan",
+      "description": "Jalankan sekali di awal setiap putaran uji. Membuat runId baru dan dua akun uji (A dan B) yang belum ada.",
+      "item": [
+        {
+          "name": "00.1 Mulai putaran uji baru (GET /config)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/config",
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Menghapus token dan ID lama dari putaran sebelumnya. Email uji memakai domain example.test (RULE-M008)."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const runId = Date.now().toString(36);",
+                  "pm.collectionVariables.set(\"runId\", runId);",
+                  "pm.collectionVariables.set(\"emailA\", `a-${runId}@example.test`);",
+                  "pm.collectionVariables.set(\"emailB\", `b-${runId}@example.test`);",
+                  "[\"tokenA\",\"tokenA_old\",\"tokenB\",\"convA\",\"convB\",\"count200\",\"count429\",\"remainingStart\",\"remainingBeforeRetry\",\"loginMsg\",\"forgotMsg\",\"longText\"]",
+                  "  .forEach(k => pm.collectionVariables.unset(k));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Isi config\", () => {",
+                  "  const d = pm.response.json().data;",
+                  "  pm.expect(d.min_app_version).to.be.a(\"string\");",
+                  "  pm.expect(d.crisis_contacts_version).to.match(/^[0-9a-f]{12}$/);",
+                  "  pm.expect(d.features.overlay).to.be.a(\"boolean\");",
+                  "});",
+                  "pm.test(\"CORS dimatikan: tanpa header Access-Control-Allow-Origin\", () => {",
+                  "  pm.expect(pm.response.headers.has(\"Access-Control-Allow-Origin\")).to.be.false;",
+                  "});",
+                  "pm.test(\"Runtime variabel siap\", () => {",
+                  "  pm.expect(pm.collectionVariables.get(\"emailA\")).to.include(\"@example.test\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "00.2 Rute tidak ada -> amplop galat seragam",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/rute-yang-tidak-ada",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 dengan galat not_found\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"not_found\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Auth",
+      "description": "Jalankan seluruh folder ini lewat Runner dalam kurang dari 1 menit (agar 01.6 benar-benar kena batas 5 pendaftaran per menit per IP). Bila 01.1 mendapat 429, tunggu 60 detik dan ulangi mulai dari 00.1.",
+      "item": [
+        {
+          "name": "01.1 Daftar A",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji A\",\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\",\n  \"terms\": true,\n  \"major\": \"Informatika\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Token dan pengguna\", () => {",
+                  "  pm.expect(d.token).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.token_type).to.eql(\"Bearer\");",
+                  "  pm.expect(d.expires_at === null || /^\\d{4}-\\d{2}-\\d{2}T.*Z$/.test(d.expires_at), \"expires_at null atau ISO UTC\").to.be.true;",
+                  "  pm.expect(d.user.email).to.eql(pm.collectionVariables.get(\"emailA\"));",
+                  "  pm.expect(d.user.email_verified).to.be.false;",
+                  "  pm.expect(d.email_sent).to.be.a(\"boolean\");",
+                  "});",
+                  "pm.test(\"Ringkasan pengguna tanpa ID atau kolom internal\", () => {",
+                  "  pm.expect(Object.keys(d.user).sort()).to.eql([\"email\",\"email_verified\",\"name\"]);",
+                  "});",
+                  "pm.collectionVariables.set(\"tokenA\", d.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.2 Daftar B",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji B\",\n  \"email\": \"{{emailB}}\",\n  \"password\": \"{{password}}\",\n  \"terms\": true,\n  \"major\": \"Informatika\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 201\", () => pm.response.to.have.status(201));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Token B\", () => pm.expect(d.token).to.be.a(\"string\").and.not.empty);",
+                  "pm.collectionVariables.set(\"tokenB\", d.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.3 Daftar: kata sandi terlalu pendek -> 422 per kolom",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji\",\n  \"email\": \"pendek-{{runId}}@example.test\",\n  \"password\": \"123\",\n  \"terms\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.password ada\", () => pm.expect(pm.response.json().errors.password).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.4 Daftar: tanpa centang ketentuan -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji\",\n  \"email\": \"terms-{{runId}}@example.test\",\n  \"password\": \"{{password}}\",\n  \"terms\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.terms ada\", () => pm.expect(pm.response.json().errors.terms).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.5 Daftar: email sudah terdaftar -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji A lagi\",\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\",\n  \"terms\": true,\n  \"major\": \"Informatika\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.email ada\", () => pm.expect(pm.response.json().errors.email).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.6 Daftar ke-6 dalam semenit -> 429 rate_limited",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/register",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Uji\",\n  \"email\": \"limit-{{runId}}@example.test\",\n  \"password\": \"{{password}}\",\n  \"terms\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            },
+            "description": "Hanya lolos bila dijalankan cepat setelah 01.1 s.d. 01.5 (lima permintaan pertama menghabiskan batas)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 429 dengan galat rate_limited\", () => {",
+                  "  pm.response.to.have.status(429);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"rate_limited\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"Header Retry-After\", () => pm.expect(Number(pm.response.headers.get(\"Retry-After\"))).to.be.above(0));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.7 Login salah sandi -> 401 invalid_credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"salah-total\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat invalid_credentials\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"invalid_credentials\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.collectionVariables.set(\"loginMsg\", pm.response.json().error.message);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.8 Login email tidak terdaftar -> galat sama persis (tanpa enumerasi)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tidak-ada-{{runId}}@example.test\",\n  \"password\": \"apa-saja-123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat invalid_credentials\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"invalid_credentials\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"Pesan identik dengan 01.7\", () => pm.expect(pm.response.json().error.message).to.eql(pm.collectionVariables.get(\"loginMsg\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.9 Login A (belum terverifikasi tetap boleh) -> token baru",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"tokenA_old\", pm.collectionVariables.get(\"tokenA\"));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Token baru berbeda dari token pendaftaran\", () => {",
+                  "  pm.expect(d.token).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.token).to.not.eql(pm.collectionVariables.get(\"tokenA_old\"));",
+                  "  pm.expect(d.user.email_verified).to.be.false;",
+                  "});",
+                  "pm.collectionVariables.set(\"tokenA\", d.token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.10 Token lama A sudah dicabut oleh login baru -> 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA_old}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Satu token per perangkat (ADR-M10)."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat unauthenticated\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unauthenticated\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.11 Lupa sandi: email terdaftar -> 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Ada pesan\", () => pm.expect(pm.response.json().data.message).to.be.a(\"string\").and.not.empty);",
+                  "pm.collectionVariables.set(\"forgotMsg\", pm.response.json().data.message);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.12 Lupa sandi: email tidak terdaftar -> respons sama persis",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/forgot-password",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"tidak-ada-{{runId}}@example.test\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Pesan identik dengan 01.11\", () => pm.expect(pm.response.json().data.message).to.eql(pm.collectionVariables.get(\"forgotMsg\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.13 /me tanpa token -> 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat unauthenticated\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unauthenticated\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "01.14 /me dengan token acak -> 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenAcak}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"tokenAcak\", \"999|tokenpalsutokenpalsutokenpalsutokenpalsu\");"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat unauthenticated\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unauthenticated\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Akun belum terverifikasi",
+      "description": "Akun A dan B belum terverifikasi. Rute baca ringan boleh, rute tulis dan chat ditolak 403 unverified. Selesai folder ini, lakukan LANGKAH MANUAL verifikasi (lihat panduan) sebelum folder 02B.",
+      "item": [
+        {
+          "name": "02.1 /me A",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Bentuk /me\", () => {",
+                  "  pm.expect(d.user.email).to.eql(pm.collectionVariables.get(\"emailA\"));",
+                  "  pm.expect(d.user.email_verified).to.be.false;",
+                  "  pm.expect(Object.keys(d.user).sort()).to.eql([\"email\",\"email_verified\",\"name\"]);",
+                  "  pm.expect(d.consent.complete).to.be.false;",
+                  "  pm.expect(d.limits.message_max_chars).to.be.a(\"number\");",
+                  "  pm.expect(d.limits.chat_per_day).to.be.a(\"number\");",
+                  "  pm.expect(d.limits.chat_per_minute).to.be.a(\"number\");",
+                  "  pm.expect(d.crisis_contacts_version).to.match(/^[0-9a-f]{12}$/);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.2 GET /consent",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/consent",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Teks consent dari server\", () => {",
+                  "  pm.expect(d.ai.title).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.ai.text).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.ai.version).to.be.a(\"number\");",
+                  "  pm.expect(d.training.question).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.training.version).to.be.a(\"number\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.3 GET /crisis-contacts",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/crisis-contacts",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Daftar kontak\", () => {",
+                  "  pm.expect(d.version).to.match(/^[0-9a-f]{12}$/);",
+                  "  pm.expect(d.contacts).to.be.an(\"array\").and.not.empty;",
+                  "  d.contacts.forEach(c => {",
+                  "    pm.expect(c.name).to.be.a(\"string\").and.not.empty;",
+                  "    pm.expect(c).to.have.property(\"phone\");",
+                  "    pm.expect(c).to.have.property(\"dummy\");",
+                  "  });",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.4 POST consent AI sebelum verifikasi -> 403 unverified",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/consent",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 dengan galat unverified\", () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unverified\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.5 GET /relaxmate/today sebelum verifikasi -> 403 unverified",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 dengan galat unverified\", () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unverified\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02.6 Kirim ulang verifikasi -> 200",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/resend-verification",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Email masuk ke storage/logs/laravel.log bila MAIL_MAILER=log."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Belum terverifikasi, email dikirim\", () => {",
+                  "  pm.expect(d.email_verified).to.be.false;",
+                  "  pm.expect(d.email_sent).to.be.true;",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02B Setelah verifikasi manual",
+      "description": "Jalankan setelah akun A dan B diverifikasi lewat tinker (panduan langkah B).",
+      "item": [
+        {
+          "name": "02B.1 /me A terverifikasi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Syarat: perintah tinker verifikasi dari panduan sudah dijalankan."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"email_verified true\", () => pm.expect(pm.response.json().data.user.email_verified).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02B.2 /me B terverifikasi",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"email_verified true\", () => pm.expect(pm.response.json().data.user.email_verified).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "02B.3 Kirim ulang verifikasi saat sudah terverifikasi -> email_verified true, tanpa email baru",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/resend-verification",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Sudah terverifikasi\", () => { pm.expect(d.email_verified).to.be.true; pm.expect(d.email_sent).to.be.false; });"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Consent",
+      "description": "Consent AI dan pilihan persetujuan pelatihan. Chat tertutup sampai keduanya lengkap.",
+      "item": [
+        {
+          "name": "03.1 Pilihan pelatihan tidak valid -> 422",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account/training-consent",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"choice\": \"mungkin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.choice ada\", () => pm.expect(pm.response.json().errors.choice).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.2 A: chat sebelum consent -> 403 consent_required",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 dengan galat consent_required\", () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"consent_required\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.3 A: setuju consent AI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/consent",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"ai.granted true\", () => pm.expect(pm.response.json().data.consent.ai.granted).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.4 A: pelatihan = granted",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account/training-consent",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"choice\": \"granted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const c = pm.response.json().data.consent;",
+                  "pm.test(\"Consent lengkap\", () => { pm.expect(c.training.choice).to.eql(\"granted\"); pm.expect(c.complete).to.be.true; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.5 B: setuju consent AI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/consent",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.6 B: pelatihan = denied",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account/training-consent",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"choice\": \"denied\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const c = pm.response.json().data.consent;",
+                  "pm.test(\"Consent lengkap\", () => { pm.expect(c.training.choice).to.eql(\"denied\"); pm.expect(c.complete).to.be.true; });"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "03.7 A: /me menunjukkan consent lengkap",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"complete true\", () => pm.expect(pm.response.json().data.consent.complete).to.be.true);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 Chat A",
+      "description": "Butuh AI aktif (GROQ_KEYS_CHAT terisi). Lima POST di folder ini tepat di batas 5 per menit: jalankan lewat Runner tanpa jeda atau manual berurutan, lalu TUNGGU 60 DETIK sebelum folder 06.",
+      "item": [
+        {
+          "name": "04.1 Today A: buat percakapan hari ini",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));const ISO = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/;",
+                  "const MSG_KEYS = [\"content\",\"created_at\",\"id\",\"is_crisis\",\"role\",\"suggestion\",\"time\"];",
+                  "",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Bentuk today\", () => {",
+                  "  pm.expect(d.conversation.id).to.match(/^[0-9a-f-]{36}$/);",
+                  "  pm.expect(d.conversation.has_crisis).to.be.false;",
+                  "  pm.expect(d.conversation.day).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+                  "  pm.expect(d.conversation.created_at).to.match(ISO);",
+                  "  pm.expect(d.messages).to.be.an(\"array\").and.have.lengthOf(0);",
+                  "  pm.expect(d.unanswered).to.be.false;",
+                  "  pm.expect(d.limits.message_max_chars).to.be.a(\"number\");",
+                  "  pm.expect(d.limits.per_day).to.be.a(\"number\");",
+                  "  pm.expect(d.limits.remaining_today).to.eql(d.limits.per_day);",
+                  "});",
+                  "pm.collectionVariables.set(\"convA\", d.conversation.id);",
+                  "pm.collectionVariables.set(\"remainingStart\", String(d.limits.remaining_today));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.2 Today A lagi: percakapan yang sama (satu aliran per hari)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"ID sama\", () => pm.expect(pm.response.json().data.conversation.id).to.eql(pm.collectionVariables.get(\"convA\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.3 Kirim pesan kosong -> 422 invalid_message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat invalid_message\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"invalid_message\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.4 Kirim pesan terlalu panjang -> 422 invalid_message",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"content\": \"{{longText}}\" }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Batas 2000 karakter dari config relaxboss.limits.message_max_chars."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"longText\", \"a\".repeat(2001));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat invalid_message\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"invalid_message\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.5 Kirim pesan biasa -> balasan AI",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} aku lagi capek banget sama tugas kuliah\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200 (503 berarti AI tidak aktif: cek GROQ_KEYS_CHAT)\", () => pm.response.to.have.status(200));",
+                  "const ISO = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/;",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Dua pesan dengan bentuk presenter + created_at UTC\", () => {",
+                  "  pm.expect(d.user_message.role).to.eql(\"user\");",
+                  "  pm.expect(d.assistant_message.role).to.eql(\"assistant\");",
+                  "  pm.expect(d.user_message.content).to.include(\"MARKER-\");",
+                  "  pm.expect(d.assistant_message.content).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(d.user_message.created_at).to.match(ISO);",
+                  "  pm.expect(d.assistant_message.created_at).to.match(ISO);",
+                  "  pm.expect(d.user_message.time).to.match(/WIB$/);",
+                  "  pm.expect(d.assistant_message).to.have.property(\"suggestion\");",
+                  "  pm.expect(d.has_crisis).to.be.false;",
+                  "});",
+                  "pm.test(\"Kuota harian berkurang 1\", () => pm.expect(d.remaining_today).to.eql(Number(pm.collectionVariables.get(\"remainingStart\")) - 1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.6 Kirim pesan krisis -> Crisis Response",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Aku pengen mati aja rasanya\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Teks dari resources/crisis/cases.json. Pesan krisis tidak pernah dikirim ke AI."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Krisis terdeteksi\", () => {",
+                  "  pm.expect(d.has_crisis).to.be.true;",
+                  "  pm.expect(d.user_message.is_crisis).to.be.true;",
+                  "  pm.expect(d.assistant_message.content).to.be.a(\"string\").and.not.empty;",
+                  "});",
+                  "pm.test(\"Saran krisis tidak dapat ditutup (bila ada)\", () => {",
+                  "  const s = d.assistant_message.suggestion;",
+                  "  if (s) { pm.expect(s.dismissible).to.be.false; }",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.7 Ulang balasan saat tidak ada yang perlu -> 409 nothing_to_retry",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retry\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409 dengan galat nothing_to_retry\", () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"nothing_to_retry\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.8 Today A: empat pesan berurutan, banner krisis aktif",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Isi hari ini\", () => {",
+                  "  pm.expect(d.messages).to.have.lengthOf(4);",
+                  "  pm.expect(d.messages.map(m => m.role)).to.eql([\"user\",\"assistant\",\"user\",\"assistant\"]);",
+                  "  pm.expect(d.conversation.has_crisis).to.be.true;",
+                  "  pm.expect(d.unanswered).to.be.false;",
+                  "  pm.expect(d.limits.remaining_today).to.eql(Number(pm.collectionVariables.get(\"remainingStart\")) - 2);",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.9 Riwayat: daftar hari",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/days",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Percakapan hari ini ada di daftar\", () => {",
+                  "  const row = d.days.find(x => x.id === pm.collectionVariables.get(\"convA\"));",
+                  "  pm.expect(row, \"baris convA\").to.be.an(\"object\");",
+                  "  pm.expect(row.day).to.match(/^\\d{4}-\\d{2}-\\d{2}$/);",
+                  "  pm.expect(row.total_turns).to.be.a(\"number\");",
+                  "  pm.expect(row.has_crisis).to.be.true;",
+                  "  pm.expect(row.label).to.include(\"WIB\");",
+                  "  pm.expect(d).to.have.property(\"next_cursor\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.10 Riwayat: isi percakapan (hanya baca)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));const ISO = /^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/;",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Empat pesan, urut lama ke baru, kursor kosong\", () => {",
+                  "  pm.expect(d.messages).to.have.lengthOf(4);",
+                  "  pm.expect(d.messages[0].role).to.eql(\"user\");",
+                  "  d.messages.forEach(m => pm.expect(m.created_at).to.match(ISO));",
+                  "  pm.expect(d.next_cursor).to.be.null;",
+                  "  pm.expect(d.conversation.id).to.eql(pm.collectionVariables.get(\"convA\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "04.11 Riwayat dengan kursor sampah -> tidak 500",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages?cursor=sampah",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Bukan galat server\", () => pm.expect(pm.response.code).to.be.below(500));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Isolasi pengguna A vs B",
+      "description": "Pengguna B tidak boleh melihat atau menulis ke data pengguna A (RULE-033, NFR-M01).",
+      "item": [
+        {
+          "name": "05.1 Today B: percakapan sendiri",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Percakapan B berbeda dan kosong\", () => {",
+                  "  pm.expect(d.conversation.id).to.not.eql(pm.collectionVariables.get(\"convA\"));",
+                  "  pm.expect(d.messages).to.have.lengthOf(0);",
+                  "});",
+                  "pm.collectionVariables.set(\"convB\", d.conversation.id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.2 B membaca riwayat A -> 404 (bukan 403)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 dengan galat not_found\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"not_found\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.3 B menulis ke percakapan A -> 404",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} B menyusup\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 dengan galat not_found\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"not_found\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.4 Daftar hari B tidak memuat percakapan A",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/days",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Tidak ada convA\", () => {",
+                  "  const ids = pm.response.json().data.days.map(x => x.id);",
+                  "  pm.expect(ids).to.not.include(pm.collectionVariables.get(\"convA\"));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.5 Percakapan A tidak berubah oleh upaya B",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Masih 4 pesan\", () => pm.expect(pm.response.json().data.messages).to.have.lengthOf(4));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.6 ID percakapan bukan UUID -> 404",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/abc/messages",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 404 dengan galat not_found\", () => {",
+                  "  pm.response.to.have.status(404);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"not_found\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "05.7 /me B hanya data B",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Email B\", () => pm.expect(pm.response.json().data.user.email).to.eql(pm.collectionVariables.get(\"emailB\")));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "06 Batas dan galat layanan",
+      "description": "06.1 dijalankan 7 kali lewat Runner (Iterations = 7, tanpa jeda). 06.3 s.d. 06.9 butuh langkah manual (lihat panduan); baca deskripsi tiap request.",
+      "item": [
+        {
+          "name": "06.1 Kirim cepat B (jalankan 7 iterasi)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convB}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} tes batas ke-{{$randomInt}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Batas 5 pesan per menit per pengguna (limiter chat). Dari 7 iterasi, paling banyak 5 diterima (200) dan sisanya 429; bisa kurang dari 5 bila ada POST lain dalam menit yang sama."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const code = pm.response.code;",
+                  "pm.test(\"200 (diterima) atau 429 rate_limited\", () => pm.expect([200, 429]).to.include(code));",
+                  "if (code === 429) {",
+                  "  const j = pm.response.json();",
+                  "  pm.test(\"429 memakai kode rate_limited dan Retry-After\", () => {",
+                  "    pm.expect(j.error.code).to.eql(\"rate_limited\");",
+                  "    pm.expect(Number(pm.response.headers.get(\"Retry-After\"))).to.be.above(0);",
+                  "  });",
+                  "  pm.collectionVariables.set(\"count429\", String(Number(pm.collectionVariables.get(\"count429\") || 0) + 1));",
+                  "} else if (code === 200) {",
+                  "  pm.collectionVariables.set(\"count200\", String(Number(pm.collectionVariables.get(\"count200\") || 0) + 1));",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.2 Periksa hasil kirim cepat",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Tunggu 60 detik setelah ini sebelum request kirim pesan berikutnya."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const ok = Number(pm.collectionVariables.get(\"count200\") || 0);",
+                  "const limited = Number(pm.collectionVariables.get(\"count429\") || 0);",
+                  "pm.test(`Diterima <= 5 (dapat ${ok})`, () => pm.expect(ok).to.be.at.most(5));",
+                  "pm.test(`Minimal satu pesan kena batas per menit (dapat ${limited})`, () => pm.expect(limited).to.be.at.least(1));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.3 [Manual: chat_per_day=1] Batas harian -> 429 daily_limit",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convB}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} lewat batas harian\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Syarat: ubah 'chat_per_day' menjadi 1 di config/relaxboss.php, jalankan php artisan config:clear, dan tunggu 60 detik sejak 06.1. KEMBALIKAN ke 20 setelah uji."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"429 daily_limit (bila rate_limited: tunggu 60 detik lalu kirim ulang)\", () => {",
+                  "  pm.response.to.have.status(429);",
+                  "  pm.expect(pm.response.json().error.code).to.eql(\"daily_limit\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.4 [Manual: AI dimatikan] Pesan biasa -> 503 ai_unavailable",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} pesan saat AI mati\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Syarat: kosongkan GROQ_KEYS_CHAT di .env lalu php artisan config:clear. Tunggu 60 detik sejak folder 04."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 503 dengan galat ai_unavailable\", () => {",
+                  "  pm.response.to.have.status(503);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"ai_unavailable\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.5 Today A: pesan tersimpan tetapi belum dijawab",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"unanswered true, pesan terakhir milik pengguna\", () => {",
+                  "  pm.expect(d.unanswered).to.be.true;",
+                  "  pm.expect(d.messages[d.messages.length - 1].role).to.eql(\"user\");",
+                  "});",
+                  "pm.collectionVariables.set(\"remainingBeforeRetry\", String(d.limits.remaining_today));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.6 [Manual: AI dihidupkan lagi] Coba lagi (retry) -> 200, kuota tidak berkurang",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"retry\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Syarat: kembalikan GROQ_KEYS_CHAT, php artisan config:clear."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"Balasan terkirim tanpa pesan pengguna baru\", () => {",
+                  "  pm.expect(d.assistant_message.role).to.eql(\"assistant\");",
+                  "  pm.expect(d.remaining_today).to.eql(Number(pm.collectionVariables.get(\"remainingBeforeRetry\")));",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.7 [Opsional, AI dimatikan lagi] Pesan krisis tetap dijawab",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"Aku pengen mati aja rasanya\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Pesan krisis tidak memanggil AI (FR-018), jadi harus 200 saat AI mati."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Crisis Response statis walau AI mati\", () => pm.expect(pm.response.json().data.has_crisis).to.be.true);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.8 [Manual: percakapan A dimundurkan 2 hari] POST -> 409 conversation_closed",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/conversations/{{convA}}/messages",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"content\": \"MARKER-{{runId}} ke percakapan kemarin\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 409 dengan galat conversation_closed\", () => {",
+                  "  pm.response.to.have.status(409);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"conversation_closed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "06.9 Today A: percakapan baru, yang lama tetap terbaca",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/relaxmate/today",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "description": "Setelah ini, 'GET /relaxmate/conversations/{{convA}}/messages' (04.10) harus tetap 200."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"ID baru\", () => pm.expect(pm.response.json().data.conversation.id).to.not.eql(pm.collectionVariables.get(\"convA\")));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "07 Akun nonaktif dan hapus akun",
+      "description": "07.1 s.d. 07.3 butuh langkah manual menonaktifkan B. 07.4 dan seterusnya menghapus akun A.",
+      "item": [
+        {
+          "name": "07.1 [Manual: B dinonaktifkan] /me -> 403 account_inactive",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 dengan galat account_inactive\", () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"account_inactive\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.2 Token B sudah dicabut -> 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenB}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat unauthenticated\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unauthenticated\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.3 Login B nonaktif -> 403 account_inactive",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailB}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 403 dengan galat account_inactive\", () => {",
+                  "  pm.response.to.have.status(403);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"account_inactive\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.4 Hapus akun A tanpa sandi -> 422",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.password\", () => pm.expect(pm.response.json().errors.password).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.5 Hapus akun A dengan sandi salah -> 422",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"salah-total\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 422 dengan galat validation_failed\", () => {",
+                  "  pm.response.to.have.status(422);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"validation_failed\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});",
+                  "",
+                  "",
+                  "pm.test(\"errors.password\", () => pm.expect(pm.response.json().errors.password).to.be.an(\"array\").and.not.empty);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.6 A masih ada setelah percobaan gagal",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.7 Hapus akun A dengan sandi benar -> 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/account",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 204\", () => pm.response.to.have.status(204));",
+                  "pm.test(\"Tanpa isi\", () => pm.expect(pm.response.text()).to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.8 Token A tidak berlaku lagi -> 401",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/me",
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{tokenA}}",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat unauthenticated\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"unauthenticated\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "07.9 Login A setelah dihapus -> 401 invalid_credentials",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{emailA}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "auth": {
+              "type": "noauth"
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status 401 dengan galat invalid_credentials\", () => {",
+                  "  pm.response.to.have.status(401);",
+                  "  const j = pm.response.json();",
+                  "  pm.expect(j.error, \"amplop error\").to.be.an(\"object\");",
+                  "  pm.expect(j.error.code).to.eql(\"invalid_credentials\");",
+                  "  pm.expect(j.error.message).to.be.a(\"string\").and.not.empty;",
+                  "  pm.expect(pm.response.text()).to.not.include(\"vendor/laravel\");",
+                  "});"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
