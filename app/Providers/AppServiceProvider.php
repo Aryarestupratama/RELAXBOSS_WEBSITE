@@ -143,6 +143,13 @@ class AppServiceProvider extends ServiceProvider
                 });
         });
 
+        // API-M018 (RULE-044): batas entri mood per menit per pengguna untuk mobile, dikembalikan sebagai JSON `rate_limited`.
+        RateLimiter::for('api-mood', function (Request $request): Limit {
+            return Limit::perMinute((int) config('relaxboss.limits.mood_per_minute'))
+                ->by((string) ($request->user()?->getAuthIdentifier() ?? $request->ip()))
+                ->response(fn (Request $request, array $headers) => ApiError::rateLimited($headers, 'Terlalu banyak percobaan.'));
+        });
+
         // API-011 (RULE-044): batas entri mood per menit per pengguna, dikembalikan sebagai galat form `mood`.
         RateLimiter::for('mood', function (Request $request): Limit {
             return Limit::perMinute((int) config('relaxboss.limits.mood_per_minute'))
