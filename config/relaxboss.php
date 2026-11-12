@@ -160,7 +160,12 @@ return [
                 'model' => env('GROQ_MODEL_PRIMARY', 'openai/gpt-oss-120b'),
                 'fallback_model' => env('GROQ_MODEL_FALLBACK', 'openai/gpt-oss-20b'),
                 'max_completion_tokens' => (int) env('AI_MAX_OUTPUT_TOKENS', 800),
-                'reasoning_effort' => 'low',
+                // low, medium, atau high. Naikkan ke medium bila balasan terasa dangkal atau mengulang
+                // pertanyaan; ongkosnya latensi sedikit lebih tinggi dan token penalaran ikut menghitung
+                // terhadap max_completion_tokens.
+                'reasoning_effort' => in_array(env('AI_CHAT_REASONING_EFFORT', 'low'), ['low', 'medium', 'high'], true)
+                    ? env('AI_CHAT_REASONING_EFFORT', 'low')
+                    : 'low',
                 'timeout' => (int) env('GROQ_TIMEOUT_SECONDS', 20),
             ],
             'assessment' => [
@@ -274,7 +279,7 @@ return [
     ],
 
     // Tim dan pihak yang berperan di halaman Tentang (SCR-004). Klaim publik (RULE-049): semua nama ada
-    // izinnya (OQ-2, dikonfirmasi founder). Bukan bagan organisasi: tiga kelompok sejajar, tanpa foto.
+    // izinnya (OQ-2, dikonfirmasi founder). Bukan bagan organisasi: kelompok sejajar, tanpa foto.
     // Kosongkan array untuk menyembunyikan bagian ini. Peran fitur yang tidak ada di rilis ini sengaja
     // tidak ditulis (Komunitas, Program, Todolist).
     'team' => [
@@ -302,6 +307,14 @@ return [
             ],
         ],
         [
+            'title' => 'Tim konten',
+            'description' => 'Menyiapkan konten untuk RelaxBoss.',
+            'icon' => 'pen-line',
+            'members' => [
+                ['name' => 'Widya Indah Kamila', 'role' => 'Content Creator'],
+            ],
+        ],
+        [
             'title' => 'Kontributor psikologi',
             'description' => 'Magang dan mahasiswa psikologi yang ikut berkontribusi.',
             'icon' => 'heart',
@@ -311,6 +324,12 @@ return [
                 ['name' => 'Salsabila Amanda Rahmawati', 'role' => 'Magang Psikologi'],
             ],
         ],
+    ],
+
+    // Tautan media sosial resmi RelaxBoss, tampil sebagai ikon di Footer halaman publik. Kosongkan nilai
+    // untuk menyembunyikan ikonnya. Tanpa parameter pelacakan (mis. `?dlrf=`): hanya alamat profil.
+    'social' => [
+        'instagram' => 'https://www.instagram.com/relaxboss_id',
     ],
 
     // Eksportir data AI (FR-030, RULE-072). Fitur AI baru = satu kelas AiDataExporter + satu baris di sini.

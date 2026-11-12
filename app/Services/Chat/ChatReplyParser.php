@@ -56,7 +56,7 @@ final class ChatReplyParser
             throw new AiUnavailableException('empty_response');
         }
 
-        return new ParsedChatReply(reply: $this->clean($text));
+        return new ParsedChatReply(reply: $this->clean($this->stripJsonResidue($text)));
     }
 
     /**
@@ -94,6 +94,22 @@ final class ChatReplyParser
     private function looksLikeJson(string $text): bool
     {
         return str_starts_with($text, '{') || str_starts_with($text, '```');
+    }
+
+    /**
+     * Model kadang melewatkan pembuka JSON sehingga teks balasan berakhir dengan sisa seperti `"}`
+     * atau `","intent":"..."}`. Sisa itu dibuang supaya pengguna tidak melihatnya. Hanya dipakai pada
+     * teks tanpa kurung kurawal buka, jadi balasan biasa yang memang memuat tanda kutip tidak berubah.
+     */
+    private function stripJsonResidue(string $text): string
+    {
+        if (str_contains($text, '{')) {
+            return $text;
+        }
+
+        $text = (string) preg_replace('/"\s*,\s*"(?:intent|confidence|strategy|flow_action)"\s*:.*\z/su', '', $text);
+
+        return trim((string) preg_replace('/"?\s*\}\s*\z/u', '', $text));
     }
 
     /** Mengambil nilai "reply" dari JSON yang terpotong. */

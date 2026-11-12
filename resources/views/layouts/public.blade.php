@@ -106,6 +106,12 @@
                         @endforeach
                     </ul>
                 </nav>
+
+                @if (filled(config('relaxboss.social.instagram')))
+                    <a href="{{ config('relaxboss.social.instagram') }}" target="_blank" rel="noopener noreferrer" aria-label="RelaxBoss di Instagram (membuka tab baru)" class="inline-flex size-11 items-center justify-center rounded-full text-text-secondary transition-colors hover:bg-soft-lavender hover:text-primary">
+                        <x-icon name="instagram" class="size-6" />
+                    </a>
+                @endif
             </div>
 
             <div class="mt-6 flex flex-wrap items-center justify-center gap-x-6 border-t border-border pt-5 text-sm text-text-muted">

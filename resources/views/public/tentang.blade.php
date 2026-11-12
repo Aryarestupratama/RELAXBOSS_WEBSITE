@@ -209,7 +209,7 @@
                     <p class="mt-3 text-base text-text-secondary">Dikembangkan bersama mahasiswa dan dosen lintas fakultas, dari ilmu komputer sampai psikologi.</p>
                 </div>
 
-                {{-- Tiga kelompok sejajar sebagai daftar kredit: judul kelompok di kiri, nama dan peran di kanan. Tanpa kartu, foto, atau inisial. --}}
+                {{-- Kelompok sejajar sebagai daftar kredit: judul kelompok di kiri, nama dan peran di kanan. Tanpa kartu, foto, atau inisial. --}}
                 <div class="mx-auto mt-10 max-w-5xl divide-y divide-border border-y border-border">
                     @foreach ($teamGroups as $group)
                         <section data-reveal class="grid gap-5 py-8 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] md:gap-10 md:py-10">
