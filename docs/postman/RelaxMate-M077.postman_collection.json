@@ -1,0 +1,581 @@
+{
+  "info": {
+    "name": "RelaxMate Mobile API - TASK-M077 (GET /mood-entries)",
+    "description": "Uji manual API-M019. Jalankan docs/postman/m077-seed.php di tinker dulu, salin tokenA, tokenB, tokenC ke Variables. Ikuti docs/API-Test-Guide.md bagian G di repo mobile.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "tokenA",
+      "value": ""
+    },
+    {
+      "key": "tokenB",
+      "value": ""
+    },
+    {
+      "key": "tokenC",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Akses",
+      "item": [
+        {
+          "name": "00.1 Tanpa token -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "00.2 Akun belum terverifikasi -> 403 unverified",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 403\", () => pm.response.to.have.status(403));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"kode unverified\", () => pm.expect(j.error.code).to.eql(\"unverified\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenC}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Data A",
+      "item": [
+        {
+          "name": "01.1 A days=7: satu titik per hari, catatan terakhir menang",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "const d = j.data;",
+                  "pm.test(\"3 hari terisi (10 dan 40 hari lalu tidak ikut)\", () => pm.expect(d.days.length).to.eql(3));",
+                  "pm.test(\"urut dari terlama ke terbaru\", () => pm.expect(d.days.map(x=>x.date)).to.eql([...d.days.map(x=>x.date)].sort()));",
+                  "pm.test(\"mood per hari: 5, 3, 4 (hari ini memakai catatan terakhir = 4)\", () => pm.expect(d.days.map(x=>x.mood)).to.eql([5,3,4]));",
+                  "pm.test(\"tiap elemen hanya date, mood, logged_at\", () => d.days.forEach(x => pm.expect(Object.keys(x).sort()).to.eql([\"date\",\"logged_at\",\"mood\"])));",
+                  "pm.test(\"logged_at ISO UTC (Z)\", () => d.days.forEach(x => pm.expect(x.logged_at).to.match(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$/)));",
+                  "pm.test(\"ringkasan: rata-rata 4, terisi 3 dari 7\", () => { pm.expect(d.summary.average).to.eql(4); pm.expect(d.summary.filled_days).to.eql(3); pm.expect(d.summary.total_days).to.eql(7); });",
+                  "pm.test(\"hari terbaik = hari mood 5 (tanggal elemen pertama)\", () => pm.expect(d.summary.best_date).to.eql(d.days[0].date));",
+                  "pm.test(\"range 7 hari berakhir pada tanggal elemen terakhir\", () => pm.expect(d.range.to).to.eql(d.days[2].date));",
+                  "pm.test(\"tanpa note dan tanpa teks rahasia\", () => { pm.expect(pm.response.text()).to.not.include(\"RAHASIA-M077\"); pm.expect(pm.response.text()).to.not.include(\"note\"); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "01.2 A days=30: ikut hari ke-10, hari ke-40 tetap di luar",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "const d = j.data;",
+                  "pm.test(\"4 hari terisi\", () => pm.expect(d.days.length).to.eql(4));",
+                  "pm.test(\"mood: 1, 5, 3, 4\", () => pm.expect(d.days.map(x=>x.mood)).to.eql([1,5,3,4]));",
+                  "pm.test(\"ringkasan: rata-rata 3.25, terisi 4 dari 30\", () => { pm.expect(d.summary.average).to.eql(3.25); pm.expect(d.summary.filled_days).to.eql(4); pm.expect(d.summary.total_days).to.eql(30); });",
+                  "pm.test(\"hari terbaik = hari mood 5\", () => pm.expect(d.summary.best_date).to.eql(d.days[1].date));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "01.3 A tanpa days -> bawaan 7",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"total_days 7\", () => pm.expect(j.data.summary.total_days).to.eql(7));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Validasi days",
+      "item": [
+        {
+          "name": "02.1 days=14 -> 422 validation_failed",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"galat days\", () => { pm.expect(j.error.code).to.eql(\"validation_failed\"); pm.expect(j.errors.days).to.exist; });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=14",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "14"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02.2 days=abc -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "const j = pm.response.json();",
+                  "pm.test(\"galat days\", () => pm.expect(j.errors.days).to.exist);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "abc"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02.3 days=0 -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=0",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "0"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "02.4 days=-7 -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=-7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "-7"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Isolasi",
+      "item": [
+        {
+          "name": "03.1 Isolasi: B hanya melihat datanya sendiri",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "const d = j.data;",
+                  "pm.test(\"1 hari, mood 5\", () => { pm.expect(d.days.length).to.eql(1); pm.expect(d.days[0].mood).to.eql(5); });",
+                  "pm.test(\"rata-rata 5, terisi 1\", () => { pm.expect(d.summary.average).to.eql(5); pm.expect(d.summary.filled_days).to.eql(1); });"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=30",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "30"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Catatan terakhir menang",
+      "item": [
+        {
+          "name": "04.1 A catat mood baru (API-M018) -> 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"mood\": 1}"
+            }
+          }
+        },
+        {
+          "name": "04.2 A days=7: catatan baru menjadi yang terakhir hari ini",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const j = pm.response.json();",
+                  "const d = j.data;",
+                  "pm.test(\"hari ini kini mood 1 (terakhir menang), masih 3 hari\", () => { pm.expect(d.days.length).to.eql(3); pm.expect(d.days[2].mood).to.eql(1); });",
+                  "pm.test(\"rata-rata (5+3+1)/3 = 3\", () => pm.expect(d.summary.average).to.eql(3));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries?days=7",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mood-entries"
+              ],
+              "query": [
+                {
+                  "key": "days",
+                  "value": "7"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
