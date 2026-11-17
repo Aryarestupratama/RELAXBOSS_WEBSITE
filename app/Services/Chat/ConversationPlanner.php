@@ -25,9 +25,19 @@ final class ConversationPlanner
 
     private const LONG_FIRST_MESSAGE = 100;
 
-    private const SUBSTANTIVE_MESSAGE = 40;
+    private const SUBSTANTIVE_MESSAGE = 25;
 
     private const VALIDATION_STRATEGIES = ['validation', 'affirmation'];
+
+    /** Ciri balasan yang hanya memvalidasi atau menamai perasaan (model sering tak melabelinya `validation`). */
+    private const VALIDATION_PATTERN = '/\b(?:wajar|pantes|pantas|pasti\s+(?:berat|capek|lelah|susah|nggak\s+enak)|(?:nggak|gak|tidak)\s+gampang|valid|aku\s+(?:paham|ngerti|mengerti)|kedengarannya\s+(?:berat|capek|lelah)|(?:berat|capek|melelahkan)\s+banget|bikin\s+(?:kamu\s+)?(?:capek|kesel|lelah|stres|sedih|frustrasi))\b/u';
+
+    /** Fokus bergilir untuk giliran CERMIN supaya balasan tidak berulang pola. */
+    private const REFLECT_FOCUS = [
+        'Cermin satu detail spesifik dari ceritanya (orang, kejadian, atau kata yang ia pakai) dengan kata lain.',
+        'Hubungkan dua hal yang pernah ia ceritakan di percakapan ini dan sebut pola atau kaitannya dengan hati-hati ("kedengarannya...", "sepertinya..."), tanpa menyimpulkan di luar yang ia katakan.',
+        'Rangkum inti ceritanya sejauh ini dalam satu kalimat, lalu satu kalimat normalisasi singkat tanpa angka atau statistik, atau satu kalimat yang membuka ruang untuknya melanjutkan.',
+    ];
 
     /**
      * @param  list<array{role: string, content: string, strategy?: ?string, flow_action?: ?string}>  $turns  urut lama ke baru, pesan pengguna terbaru di akhir
@@ -52,10 +62,18 @@ final class ConversationPlanner
         $recent = array_slice($assistants, -2);
         $avoidValidation = count(array_filter(
             $recent,
-            static fn (array $turn): bool => in_array($turn['strategy'] ?? null, self::VALIDATION_STRATEGIES, true),
+            static fn (array $turn): bool => in_array($turn['strategy'] ?? null, self::VALIDATION_STRATEGIES, true)
+                || preg_match(self::VALIDATION_PATTERN, mb_strtolower($turn['content'])) === 1,
         )) > 0;
 
-        $make = static fn (DialogueAct $act, bool $listenOnly = false): TurnPlan => new TurnPlan($act, $avoidValidation, $listenOnly);
+        $focus = self::REFLECT_FOCUS[count($assistants) % count(self::REFLECT_FOCUS)];
+
+        $make = static fn (DialogueAct $act, bool $listenOnly = false): TurnPlan => new TurnPlan(
+            $act,
+            $avoidValidation,
+            $listenOnly,
+            focus: $act === DialogueAct::Reflect ? $focus : null,
+        );
 
         if ($this->isClosing($text)) {
             return $make(DialogueAct::Close);
@@ -132,7 +150,7 @@ final class ConversationPlanner
     /** @return list<string> */
     private function sentences(string $text): array
     {
-        $parts = preg_split('/(?<=[.!?…])\s+|\R+/u', trim($text)) ?: [];
+        $parts = preg_split('/(?<=[.!?\x{2026}])\s+|\R+/u', trim($text)) ?: [];
 
         return array_values(array_filter(array_map('trim', $parts), static fn (string $part): bool => $part !== ''));
     }

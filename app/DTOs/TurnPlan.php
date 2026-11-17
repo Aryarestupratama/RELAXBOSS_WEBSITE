@@ -14,6 +14,7 @@ final readonly class TurnPlan
         public bool $avoidValidation = false,
         public bool $listenOnly = false,
         public bool $retry = false,
+        public ?string $focus = null,
     ) {}
 
     public function allowsQuestion(): bool
@@ -24,7 +25,7 @@ final readonly class TurnPlan
     /** Rencana yang sama dengan peringatan, dipakai saat balasan pertama melanggar larangan bertanya. */
     public function forRetry(): self
     {
-        return new self($this->act, $this->avoidValidation, $this->listenOnly, true);
+        return new self($this->act, $this->avoidValidation, $this->listenOnly, true, $this->focus);
     }
 
     /** Bagian yang ditambahkan ke instruksi sistem (data dari sistem, bukan dari pengguna). */
@@ -32,12 +33,16 @@ final readonly class TurnPlan
     {
         $lines = ['', '', '# ARAHAN GILIRAN INI (ditentukan sistem, WAJIB diikuti; mengalahkan aturan gaya lain)', '', $this->act->instruction()];
 
+        if ($this->focus !== null) {
+            $lines[] = 'Fokus giliran ini: '.$this->focus;
+        }
+
         if ($this->listenOnly) {
             $lines[] = 'Ia meminta didengarkan saja: jangan memberi saran atau solusi.';
         }
 
         if ($this->avoidValidation) {
-            $lines[] = 'Balasanmu sebelumnya sudah bernada validasi. Jangan membuka dengan validasi atau penghiburan (mis. "wajar", "pasti berat", "perasaanmu valid"); langsung sentuh detail ceritanya.';
+            $lines[] = 'Balasanmu sebelumnya sudah bernada validasi. Jangan membuka dengan validasi, penghiburan, atau kalimat yang hanya menamai perasaannya (mis. "wajar", "pasti berat", "bikin kamu kesel", "perasaanmu valid"); langsung sentuh isi ceritanya.';
         }
 
         if (! $this->allowsQuestion()) {

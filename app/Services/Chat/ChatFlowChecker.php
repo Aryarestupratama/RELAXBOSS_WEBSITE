@@ -59,6 +59,14 @@ final class ChatFlowChecker
             }
         }
 
+        foreach ($this->validationCases() as [$name, $turns, $avoid]) {
+            $total++;
+
+            if ($this->planner->plan($turns)->avoidValidation !== $avoid) {
+                $failures[] = "validasi: {$name}: diharapkan avoidValidation=".($avoid ? 'ya' : 'tidak');
+            }
+        }
+
         foreach ($this->enforceCases() as [$name, $act, $reply, $expected, $violated]) {
             $total++;
             $result = $this->planner->enforce(new TurnPlan($act), $reply);
@@ -114,6 +122,20 @@ final class ChatFlowChecker
             ['pamit: tutup', [$u('a'), $a('Cerita aja.'), $u('Makasih ya, aku mau istirahat dulu.')], DialogueAct::Close],
             ['dengerin aja: tanpa tanya dan saran', [$u('a'), $a('Stres kenapa nih?'), $u('aku cuma pengen cerita, jangan dikasih saran dulu ya, dosenku nyebelin banget')], DialogueAct::Reflect],
             ['penegas "ya?" bukan pertanyaan', [$u('a'), $a('Capek banget ya?'), $u($story)], DialogueAct::Reflect],
+        ];
+    }
+
+    /** @return list<array{0: string, 1: list<array<string, mixed>>, 2: bool}> */
+    private function validationCases(): array
+    {
+        $u = static fn (string $text): array => ['role' => 'user', 'content' => $text];
+        $a = static fn (string $text, ?string $strategy = null): array => ['role' => 'assistant', 'content' => $text, 'strategy' => $strategy];
+
+        return [
+            ['label validation', [$u('capek'), $a('Itu berat.', 'validation'), $u('iya banget kayaknya')], true],
+            ['validasi tanpa label (isi balasan)', [$u('capek'), $a('Kamu pasti capek banget ya.', 'active_listening'), $u('iya banget kayaknya')], true],
+            ['menamai perasaan tanpa label', [$u('kesel'), $a('Jadi tugasnya menumpuk, bikin kamu kesel.', 'active_listening'), $u('iya banget kayaknya')], true],
+            ['balasan berisi isi cerita: tidak perlu menghindar', [$u('capek'), $a('Jadi dua deadline jatuh di hari yang sama dan laporan praktikum yang paling menyita waktu.', 'active_listening'), $u('iya banget kayaknya')], false],
         ];
     }
 
