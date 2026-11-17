@@ -12,14 +12,22 @@ use App\Exceptions\AiUnavailableException;
  * Membaca keluaran model: `{reply, intent, confidence, strategy, flow_action}` (Architecture 6.3).
  *
  * - JSON sah (boleh dibungkus ```json atau diberi teks di sekitarnya): dipakai.
- * - JSON terpotong: `reply` diselamatkan lewat pola, sisanya kosong.
+ * - JSON rusak atau terpotong, atau teks yang kemasukan sisa metadata (mis. `...apa?intent":"academic_pressure"`):
+ *   teks dipotong pada kunci metadata pertama; bagian sebelumnya jadi balasan, nilai metadatanya diselamatkan.
  * - Bukan JSON sama sekali: seluruh teks menjadi balasan, intent kosong.
  * - Tampak JSON tetapi tanpa `reply` yang bisa dibaca: AiUnavailableException('invalid_response'),
  *   supaya pengguna tidak melihat JSON mentah (pemanggil jatuh ke respons statis).
+ *
+ * Apa pun jalurnya, balasan akhir tidak pernah memuat kunci metadata (jaring pengaman di `clean()`).
  */
 final class ChatReplyParser
 {
     private const MAX_REPLY_CHARS = 4000;
+
+    /** Kunci metadata dengan tanda kutip penutup. Kutip pembuka boleh hilang (`apa?intent":`). */
+    private const META_KEY = '/(intent|confidence|strategy|flow_action)"\s*:/u';
+
+    private const REPLY_PREFIX = '/\A\s*(?:```(?:json)?\s*)?\{?\s*"?reply"\s*:\s*"/iu';
 
     public function parse(string $raw): ParsedChatReply
     {
@@ -29,7 +37,7 @@ final class ChatReplyParser
         if ($data !== null) {
             $reply = $data['reply'] ?? null;
 
-            if (is_string($reply) && trim($reply) !== '') {
+            if (is_string($reply) && trim($this->clean($reply)) !== '') {
                 return new ParsedChatReply(
                     reply: $this->clean($reply),
                     intent: $this->intent($data['intent'] ?? null),
@@ -42,21 +50,15 @@ final class ChatReplyParser
             throw new AiUnavailableException('invalid_response');
         }
 
-        if ($this->looksLikeJson($text)) {
-            $salvaged = $this->salvageReply($text);
-
-            if ($salvaged === null) {
-                throw new AiUnavailableException('invalid_response');
-            }
-
-            return new ParsedChatReply(reply: $this->clean($salvaged));
-        }
-
         if ($text === '') {
             throw new AiUnavailableException('empty_response');
         }
 
-        return new ParsedChatReply(reply: $this->clean($this->stripJsonResidue($text)));
+        if ($this->looksLikeJson($text) || preg_match(self::META_KEY, $text) === 1 || preg_match(self::REPLY_PREFIX, $text) === 1) {
+            return $this->salvage($text);
+        }
+
+        return new ParsedChatReply(reply: $this->clean($text));
     }
 
     /**
@@ -97,31 +99,52 @@ final class ChatReplyParser
     }
 
     /**
-     * Model kadang melewatkan pembuka JSON sehingga teks balasan berakhir dengan sisa seperti `"}`
-     * atau `","intent":"..."}`. Sisa itu dibuang supaya pengguna tidak melihatnya. Hanya dipakai pada
-     * teks tanpa kurung kurawal buka, jadi balasan biasa yang memang memuat tanda kutip tidak berubah.
+     * Teks rusak: potong pada kunci metadata pertama. Bagian sebelumnya adalah balasan (dibuang pembuka
+     * `{"reply":"` bila ada, dan sisa tanda kutip atau koma di ujung); bagian sesudahnya hanya dipakai
+     * untuk mengambil intent, confidence, strategy, dan flow_action.
      */
-    private function stripJsonResidue(string $text): string
+    private function salvage(string $text): ParsedChatReply
     {
-        if (str_contains($text, '{')) {
-            return $text;
+        $head = $text;
+        $tail = '';
+
+        if (preg_match(self::META_KEY, $text, $match, PREG_OFFSET_CAPTURE) === 1) {
+            $head = substr($text, 0, (int) $match[0][1]);
+            $tail = substr($text, (int) $match[0][1]);
         }
 
-        $text = (string) preg_replace('/"\s*,\s*"(?:intent|confidence|strategy|flow_action)"\s*:.*\z/su', '', $text);
+        $isJsonString = preg_match(self::REPLY_PREFIX, $head) === 1;
+        $head = (string) preg_replace(self::REPLY_PREFIX, '', $head);
+        $head = trim((string) preg_replace('/(?:[\s",}\x60]|\\\\n)+\z/u', '', $head));
 
-        return trim((string) preg_replace('/"?\s*\}\s*\z/u', '', $text));
+        if ($isJsonString) {
+            $decoded = json_decode('"'.$head.'"');
+            $head = is_string($decoded) ? $decoded : str_replace(['\\n', '\\"', '\\\\'], ["\n", '"', '\\'], $head);
+        }
+
+        $reply = $this->clean($head);
+
+        if ($reply === '' || str_starts_with($reply, '{') || str_starts_with($reply, '```')) {
+            throw new AiUnavailableException('invalid_response');
+        }
+
+        return new ParsedChatReply(
+            reply: $reply,
+            intent: $this->intent($this->metaString($tail, 'intent')),
+            confidence: $this->confidence($this->metaNumber($tail, 'confidence')),
+            strategy: $this->code($this->metaString($tail, 'strategy')),
+            flowAction: $this->code($this->metaString($tail, 'flow_action')),
+        );
     }
 
-    /** Mengambil nilai "reply" dari JSON yang terpotong. */
-    private function salvageReply(string $text): ?string
+    private function metaString(string $tail, string $key): ?string
     {
-        if (preg_match('/"reply"\s*:\s*"((?:[^"\\\\]|\\\\.)*)/su', $text, $match) !== 1) {
-            return null;
-        }
+        return preg_match('/'.$key.'"\s*:\s*"([^"]*)"/u', $tail, $match) === 1 ? $match[1] : null;
+    }
 
-        $decoded = json_decode('"'.$match[1].'"');
-
-        return is_string($decoded) && trim($decoded) !== '' ? $decoded : null;
+    private function metaNumber(string $tail, string $key): ?string
+    {
+        return preg_match('/'.$key.'"\s*:\s*([0-9]+(?:\.[0-9]+)?)/u', $tail, $match) === 1 ? $match[1] : null;
     }
 
     private function intent(mixed $value): ?Intent
@@ -150,8 +173,14 @@ final class ChatReplyParser
         return is_string($value) && preg_match('/\A[a-z_]{1,100}\z/', $value) === 1 ? $value : null;
     }
 
+    /** Jaring pengaman terakhir: buang sisa metadata dari balasan, apa pun jalurnya. */
     private function clean(string $reply): string
     {
+        if (preg_match(self::META_KEY, $reply, $match, PREG_OFFSET_CAPTURE) === 1) {
+            $reply = substr($reply, 0, (int) $match[0][1]);
+            $reply = (string) preg_replace('/(?:[\s",}\x60]|\\\\n)+\z/u', '', $reply);
+        }
+
         $reply = (string) preg_replace('/[^\P{C}\n]+/u', '', $reply);
 
         return mb_substr(trim($reply), 0, self::MAX_REPLY_CHARS);

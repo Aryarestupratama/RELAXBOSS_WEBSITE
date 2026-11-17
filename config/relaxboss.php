@@ -154,9 +154,14 @@ return [
             'assessment' => array_values(array_filter(array_map('trim', explode(',', (string) env('GROQ_KEYS_ASSESSMENT', ''))))),
         ],
 
+        // Model yang mendukung `strict: true` pada json_schema (constrained decoding). Model lain: best-effort.
+        'strict_schema_models' => ['openai/gpt-oss-120b'],
+
         'features' => [
             'chat' => [
                 'prompt' => 'relaxmate.system.md',
+                // Keluaran terstruktur (json_schema) untuk balasan chat. Matikan lewat .env bila Groq menolaknya.
+                'structured_output' => filter_var(env('AI_CHAT_STRUCTURED_OUTPUT', true), FILTER_VALIDATE_BOOL),
                 'model' => env('GROQ_MODEL_PRIMARY', 'openai/gpt-oss-120b'),
                 'fallback_model' => env('GROQ_MODEL_FALLBACK', 'openai/gpt-oss-20b'),
                 'max_completion_tokens' => (int) env('AI_MAX_OUTPUT_TOKENS', 800),

@@ -16,4 +16,9 @@ final readonly class ParsedChatReply
         public ?string $strategy = null,
         public ?string $flowAction = null,
     ) {}
+
+    public function withReply(string $reply): self
+    {
+        return new self($reply, $this->intent, $this->confidence, $this->strategy, $this->flowAction);
+    }
 }

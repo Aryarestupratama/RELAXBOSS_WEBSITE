@@ -6,6 +6,7 @@ namespace App\Services\Chat;
 
 use App\Contracts\ChatCompletionClient;
 use App\DTOs\ChatbotResult;
+use App\DTOs\ParsedChatReply;
 use App\Enums\AiFeature;
 use App\Enums\CrisisLayer;
 use App\Enums\Intent;
@@ -17,6 +18,7 @@ use App\Models\Message;
 use App\Models\User;
 use App\Support\CrisisResponse;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Satu giliran RelaxMate: simpan pesan pengguna, minta balasan AI, simpan balasan (FR-014, FR-029).
@@ -39,6 +41,8 @@ final class ChatbotService
         private readonly ChatReplyParser $parser,
         private readonly ActionSuggestionService $suggestions,
         private readonly CrisisDetector $crisis,
+        private readonly ConversationPlanner $planner,
+        private readonly ChatReplySchema $schema,
     ) {}
 
     /**
@@ -89,9 +93,7 @@ final class ChatbotService
             );
         }
 
-        $messages = $this->context->build($user, $conversation);
-        $completion = $this->client->complete(AiFeature::Chat, $messages);
-        $parsed = $this->parser->parse($completion->content);
+        $parsed = $this->generate($user, $conversation);
 
         $type = $this->suggestions->typeFor($parsed->intent);
         $suggestion = $this->suggestions->suggestion($parsed->intent);
@@ -123,6 +125,50 @@ final class ChatbotService
         });
 
         return new ChatbotResult($userMessage, $assistantMessage, $suggestion);
+    }
+
+    /**
+     * Satu balasan AI yang sudah dibaca dan ditegakkan aturan pertanyaannya. Bila giliran ini dilarang
+     * bertanya dan balasan hanya berisi pertanyaan, AI dipanggil sekali lagi dengan peringatan. Bila
+     * pengulangan gagal atau tetap melanggar, balasan pertama dipakai (pesan tetap sampai ke pengguna).
+     *
+     * @throws AiUnavailableException
+     */
+    private function generate(User $user, Conversation $conversation): ParsedChatReply
+    {
+        $context = $this->context->build($user, $conversation);
+        $parsed = $this->ask($context->messages);
+        $checked = $this->planner->enforce($context->plan, $parsed->reply);
+
+        if (! $checked['violated']) {
+            return $parsed->withReply($checked['reply']);
+        }
+
+        try {
+            $retryContext = $this->context->build($user, $conversation, retry: true);
+            $retried = $this->ask($retryContext->messages);
+            $recheck = $this->planner->enforce($retryContext->plan, $retried->reply);
+
+            Log::info('chat.question_budget_retry', ['act' => $context->plan->act->value, 'fixed' => ! $recheck['violated']]);
+
+            if (! $recheck['violated']) {
+                return $retried->withReply($recheck['reply']);
+            }
+        } catch (AiUnavailableException) {
+            Log::warning('chat.question_budget_retry_failed', ['act' => $context->plan->act->value]);
+        }
+
+        return $parsed;
+    }
+
+    /**
+     * @param  list<array{role: string, content: string}>  $messages
+     */
+    private function ask(array $messages): ParsedChatReply
+    {
+        $completion = $this->client->complete(AiFeature::Chat, $messages, $this->schema->responseFormat());
+
+        return $this->parser->parse($completion->content);
     }
 
     /**

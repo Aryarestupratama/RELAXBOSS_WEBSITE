@@ -40,7 +40,7 @@ final class GroqClient implements ChatCompletionClient
         private readonly AiUsageRecorder $usage,
     ) {}
 
-    public function complete(AiFeature $feature, array $messages): AiCompletion
+    public function complete(AiFeature $feature, array $messages, ?array $responseFormat = null): AiCompletion
     {
         /** @var array{model: string, fallback_model: ?string, max_completion_tokens: int, reasoning_effort: string, timeout: int} $config */
         $config = config("relaxboss.ai.features.{$feature->value}");
@@ -60,7 +60,14 @@ final class GroqClient implements ChatCompletionClient
                 $started = microtime(true);
 
                 try {
-                    $response = $this->send($model, $key->secret, $messages, $config);
+                    $response = $this->send($model, $key->secret, $messages, $config, $responseFormat);
+
+                    // Schema ditolak (400): ulangi sekali tanpa response_format; parser tetap membaca teks bebas.
+                    if ($responseFormat !== null && $response->status() === 400) {
+                        $this->fail($feature, $model, $key, 'status_400_response_format', $started);
+                        $started = microtime(true);
+                        $response = $this->send($model, $key->secret, $messages, $config, null);
+                    }
                 } catch (ConnectionException) {
                     $reason = 'timeout';
                     $this->fail($feature, $model, $key, 'timeout', $started);
@@ -140,21 +147,37 @@ final class GroqClient implements ChatCompletionClient
      *
      * @param  list<array{role: string, content: string}>  $messages
      * @param  array{max_completion_tokens: int, reasoning_effort: string, timeout: int}  $config
+     * @param  array<string, mixed>|null  $responseFormat
      */
-    private function send(string $model, #[SensitiveParameter] string $secret, array $messages, array $config): Response
+    private function send(string $model, #[SensitiveParameter] string $secret, array $messages, array $config, ?array $responseFormat = null): Response
     {
+        $payload = [
+            'model' => $model,
+            'messages' => $messages,
+            'max_completion_tokens' => (int) $config['max_completion_tokens'],
+            'reasoning_effort' => $config['reasoning_effort'],
+            'include_reasoning' => false,
+        ];
+
+        if ($responseFormat !== null) {
+            if (isset($responseFormat['json_schema']) && is_array($responseFormat['json_schema'])) {
+                // Mode strict (constrained decoding) hanya untuk model yang didukung; lainnya best-effort.
+                $responseFormat['json_schema']['strict'] = in_array(
+                    $model,
+                    (array) config('relaxboss.ai.strict_schema_models', []),
+                    true,
+                );
+            }
+
+            $payload['response_format'] = $responseFormat;
+        }
+
         return Http::withToken($secret)
             ->acceptJson()
             ->asJson()
             ->connectTimeout(self::CONNECT_TIMEOUT_SECONDS)
             ->timeout((int) $config['timeout'])
-            ->post(self::ENDPOINT, [
-                'model' => $model,
-                'messages' => $messages,
-                'max_completion_tokens' => (int) $config['max_completion_tokens'],
-                'reasoning_effort' => $config['reasoning_effort'],
-                'include_reasoning' => false,
-            ]);
+            ->post(self::ENDPOINT, $payload);
     }
 
     private function parse(Response $response, string $model): ?AiCompletion

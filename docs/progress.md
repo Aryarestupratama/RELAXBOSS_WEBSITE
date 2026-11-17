@@ -1,5 +1,5 @@
 # RelaxBoss - Progress
-Version: 1.79 | Status: Living document | Last updated: 2026-10-29
+Version: 1.80 | Status: Living document | Last updated: 2026-11-18
 Owner: Founder (solo developer)
 
 Dokumen ini dibaca pertama setiap mulai bekerja. Perbarui di akhir setiap task atau sesi. Dokumen proyek disimpan **di luar repo kode** (RULE-014). Riwayat lama (TASK-001 sampai TASK-009 versi sebelumnya) dihapus karena proyek dirombak dari awal.
@@ -12,10 +12,11 @@ Dokumen ini dibaca pertama setiap mulai bekerja. Perbarui di akhir setiap task a
 |---|---|
 | Tahap | M0–M5 selesai. Fitur inti, Admin, artikel publik/admin, notifikasi dalam aplikasi, preflight, dan backup database sudah ada. **Website sudah di-hosting** (`https://relaxboss.my.id`). TASK-031 masih berjalan: cron, backup manual, `relaxboss:preflight` hijau penuh, dan pengalihan HTTPS sudah terverifikasi 2026-10-28; sisa langkah ada di Catatan Serah Terima. |
 | Artikel | TASK-032–037: daftar/detail, tautan Dashboard, dan seeder 25 artikel. TASK-038 menambahkan rancangan pencarian `?q=` dan paginasi bernomor; verifikasi implementasi/manual belum dikonfirmasi. Seeder masih perlu dijalankan dan diverifikasi di hosting. |
+| RelaxMate (chat) | **TASK-051** (revisi ritme percakapan, 2026-11-18): kode selesai, menunggu manual test. Parser balasan diperkeras (bug `...apa?intent":"academic_pressure"` bocor ke teks), keluaran terstruktur Groq (`json_schema`) dengan jalur mundur, `ConversationPlanner` memilih jenis balasan per giliran dan menegakkan batas pertanyaan, prompt `2026-11-17.1`. Detail di Architecture 6.3a. |
 | Berikutnya | **TASK-050** (target sentuh dan layar chat di HP, `Next`). Lalu selesaikan sisa TASK-031 (daftar di Catatan Serah Terima): verifikasi backup otomatis 02:00 WIB, setelan PHP hosting (`zend.exception_ignore_args`, `expose_php`), `chmod 700` folder backup, pengumuman contoh ke draf, uptime monitor, Google Search Console, HSTS bertahap, telepon Healing119, Instagram. Lalu putuskan OQ-14, OQ-15, OQ-17, dan tutup OQ-1 setelah sumber dan izin Instrumen terkonfirmasi. Jangan menimpa database hosting dengan SQL lokal penuh. |
 | Pemblokir | Instrumen asli sudah aktif di produksi (PHQ-9, GAD-7, DASS-21, K10, SWLS, WHO-5; terlihat di sitemap) dan preflight hijau, tetapi OQ-1 belum ditutup sampai `source_reference` dan izin pemakaian tiap Instrumen terkonfirmasi (K10 perlu dicek sendiri). Klaim UMB spesifik tetap kosong sampai izin dan rumusan klaim terverifikasi (OQ-2). OQ-5 wajib dijawab sebelum ekspor dipakai melatih model. Kontak Healing119.id perlu diverifikasi dengan menelepon sebelum promosi. OQ-12 (lisensi ilustrasi AI) dan OQ-15 (FR-012) sebaiknya diputuskan sebelum promosi publik. |
 | Alur kerja | Kerja di `main`, commit lalu push, pesan commit bahasa Inggris. Dokumen tetap di luar repo (RULE-014). Manual test wajib; tanpa CI/test otomatis. |
-| Versi dokumen | PRD 1.8, Architecture 1.74, Schema 1.14, Design 1.75, Rules 1.5, progress 1.79. |
+| Versi dokumen | PRD 1.8, Architecture 1.75, Schema 1.14, Design 1.75, Rules 1.5, progress 1.80. |
 
 > Status task yang perlu uji manual atau konfirmasi founder tidak dianggap terverifikasi hanya karena catatan Doc Sync sudah ditulis.
 
@@ -150,6 +151,7 @@ Status: `Next`, `Todo`, `Doing`, `Done`, `Blocked`. Satu task `Doing` pada satu 
 | TASK-048 | Komponen tabel admin bersama (`DataTable`, `DataTableCard`, `TableToolbar`, `TableSearch`, `TableFilterTabs`, `TablePager`; konstanta `ROW_BUTTON` dan `MOBILE_CARD` di `lib/adminTable.ts`) dan penerapannya di enam halaman daftar admin (Asesmen, Artikel, Pengumuman, Pengguna, Monitoring Chat, Monitoring Asesmen). Menggantikan `MonitoringFilter` dan `MonitoringPager`. Commit `425bbbe`. Hanya tampilan: filter dan paginasi tetap di server, tanpa paket baru (TanStack Table sengaja tidak dipakai) | Design CMP-012, CMP-040, CMP-047, SCR-020 s.d. SCR-022, SCR-026, SCR-028, RULE-050, RULE-052 | Done (setelah manual test lolos dan di-push) |
 | TASK-049 | Ikon tab dan web app: `public/favicon.ico` asli (sebelumnya 0 byte), `icon-192`, `icon-512`, `icon-maskable-512`, `apple-touch-icon`, `public/manifest.webmanifest` (`start_url` `/dashboard`, `standalone`), dan partial Blade `layouts/partials/head-icons.blade.php` yang dipakai layout Publik dan layout Inertia (`app.blade.php` sebelumnya tanpa ikon). Tanpa route, migration, paket, atau perubahan CSP | Design bagian 2 dan 10, Architecture 4 dan 11, RULE-003 | Done (setelah manual test lolos dan di-push) |
 | TASK-050 | Target sentuh dan layar chat di HP (rencana lama, digeser dari 048 lalu 049). Hanya tampilan | Design bagian 2 (target sentuh 44px), SCR-017, RULE-055 | Next |
+| TASK-051 | Revisi ritme percakapan RelaxMate (hanya backend). (1) `ChatReplyParser` memotong teks pada kunci metadata pertama (`intent"`, `confidence"`, `strategy"`, `flow_action"`) sehingga sisa JSON tidak pernah tampil. (2) `response_format` `json_schema` (`ChatReplySchema`; strict hanya untuk `openai/gpt-oss-120b`) lewat parameter ketiga `ChatCompletionClient::complete()`; bila Groq menjawab 400, klien mengulang sekali tanpa `response_format`; dimatikan lewat `AI_CHAT_STRUCTURED_OUTPUT=false`. (3) `ConversationPlanner` + `DialogueAct` + `TurnPlan`: kode memilih jenis balasan (tanya, cermin, temani, tawaran, bantu, tutup), menyuntik "ARAHAN GILIRAN INI" ke system prompt, membuang kalimat tanya bila giliran dilarang bertanya, dan mengulang panggilan satu kali bila hanya tersisa pertanyaan. (4) Prompt `2026-11-17.1`: aturan pertanyaan diganti arahan sistem, "alat selain bertanya", contoh dialog berurutan. (5) `php artisan relaxboss:check-chat` (32 kasus). Tanpa migration, tanpa paket baru, tanpa perubahan API mobile | Architecture 6.3 dan 6.3a, RULE-036, RULE-047 | Doing (kode selesai, menunggu manual test) |
 
 ---
 
@@ -222,6 +224,7 @@ Status: `Next`, `Todo`, `Doing`, `Done`, `Blocked`. Satu task `Doing` pada satu 
 
 | Tanggal | Ringkasan |
 |---|---|
+| 2026-11-18 | TASK-051: revisi ritme percakapan RelaxMate. Penyebab teks `...apa?intent":"..."` di balasan: model kadang menghilangkan `","` di antara `reply` dan `intent`; regex pembersih lama hanya cocok untuk `","intent"`. Penyebab chatbot terasa mewawancarai: aturan "jangan banyak bertanya" hanya ada di prompt dan kalah oleh pola riwayat (balasan sebelumnya berakhir pertanyaan), sehingga ritme sekarang dikendalikan kode. Dokumen disegarkan: Architecture mencatat prompt `2026-10-27.1` padahal kode sudah `2026-11-12.2`, kini `2026-11-17.1`. progress.md v1.80. |
 | 2026-10-29 | TASK-049: ikon tab dan web app (favicon asli, ikon 192/512/maskable, apple-touch-icon, manifest, partial `head-icons`). Doc Sync TASK-047 dan TASK-048 dicatat bersamaan. Penomoran: tugas lama "Target sentuh dan layar chat di HP" menjadi TASK-050. OQ-18 dibuka (selisih tabel token Design dan `app.css`). Repo HEAD sebelum sesi: `425bbbe`. progress.md v1.79. |
 | 2026-10-29 | TASK-048: komponen tabel admin bersama dan penerapannya di enam halaman daftar admin (`DataTableCard`, `DataTable`, `TableToolbar`, `TableSearch`, `TableFilterTabs`, `TablePager`). `MonitoringFilter` dan `MonitoringPager` dihapus. Tanpa perubahan perilaku atau route. progress.md v1.78. |
 | 2026-10-28 | TASK-047: perbaikan tata letak HP (overflow, header, bar tab, target sentuh `Logo`/`LogoutButton`, label grafik mood). Tanpa perubahan perilaku atau route. progress.md v1.77. |
@@ -253,6 +256,12 @@ Status: `Next`, `Todo`, `Doing`, `Done`, `Blocked`. Satu task `Doing` pada satu 
 - Setelah selesai satu task: perbarui dokumen terkait di folder dokumen, ubah status di sini, commit kode (bahasa Inggris), push ke `main`.
 - Ide baru masuk `TODO-LATER.md`, bukan dikerjakan.
 - Prompt AI ditulis founder (RULE-036); pakai placeholder bertanda sampai prompt asli masuk, dan `preflight` menolak go-live bila masih placeholder.
+
+### Catatan terbaru 2026-11-18 (TASK-051)
+- Manual test: `php artisan relaxboss:check-chat` (harus 32 lolos), `php artisan relaxboss:check-crisis` (RULE-047, prompt berubah), lalu uji percakapan nyata (panduan di sesi). Bila log memuat `ai.attempt_failed` dengan `code=status_400_response_format`, Groq menolak schema: setel `AI_CHAT_STRUCTURED_OUTPUT=false` lalu `php artisan config:clear`; parser tetap melindungi teks.
+- Angka planner adalah asumsi (RULE-026): `QUIET_TURNS` 2 (setelah satu pertanyaan, dua balasan tanpa pertanyaan), tawaran pilihan mulai pesan pengguna ke-4, pesan pertama dianggap panjang di 100 karakter. Rasio refleksi banding pertanyaan sekitar 2:1 perlu dikonfirmasi psikolog yang dikonsultasi founder.
+- Belum dikerjakan (ide, masuk `TODO-LATER.md` bila disetujui): chip mode di mobile ("Dengerin aja", "Bantu aku mikir", "Kasih saran"; teks chip yang dikirim sudah dikenali planner), kolom `need_type` pada klasifikasi, set uji 15 sampai 20 skenario curhat untuk mengukur rasio pertanyaan.
+- Balasan yang dipangkas planner disimpan apa adanya (yang terlihat pengguna dan yang masuk riwayat sama). `ai_strategy` dan `ai_flow_action` tetap dari model.
 
 ### Catatan terbaru 2026-10-27
 - Jalankan seeder artikel dengan `php artisan db:seed --class=ArticleContentSeeder --force`; cek 25 artikel terbit, kategori, referensi, halaman detail, filter, dan sitemap. Seeder tidak dijalankan otomatis lewat `DatabaseSeeder`.

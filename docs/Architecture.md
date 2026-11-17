@@ -1,5 +1,5 @@
 # RelaxBoss - Architecture
-Version: 1.74 | Status: Draft | Last updated: 2026-10-29
+Version: 1.75 | Status: Draft | Last updated: 2026-11-18
 Depends on: PRD v1.7, Schema v1.12 | Owner: Founder (solo developer)
 
 Label: `[Verified]` ada sumber, `[Inference]` kesimpulan, `[Assumption]` asumsi yang bisa diubah. Kedalaman: **Lite**.
@@ -229,7 +229,7 @@ sequenceDiagram
 | Timeout | 20 detik per panggilan |
 | Batas masukan | Pesan ≤ 2.000 karakter; konteks ≤ 10 pesan terakhir dan ≤ 9.000 karakter (FR-026) |
 | Batas keluaran | `max_completion_tokens` 800; jaga agar balasan tidak terpotong token reasoning |
-| Format keluaran | AI diminta membalas JSON `{reply, intent, confidence, strategy, flow_action}` `[Assumption]`. Bila gagal di-parse: seluruh teks dipakai sebagai balasan, intent kosong |
+| Format keluaran | JSON `{reply, intent, confidence, strategy, flow_action}`, diminta lewat `response_format` `json_schema` (`ChatReplySchema`; `strict: true` hanya untuk model di `ai.strict_schema_models`, bawaan `openai/gpt-oss-120b`; model lain best-effort) `[Verified]` dokumentasi Groq. Bila Groq menjawab 400, klien mengulang sekali tanpa `response_format`. Dimatikan dengan `AI_CHAT_STRUCTURED_OUTPUT=false`. Pembacaan lewat `ChatReplyParser`: teks dipotong pada kunci metadata pertama sehingga sisa JSON tidak tampil; bukan JSON = seluruh teks jadi balasan, intent kosong |
 | Pesan ganda | Dicegah oleh `turn_number` unik; `Cache::lock` per pengguna agar dua pesan tidak diproses bersamaan |
 | Identitas | Hanya isi percakapan dan jurusan (bila diisi). Dilarang nama, email, ID, kampus (FR-015) |
 | Tampilan | Balasan ditampilkan sebagai teks biasa (tanpa HTML atau Markdown) |
@@ -247,6 +247,20 @@ sequenceDiagram
 3. **Banner permanen** (`CMP-008`) selama Percakapan berlanjut; tautan bantuan di footer area aplikasi.
 4. **Pemeriksaan manual:** setelah mengubah prompt atau kata kunci, periksa `resources/crisis/cases.json` (≥ 30 kasus positif dan negatif) sebelum push (RULE-047, M-5).
 5. **Batas yang diakui:** aturan kata kunci tidak sempurna; layer 2 dan tinjauan lewat monitoring admin adalah pelengkapnya. Kontak bantuan diisi di TASK-030 (OQ-3); sebelum itu hanya kontak dummy bertanda jelas.
+
+### 6.3a Ritme percakapan RelaxMate (TASK-051)
+
+Ritme tidak diserahkan ke model. `ConversationPlanner` (tanpa AI, tanpa database) memilih `DialogueAct` tiap giliran dari riwayat; `ContextBuilder::build()` mengembalikan `ChatContext` (pesan + `TurnPlan`) dan menambahkan bagian "ARAHAN GILIRAN INI" ke system prompt, sebelum baris jurusan.
+
+| Jenis | Kapan | Pertanyaan |
+|---|---|---|
+| `close` | Pesan pendek berisi makasih atau pamit | Dilarang |
+| `reflect` / `invite` | Pengguna minta didengarkan saja; atau belum ada 2 balasan tanpa pertanyaan sejak pertanyaan terakhir (`reflect` bila pesan >= 40 karakter, selain itu `invite`); pesan pertama >= 100 karakter | Dilarang |
+| `help` | Pengguna bingung atau minta saran | Satu tawaran di akhir boleh |
+| `offer_choice` | Pesan pengguna ke-4 dst., setelah 2 balasan tanpa pertanyaan, dan belum ada `suggest_action` di 4 balasan terakhir | Satu (pilihan: didengarkan saja atau cari langkah kecil) |
+| `ask` | Pesan pertama pendek, atau anggaran pertanyaan pulih | Tepat satu |
+
+Penegakan di kode: bila giliran dilarang bertanya, `enforce()` membuang kalimat tanya dari balasan; bila tak ada yang tersisa, `ChatbotService` memanggil AI sekali lagi dengan peringatan; bila tetap melanggar, balasan pertama dipakai dan dicatat `chat.question_budget_retry` (tanpa isi). Penegas ringan di akhir kalimat ("... ya?", "... kan?") tidak dihitung pertanyaan. Pelanggaran validasi beruntun dicegah dengan menambah larangan membuka dengan validasi bila salah satu dari 2 balasan terakhir bernada `validation` atau `affirmation`. Riwayat dibaca dari `messages` (isi, `ai_strategy`, `ai_flow_action`): tanpa kolom baru. Angka (2 balasan tenang, tawaran di pesan ke-4, 100 dan 40 karakter) adalah asumsi (RULE-026). Pesan krisis tidak melewati planner (jalur statis tetap). `php artisan relaxboss:check-chat` memeriksa parser dan planner (32 kasus) tanpa AI dan database.
 
 ### 6.4 Intent dan saran tindakan (FR-029)
 
@@ -393,7 +407,7 @@ Bentuk `crisis_contacts` `[Assumption]`: daftar `['name' => string, 'phone' => ?
 - `InlineNote` React dan `x-inline-note` Blade menggantikan `InlineNote` dan `x-inline-note`. `x-empty-state` memakai ikon Lucide, tanpa ilustrasi gambar.
 - Toast menggunakan Radix Toast (`ui/toast.tsx`, `shared/Toaster.tsx`, `lib/toast.ts`) karena `sonner` menyuntik `<style>` tanpa nonce. Flash bersama berisi `{id, status}`.
 - `ContentPurger` (`app/Services/Maintenance`) dan command `relaxboss:purge-content` disiapkan untuk pembersihan data dummy sebelum go-live. Backup database harus dibuat dan diverifikasi sebelum menjalankannya; baca opsi command di implementasi/Artisan sebelum eksekusi.
-- Prompt AI tercatat versi `2026-10-27.1`; perubahan prompt atau `resources/crisis/keywords.id.php` memicu pemeriksaan manual `resources/crisis/cases.json` (≥30 kasus) sesuai RULE-047/047A.
+- Prompt AI RelaxMate tercatat versi `2026-11-17.1` (placeholder `{{INTENT_CODES}}`, `{{STRATEGY_CODES}}`, `{{FLOW_ACTIONS}}` diisi `ContextBuilder`); perubahan prompt atau `resources/crisis/keywords.id.php` memicu pemeriksaan manual `resources/crisis/cases.json` (≥30 kasus) sesuai RULE-047/047A.
 - Ilustrasi auth `auth-masuk.webp` dan `auth-daftar.webp` berasal dari aset yang dibuat dengan AI. Simpan PNG sumber dan prompt, lalu periksa hak penggunaan komersial sebelum launch (OQ-12).
 
 Untuk kontrak route, alur AI, privasi, dan ekspor, lihat bagian 5–10. Detail implementasi historis per task dipindahkan ke ringkasan `progress.md` agar bagian ini tetap operasional.
@@ -525,6 +539,7 @@ Pertanyaan tingkat produk (OQ-1 sampai OQ-10) ada di PRD.
 
 | Versi | Tanggal | Ringkasan |
 |---|---|---|
+| 1.75 | 2026-11-18 | TASK-051: 6.3 (format keluaran terstruktur), 6.3a baru (ritme percakapan), versi prompt `2026-11-17.1` (dokumen sebelumnya tertinggal di `2026-10-27.1`), `ChatContext`; tanpa paket dan migration baru. |
 | 1.74 | 2026-10-29 | Doc Sync TASK-047–049: struktur folder (ikon, manifest, partial `head-icons`, komponen tabel admin), catatan bagian 11 dan 13; tanpa paket baru dan tanpa perubahan route atau perilaku. |
 | 1.73 | 2026-10-28 | Doc Sync TASK-031: bagian 12 (cron satu baris dan catatan UTC, pengalihan HTTPS di `public/.htaccess`, setelan PHP hosting); tanpa paket baru. |
 | 1.72 | 2026-10-28 | Doc Sync TASK-044–046: NotificationFeed, preferensi, pengumuman, route, ADR-019; tanpa paket baru. |
