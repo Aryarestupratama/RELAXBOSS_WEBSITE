@@ -62,7 +62,7 @@ final readonly class TurnPlan
         }
 
         if ($this->avoidOpening) {
-            $lines[] = 'Jangan membuka dengan pola yang sama seperti balasan sebelumnya ("Kamu ngerasa...", "Kedengarannya...", "Sepertinya..."); buka dengan hal lain, misalnya detail spesifik atau satu kalimat hangat yang pendek.';
+            $lines[] = 'Jangan membuka dengan pola yang sama seperti balasan sebelumnya ("Kamu ngerasa...", "Kedengarannya...", "Sepertinya...") dan jangan membuka dengan kata perintah ("Dengar", "Tenang", "Sabar", "Ingat"); buka dengan hal lain, misalnya detail spesifik atau satu kalimat hangat yang pendek.';
         }
 
         $lines[] = $this->casualUser

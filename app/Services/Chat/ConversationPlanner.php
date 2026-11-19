@@ -48,7 +48,7 @@ final class ConversationPlanner
     private const CLOSING_PATTERN = '/(?:\bnyimak\b|menyimak|teruskan|lanjut(?:kan)?\s+cerita|siap\s+mendengarkan|aku\s+(?:ada\s+)?di\s+sini|kapan\s*pun\s+kamu\s+mau)/u';
 
     /** Pembuka berpola ("Kamu ngerasa...", "Kedengarannya...") yang sering diulang model. */
-    private const OPENING_PATTERN = '/\A\W*(?:kamu\s+(?:lagi\s+)?(?:ngerasa|merasa|terasa)|kedengarannya|sepertinya|kayaknya|jadi\s+kamu)\b/u';
+    private const OPENING_PATTERN = '/\A\W*(?:kamu\s+(?:lagi\s+)?(?:ngerasa|merasa|terasa)|kedengarannya|sepertinya|kayaknya|jadi\s+kamu|dengar(?:in|kan)?|simak|tenang|sabar|ingat)\b/u';
 
     /** Fokus bergilir untuk giliran CERMIN supaya balasan tidak berulang pola. */
     private const REFLECT_FOCUS = [
@@ -183,6 +183,8 @@ final class ConversationPlanner
      */
     public function enforce(TurnPlan $plan, string $reply): array
     {
+        $reply = $this->dropCommandOpener($reply);
+
         if ($plan->avoidClosing) {
             $reply = $this->dropClosing($reply);
         }
@@ -211,6 +213,20 @@ final class ConversationPlanner
         }
 
         return ['reply' => $result, 'violated' => false];
+    }
+
+    /** Buang pembuka perintah ("Dengar ya,", "Tenang,", "Sabar.") yang terdengar seperti memarahi, bila ada isi yang tersisa. */
+    private function dropCommandOpener(string $reply): string
+    {
+        $stripped = preg_replace('/\A\s*(?:coba\s+)?(?:dengar(?:in|kan)?|simak|tenang|sabar|ingat)(?:\s+(?:ya|yaa|dulu|aku|deh|dong|baik-baik))*\s*[,.!:]\s*/iu', '', $reply);
+
+        if ($stripped === null || mb_strlen(trim($stripped)) < 8 || $stripped === $reply) {
+            return $reply;
+        }
+
+        $stripped = trim($stripped);
+
+        return mb_strtoupper(mb_substr($stripped, 0, 1)).mb_substr($stripped, 1);
     }
 
     /** Buang kalimat penutup generik di ujung balasan, selama masih ada isi yang tersisa. */

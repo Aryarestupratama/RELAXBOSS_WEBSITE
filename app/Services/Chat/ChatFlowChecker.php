@@ -198,6 +198,7 @@ final class ChatFlowChecker
             ['penutup "aku di sini nyimak" terdeteksi', [$u('capek'), $a('Berat banget hari ini. Aku di sini nyimak kalau mau lanjut cerita.'), $u('iya')], true, false],
             ['pembuka "Kamu ngerasa" terdeteksi', [$u('capek'), $a('Kamu ngerasa kewalahan sama tugas minggu ini.'), $u('iya')], false, true],
             ['pembuka "Kedengarannya" terdeteksi', [$u('capek'), $a('Kedengarannya kamu lagi kebanjiran tugas.'), $u('iya')], false, true],
+            ['pembuka perintah "Dengar" terdeteksi', [$u('capek'), $a('Dengar ya, tugas itu bisa dicicil.'), $u('iya')], false, true],
             ['balasan bervariasi: tidak ada pola', [$u('capek'), $a('Dua deadline di hari yang sama, pantas kepalamu penuh.'), $u('iya')], false, false],
         ];
     }
@@ -224,6 +225,9 @@ final class ChatFlowChecker
             ['hanya pertanyaan: pelanggaran', DialogueAct::Reflect, 'Yang paling bikin kesel bagian mana?', 'Yang paling bikin kesel bagian mana?', true],
             ['tanya boleh: tak diubah', DialogueAct::Ask, 'Wah, padat. Yang paling nyangkut yang mana?', 'Wah, padat. Yang paling nyangkut yang mana?', false],
             ['penegas "ya?" lolos', DialogueAct::Reflect, 'Capek banget ya?', 'Capek banget ya?', false],
+            ['pembuka perintah "Dengar ya," dibuang', DialogueAct::Reflect, 'Dengar ya, harus megang semuanya sendirian itu berat.', 'Harus megang semuanya sendirian itu berat.', false],
+            ['pembuka "Tenang." dibuang', DialogueAct::Invite, 'Tenang. Hari ini nggak harus beres semuanya.', 'Hari ini nggak harus beres semuanya.', false],
+            ['kata "dengar" di tengah kalimat tidak disentuh', DialogueAct::Reflect, 'Dari yang kamu ceritain, kedengarannya capek banget.', 'Dari yang kamu ceritain, kedengarannya capek banget.', false],
             ['penutup generik dibuang bila ada isi', DialogueAct::Reflect, 'Harus megang semuanya sendirian itu berat. Aku di sini nyimak, teruskan kalau mau cerita lebih lanjut.', 'Harus megang semuanya sendirian itu berat.', false, true],
             ['penutup generik dipertahankan bila satu-satunya isi', DialogueAct::Invite, 'Aku di sini nyimak.', 'Aku di sini nyimak.', false, true],
             ['dua baris, pertanyaan di baris kedua', DialogueAct::Invite, "Aku nyimak.\nMau lanjut cerita apa?", 'Aku nyimak.', false],
