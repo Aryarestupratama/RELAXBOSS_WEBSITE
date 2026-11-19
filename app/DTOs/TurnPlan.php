@@ -15,6 +15,9 @@ final readonly class TurnPlan
         public bool $listenOnly = false,
         public bool $retry = false,
         public ?string $focus = null,
+        public ?string $note = null,
+        public bool $avoidClosing = false,
+        public bool $avoidOpening = false,
     ) {}
 
     public function allowsQuestion(): bool
@@ -25,13 +28,17 @@ final readonly class TurnPlan
     /** Rencana yang sama dengan peringatan, dipakai saat balasan pertama melanggar larangan bertanya. */
     public function forRetry(): self
     {
-        return new self($this->act, $this->avoidValidation, $this->listenOnly, true, $this->focus);
+        return new self($this->act, $this->avoidValidation, $this->listenOnly, true, $this->focus, $this->note, $this->avoidClosing, $this->avoidOpening);
     }
 
     /** Bagian yang ditambahkan ke instruksi sistem (data dari sistem, bukan dari pengguna). */
     public function section(): string
     {
         $lines = ['', '', '# ARAHAN GILIRAN INI (ditentukan sistem, WAJIB diikuti; mengalahkan aturan gaya lain)', '', $this->act->instruction()];
+
+        if ($this->note !== null) {
+            $lines[] = $this->note;
+        }
 
         if ($this->focus !== null) {
             $lines[] = 'Fokus giliran ini: '.$this->focus;
@@ -43,6 +50,14 @@ final readonly class TurnPlan
 
         if ($this->avoidValidation) {
             $lines[] = 'Balasanmu sebelumnya sudah bernada validasi. Jangan membuka dengan validasi, penghiburan, atau kalimat yang hanya menamai perasaannya (mis. "wajar", "pasti berat", "bikin kamu kesel", "perasaanmu valid"); langsung sentuh isi ceritanya.';
+        }
+
+        if ($this->avoidClosing) {
+            $lines[] = 'Balasanmu sebelumnya ditutup dengan undangan generik ("aku nyimak", "teruskan ceritanya", "aku di sini"). Jangan menutup dengan kalimat seperti itu lagi; akhiri balasan dengan isi.';
+        }
+
+        if ($this->avoidOpening) {
+            $lines[] = 'Jangan membuka dengan pola yang sama seperti balasan sebelumnya ("Kamu ngerasa...", "Kedengarannya...", "Sepertinya..."); buka dengan hal lain, misalnya detail spesifik atau satu kalimat hangat yang pendek.';
         }
 
         if (! $this->allowsQuestion()) {

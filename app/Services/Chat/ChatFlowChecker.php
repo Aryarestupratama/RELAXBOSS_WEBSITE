@@ -67,9 +67,19 @@ final class ChatFlowChecker
             }
         }
 
-        foreach ($this->enforceCases() as [$name, $act, $reply, $expected, $violated]) {
+        foreach ($this->flagCases() as [$name, $turns, $closing, $opening]) {
             $total++;
-            $result = $this->planner->enforce(new TurnPlan($act), $reply);
+            $plan = $this->planner->plan($turns);
+
+            if ($plan->avoidClosing !== $closing || $plan->avoidOpening !== $opening) {
+                $failures[] = "pola: {$name}: avoidClosing=".($plan->avoidClosing ? 'ya' : 'tidak').' avoidOpening='.($plan->avoidOpening ? 'ya' : 'tidak');
+            }
+        }
+
+        foreach ($this->enforceCases() as $case) {
+            [$name, $act, $reply, $expected, $violated] = $case;
+            $total++;
+            $result = $this->planner->enforce(new TurnPlan($act, avoidClosing: $case[5] ?? false), $reply);
 
             if ($result['reply'] !== $expected || $result['violated'] !== $violated) {
                 $failures[] = "enforce: {$name}: \"{$result['reply']}\" violated=".($result['violated'] ? 'ya' : 'tidak');
@@ -106,6 +116,7 @@ final class ChatFlowChecker
         $u = static fn (string $text): array => ['role' => 'user', 'content' => $text];
         $a = static fn (string $text, ?string $strategy = null, ?string $flow = null): array => ['role' => 'assistant', 'content' => $text, 'strategy' => $strategy, 'flow_action' => $flow];
 
+        $long = 'Tugas numpuk banget minggu ini, laporan praktikum sama presentasi deadline-nya lusa semua dan aku belum mulai sama sekali. Dosennya juga nagih terus, belum tidur dari kemarin.';
         $story = 'Tugas numpuk banget minggu ini, laporan praktikum sama presentasi deadline-nya lusa semua dan aku belum mulai sama sekali.';
 
         return [
@@ -114,14 +125,32 @@ final class ChatFlowChecker
             ['setelah pertanyaan: cermin', [$u('Aku stres banget'), $a('Stres kenapa nih?'), $u($story)], DialogueAct::Reflect],
             ['setelah pertanyaan, balasan pendek: temani', [$u('Aku stres banget'), $a('Stres kenapa nih?'), $u('tugas')], DialogueAct::Invite],
             ['satu giliran tenang: masih tanpa tanya', [$u('a'), $a('Stres kenapa nih?'), $u($story), $a('Jadi dua deadline jatuh di hari yang sama.'), $u($story)], DialogueAct::Reflect],
-            ['dua giliran tenang, belum empat giliran: boleh tanya', [$u($story), $a('Dua deadline jatuh di hari yang sama.'), $u($story), $a('Belum tidur dari kemarin.'), $u($story)], DialogueAct::Ask],
+            ['cerita jelas: anggaran pertanyaan diperpanjang', [$u($story), $a('Dua deadline jatuh di hari yang sama.'), $u($story), $a('Belum tidur dari kemarin.'), $u($story)], DialogueAct::Reflect],
+            ['cerita jelas, tiga giliran tenang: boleh tanya', [$u($story), $a('Dua deadline.'), $u($story), $a('Belum tidur.', null, 'suggest_action'), $u($story), $a('Berat.'), $u($story)], DialogueAct::Ask],
+            ['cerita tipis, satu giliran tenang: boleh tanya', [$u('capek'), $a('Capek kenapa nih?'), $u('iya'), $a('Aku nyimak.'), $u('hmm')], DialogueAct::Ask],
+            ['cerita tipis, belum ada giliran tenang: temani', [$u('capek'), $a('Capek kenapa nih?'), $u('iya')], DialogueAct::Invite],
+            ['pesan terakhir pendek tapi cerita sudah jelas: cermin', [$u($long), $a('Dua deadline di hari yang sama.'), $u('iya')], DialogueAct::Reflect],
             ['empat giliran pengguna: tawaran pilihan', [$u('a'), $a('Stres kenapa nih?'), $u($story), $a('Dua deadline di hari yang sama.'), $u($story), $a('Belum tidur dari kemarin.'), $u($story), $a('Berat ya.'), $u($story)], DialogueAct::OfferChoice],
-            ['tawaran tidak diulang', [$u('a'), $a('Mau didengerin aja atau cari langkah?', null, 'suggest_action'), $u($story), $a('Dua deadline.'), $u($story), $a('Belum tidur.'), $u($story), $a('Berat.'), $u($story)], DialogueAct::Ask],
+            ['tawaran tidak diulang, tiga giliran tenang: tanya', [$u('a'), $a('Mau didengerin aja atau cari langkah?', null, 'suggest_action'), $u($story), $a('Dua deadline.'), $u($story), $a('Belum tidur.'), $u($story), $a('Berat.'), $u($story)], DialogueAct::Ask],
             ['bingung: bantu', [$u('a'), $a('Stres kenapa nih?'), $u('yaa itu aku bingung')], DialogueAct::Help],
             ['minta saran: bantu', [$u('Aku mau minta saran dong soal skripsi')], DialogueAct::Help],
             ['pamit: tutup', [$u('a'), $a('Cerita aja.'), $u('Makasih ya, aku mau istirahat dulu.')], DialogueAct::Close],
             ['dengerin aja: tanpa tanya dan saran', [$u('a'), $a('Stres kenapa nih?'), $u('aku cuma pengen cerita, jangan dikasih saran dulu ya, dosenku nyebelin banget')], DialogueAct::Reflect],
             ['penegas "ya?" bukan pertanyaan', [$u('a'), $a('Capek banget ya?'), $u($story)], DialogueAct::Reflect],
+        ];
+    }
+
+    /** @return list<array{0: string, 1: list<array<string, mixed>>, 2: bool, 3: bool}> */
+    private function flagCases(): array
+    {
+        $u = static fn (string $text): array => ['role' => 'user', 'content' => $text];
+        $a = static fn (string $text): array => ['role' => 'assistant', 'content' => $text];
+
+        return [
+            ['penutup "aku di sini nyimak" terdeteksi', [$u('capek'), $a('Berat banget hari ini. Aku di sini nyimak kalau mau lanjut cerita.'), $u('iya')], true, false],
+            ['pembuka "Kamu ngerasa" terdeteksi', [$u('capek'), $a('Kamu ngerasa kewalahan sama tugas minggu ini.'), $u('iya')], false, true],
+            ['pembuka "Kedengarannya" terdeteksi', [$u('capek'), $a('Kedengarannya kamu lagi kebanjiran tugas.'), $u('iya')], false, true],
+            ['balasan bervariasi: tidak ada pola', [$u('capek'), $a('Dua deadline di hari yang sama, pantas kepalamu penuh.'), $u('iya')], false, false],
         ];
     }
 
@@ -139,7 +168,7 @@ final class ChatFlowChecker
         ];
     }
 
-    /** @return list<array{0: string, 1: DialogueAct, 2: string, 3: string, 4: bool}> */
+    /** @return list<array<int, mixed>> */
     private function enforceCases(): array
     {
         return [
@@ -147,6 +176,8 @@ final class ChatFlowChecker
             ['hanya pertanyaan: pelanggaran', DialogueAct::Reflect, 'Yang paling bikin kesel bagian mana?', 'Yang paling bikin kesel bagian mana?', true],
             ['tanya boleh: tak diubah', DialogueAct::Ask, 'Wah, padat. Yang paling nyangkut yang mana?', 'Wah, padat. Yang paling nyangkut yang mana?', false],
             ['penegas "ya?" lolos', DialogueAct::Reflect, 'Capek banget ya?', 'Capek banget ya?', false],
+            ['penutup generik dibuang bila ada isi', DialogueAct::Reflect, 'Harus megang semuanya sendirian itu berat. Aku di sini nyimak, teruskan kalau mau cerita lebih lanjut.', 'Harus megang semuanya sendirian itu berat.', false, true],
+            ['penutup generik dipertahankan bila satu-satunya isi', DialogueAct::Invite, 'Aku di sini nyimak.', 'Aku di sini nyimak.', false, true],
             ['dua baris, pertanyaan di baris kedua', DialogueAct::Invite, "Aku nyimak.\nMau lanjut cerita apa?", 'Aku nyimak.', false],
         ];
     }
