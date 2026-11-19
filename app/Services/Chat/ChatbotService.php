@@ -43,6 +43,7 @@ final class ChatbotService
         private readonly CrisisDetector $crisis,
         private readonly ConversationPlanner $planner,
         private readonly ChatReplySchema $schema,
+        private readonly CasualRegister $register,
     ) {}
 
     /**
@@ -94,6 +95,7 @@ final class ChatbotService
         }
 
         $parsed = $this->generate($user, $conversation);
+        $parsed = $parsed->withReply($this->register->casualize($parsed->reply));
 
         $type = $this->suggestions->typeFor($parsed->intent);
         $suggestion = $this->suggestions->suggestion($parsed->intent);

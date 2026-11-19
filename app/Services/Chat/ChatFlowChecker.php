@@ -76,6 +76,31 @@ final class ChatFlowChecker
             }
         }
 
+        $register = new CasualRegister;
+
+        foreach ($this->registerCases() as [$name, $input, $expected]) {
+            $total++;
+            $actual = $register->casualize($input);
+
+            if ($actual !== $expected) {
+                $failures[] = "bahasa: {$name}: \"{$actual}\" (diharapkan \"{$expected}\")";
+            }
+        }
+
+        foreach ($this->styleCases() as [$name, $text, $casual]) {
+            $total++;
+
+            if ($register->isCasual($text) !== $casual) {
+                $failures[] = "gaya: {$name}: diharapkan santai=".($casual ? 'ya' : 'tidak');
+            }
+        }
+
+        $total++;
+
+        if ($register->formalWords('Sungguh, kamu sangat tabah.') !== ['sungguh', 'sangat', 'tabah']) {
+            $failures[] = 'bahasa: kata baku tidak terdeteksi lengkap';
+        }
+
         foreach ($this->enforceCases() as $case) {
             [$name, $act, $reply, $expected, $violated] = $case;
             $total++;
@@ -137,6 +162,29 @@ final class ChatFlowChecker
             ['pamit: tutup', [$u('a'), $a('Cerita aja.'), $u('Makasih ya, aku mau istirahat dulu.')], DialogueAct::Close],
             ['dengerin aja: tanpa tanya dan saran', [$u('a'), $a('Stres kenapa nih?'), $u('aku cuma pengen cerita, jangan dikasih saran dulu ya, dosenku nyebelin banget')], DialogueAct::Reflect],
             ['penegas "ya?" bukan pertanyaan', [$u('a'), $a('Capek banget ya?'), $u($story)], DialogueAct::Reflect],
+        ];
+    }
+
+    /** @return list<array{0: string, 1: string, 2: string}> */
+    private function registerCases(): array
+    {
+        return [
+            ['kata baku diganti', 'Kamu merasa tidak sanggup menghadapi semuanya, mengapa begitu?', 'Kamu ngerasa nggak sanggup ngadepin semuanya, kenapa begitu?'],
+            ['huruf kapital di awal dipertahankan', 'Tidak apa-apa kok. Namun pelan-pelan aja.', 'Nggak apa-apa kok. Tapi pelan-pelan aja.'],
+            ['"dapat" tidak diganti (maknanya bergantung konteks)', 'Kamu dapat banyak tugas hari ini.', 'Kamu dapat banyak tugas hari ini.'],
+            ['kata yang mengandung kata baku tidak ikut berubah', 'Perasaanmu itu tidak aneh. Itu bagian dari kesibukanmu.', 'Perasaanmu itu nggak aneh. Itu bagian dari kesibukanmu.'],
+            ['bahasa Inggris tidak berubah', 'That sounds really heavy, I am here.', 'That sounds really heavy, I am here.'],
+        ];
+    }
+
+    /** @return list<array{0: string, 1: string, 2: bool}> */
+    private function styleCases(): array
+    {
+        return [
+            ['pesan santai dan ekspresif', 'Aku hari ini udaah merasa overstimulated bgt huhu, gamau menghadapi hari besok', true],
+            ['pesan rapi', 'Saya merasa kewalahan dengan banyaknya tugas minggu ini dan ingin bercerita.', false],
+            ['singkatan dua jenis', 'tugas numpuk bgt, gak selesai selesai', true],
+            ['satu penanda saja: belum cukup', 'Tugasku banyak banget minggu ini.', false],
         ];
     }
 

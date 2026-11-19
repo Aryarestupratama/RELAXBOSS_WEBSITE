@@ -19,6 +19,8 @@ use App\Enums\DialogueAct;
  */
 final class ConversationPlanner
 {
+    public function __construct(private readonly CasualRegister $register = new CasualRegister) {}
+
     private const QUIET_TURNS = 2;
 
     private const OFFER_AFTER_USER_TURNS = 4;
@@ -87,6 +89,10 @@ final class ConversationPlanner
         $avoidClosing = count(array_filter($recent, fn (array $turn): bool => preg_match(self::CLOSING_PATTERN, mb_strtolower($turn['content'])) === 1)) > 0;
         $avoidOpening = count(array_filter($recent, fn (array $turn): bool => preg_match(self::OPENING_PATTERN, mb_strtolower(trim($turn['content']))) === 1)) > 0;
 
+        $recentUsers = array_slice($lengths === [] ? [] : array_values(array_map(static fn (array $turn): string => $turn['content'], array_filter($turns, static fn (array $turn): bool => $turn['role'] === 'user'))), -2);
+        $casualUser = $this->register->isCasual(implode(' ', $recentUsers));
+        $formalWords = $this->register->formalWords(implode(' ', array_map(static fn (array $turn): string => $turn['content'], $recent)));
+
         $focus = self::REFLECT_FOCUS[count($assistants) % count(self::REFLECT_FOCUS)];
 
         [$thin, $clear] = $this->storyState($lengths);
@@ -103,6 +109,8 @@ final class ConversationPlanner
             note: $act === DialogueAct::Close ? null : $note,
             avoidClosing: $avoidClosing,
             avoidOpening: $avoidOpening,
+            casualUser: $casualUser,
+            formalWords: $formalWords,
         );
 
         $hasSubstance = $length >= self::SUBSTANTIVE_MESSAGE || $clear;
