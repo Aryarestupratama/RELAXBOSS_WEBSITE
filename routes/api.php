@@ -11,7 +11,10 @@ use App\Http\Controllers\Api\V1\CrisisContactsController;
 use App\Http\Controllers\Api\V1\DeleteAccountController;
 use App\Http\Controllers\Api\V1\MeController;
 use App\Http\Controllers\Api\V1\MoodEntryController;
+use App\Http\Controllers\Api\V1\MoodEntryDestroyController;
 use App\Http\Controllers\Api\V1\MoodEntryIndexController;
+use App\Http\Controllers\Api\V1\MoodEntryUpdateController;
+use App\Http\Controllers\Api\V1\MoodJournalController;
 use App\Http\Controllers\Api\V1\TrainingConsentController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +25,7 @@ use Illuminate\Support\Facades\Route;
 | Stateless, token Sanctum (ADR-M02). Controller ada di app/Http/Controllers/Api/V1,
 | tipis, dengan FormRequest dan API Resource. Prefix `/api` dari bootstrap/app.php.
 | Endpoint ditambahkan pada task fiturnya: ringkasan (TASK-M014, selesai), chat (TASK-M015),
-| hapus akun (TASK-M016), Mood Entry (TASK-M028), deret mood (TASK-M077).
+| hapus akun (TASK-M016), Mood Entry (TASK-M028), deret mood (TASK-M077), buku harian (TASK-M078).
 */
 Route::prefix('v1')->name('api.v1.')->group(function (): void {
     // Auth (TASK-M013). Batas per akun+IP untuk login ada di Action `LoginUser`.
@@ -73,6 +76,18 @@ Route::prefix('v1')->name('api.v1.')->group(function (): void {
             // Deret mood 7 atau 30 hari untuk grafik (API-M019, TASK-M077, FR-M030): hanya baca, milik pemilik token,
             // memakai `api-user` dari grup induk. Tanpa `ai.consent`. Catatan (`note`) tidak pernah dikirim.
             Route::get('mood-entries', MoodEntryIndexController::class)->name('mood-entries.index');
+
+            // Buku harian (API-M020 sampai M022, TASK-M078): baca catatan, ubah, dan hapus Mood Entry milik sendiri.
+            // Entri dicari lewat relasi pemilik (RULE-033); milik orang lain atau tidak ada = 404. Ubah memakai limiter
+            // `api-mood`; baca dan hapus memakai `api-user` dari grup induk. Tanpa `ai.consent`. Catatan tidak masuk log (RULE-040).
+            Route::get('mood-journal', MoodJournalController::class)->name('mood-journal.index');
+            Route::patch('mood-entries/{entry}', MoodEntryUpdateController::class)
+                ->whereNumber('entry')
+                ->middleware('throttle:api-mood')
+                ->name('mood-entries.update');
+            Route::delete('mood-entries/{entry}', MoodEntryDestroyController::class)
+                ->whereNumber('entry')
+                ->name('mood-entries.destroy');
         });
 
         // Chat (API-M012, M013, M015, M016, TASK-M015): email terverifikasi, consent AI lengkap, akun milik sendiri.

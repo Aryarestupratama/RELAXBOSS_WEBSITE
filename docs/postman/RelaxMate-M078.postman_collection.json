@@ -1,0 +1,942 @@
+{
+  "info": {
+    "name": "RelaxMate Mobile API - TASK-M078 (buku harian: GET /mood-journal, PATCH dan DELETE /mood-entries/{id})",
+    "description": "Uji manual API-M020 sampai M022. Jalankan docs/postman/m078-seed.php di tinker dulu, salin tokenA, tokenB, tokenC ke Variables. Ikuti docs/API-Test-Guide.md bagian H di repo mobile.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://127.0.0.1:8000/api/v1"
+    },
+    {
+      "key": "tokenA",
+      "value": ""
+    },
+    {
+      "key": "tokenB",
+      "value": ""
+    },
+    {
+      "key": "tokenC",
+      "value": ""
+    },
+    {
+      "key": "nextBefore",
+      "value": ""
+    },
+    {
+      "key": "entryId",
+      "value": ""
+    },
+    {
+      "key": "longNote",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Akses",
+      "item": [
+        {
+          "name": "00.1 Tanpa token -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal"
+            }
+          }
+        },
+        {
+          "name": "00.2 Belum terverifikasi (C) -> 403 unverified",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"kode unverified\", () => pm.expect(pm.response.json().error.code).to.eql(\"unverified\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenC}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Baca buku harian (API-M020)",
+      "item": [
+        {
+          "name": "01.1 Halaman pertama (A): 10 entri, ada next_before",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"10 entri\", () => pm.expect(d.entries.length).to.eql(10));",
+                  "pm.test(\"semua punya catatan\", () => d.entries.forEach(e => pm.expect(e.note).to.be.a(\"string\").and.not.empty));",
+                  "pm.test(\"urut id menurun\", () => { for (let i = 1; i < d.entries.length; i++) pm.expect(d.entries[i-1].id).to.be.above(d.entries[i].id); });",
+                  "pm.test(\"tidak ada entri B\", () => pm.expect(JSON.stringify(d)).to.not.include(\"RAHASIA-M078-B\"));",
+                  "pm.test(\"bentuk entri\", () => { const e = d.entries[0]; [\"id\",\"mood\",\"mood_label\",\"arousal_input\",\"arousal_label\",\"note\",\"entry_date\",\"logged_at\",\"edited\"].forEach(k => pm.expect(e).to.have.property(k)); pm.expect(e.edited).to.eql(false); });",
+                  "pm.test(\"next_before = id terakhir\", () => pm.expect(d.next_before).to.eql(d.entries[9].id));",
+                  "pm.collectionVariables.set(\"nextBefore\", d.next_before);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal"
+            }
+          }
+        },
+        {
+          "name": "01.2 Halaman kedua: 3 entri, next_before null",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"3 entri\", () => pm.expect(d.entries.length).to.eql(3));",
+                  "pm.test(\"next_before null\", () => pm.expect(d.next_before).to.eql(null));",
+                  "pm.test(\"semua id lebih kecil dari kursor\", () => d.entries.forEach(e => pm.expect(e.id).to.be.below(Number(pm.collectionVariables.get(\"nextBefore\")))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal?before={{nextBefore}}"
+            }
+          }
+        },
+        {
+          "name": "01.3 before tidak valid -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"validation_failed\", () => pm.expect(pm.response.json().error.code).to.eql(\"validation_failed\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal?before=abc"
+            }
+          }
+        },
+        {
+          "name": "01.4 Pengguna B hanya melihat miliknya",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const d = pm.response.json().data;",
+                  "pm.test(\"1 entri\", () => pm.expect(d.entries.length).to.eql(1));",
+                  "pm.test(\"bukan data A\", () => pm.expect(JSON.stringify(d)).to.not.include(\"RAHASIA-M078-A\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Tulis dan ubah (API-M018 dengan catatan, API-M021)",
+      "item": [
+        {
+          "name": "02.1 A mencatat mood dengan tenaga dan catatan -> 201",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 201\", () => pm.response.to.have.status(201));",
+                  "const e = pm.response.json().data.entry;",
+                  "pm.collectionVariables.set(\"entryId\", e.id);",
+                  "pm.test(\"id ada\", () => pm.expect(e.id).to.be.a(\"number\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"mood\": 3, \"arousal_input\": \"tired\", \"note\": \"RAHASIA-M078-BARU\"}"
+            }
+          }
+        },
+        {
+          "name": "02.2 PATCH ganti catatan dan mood -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const e = pm.response.json().data.entry;",
+                  "pm.test(\"catatan berubah\", () => pm.expect(e.note).to.eql(\"RAHASIA-M078-DIUBAH\"));",
+                  "pm.test(\"mood berubah\", () => pm.expect(e.mood).to.eql(4));",
+                  "pm.test(\"tenaga tetap\", () => pm.expect(e.arousal_input).to.eql(\"tired\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"mood\": 4, \"note\": \"  RAHASIA-M078-DIUBAH  \"}"
+            }
+          }
+        },
+        {
+          "name": "02.3 PATCH badan kosong -> 422 errors.entry",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"errors.entry\", () => pm.expect(pm.response.json().errors).to.have.property(\"entry\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}"
+            }
+          }
+        },
+        {
+          "name": "02.4 PATCH catatan 1501 karakter -> 422 errors.note",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"errors.note\", () => pm.expect(pm.response.json().errors).to.have.property(\"note\"));"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"longNote\", \"a\".repeat(1501));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\":\"{{longNote}}\"}"
+            }
+          }
+        },
+        {
+          "name": "02.5 PATCH catatan tepat 1500 karakter -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"panjang 1500\", () => pm.expect(pm.response.json().data.entry.note.length).to.eql(1500));"
+                ]
+              }
+            },
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set(\"longNote\", \"a\".repeat(1500));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\":\"{{longNote}}\"}"
+            }
+          }
+        },
+        {
+          "name": "02.6 PATCH tenaga tidak valid -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"errors.arousal_input\", () => pm.expect(pm.response.json().errors).to.have.property(\"arousal_input\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"arousal_input\": \"bad\"}"
+            }
+          }
+        },
+        {
+          "name": "02.7 PATCH mood 9 -> 422",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 422\", () => pm.response.to.have.status(422));",
+                  "pm.test(\"errors.mood\", () => pm.expect(pm.response.json().errors).to.have.property(\"mood\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"mood\": 9}"
+            }
+          }
+        },
+        {
+          "name": "02.8 B mengubah entri A -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\": \"bajakan\"}"
+            }
+          }
+        },
+        {
+          "name": "02.9 C (belum terverifikasi) mengubah -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenC}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\": \"x\"}"
+            }
+          }
+        },
+        {
+          "name": "02.10 PATCH kosongkan catatan dan tenaga -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "const e = pm.response.json().data.entry;",
+                  "pm.test(\"catatan null\", () => pm.expect(e.note).to.eql(null));",
+                  "pm.test(\"tenaga null\", () => pm.expect(e.arousal_input).to.eql(null));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\": null, \"arousal_input\": null}"
+            }
+          }
+        },
+        {
+          "name": "02.11 Entri tanpa catatan tidak ada di buku harian",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"tidak memuat entri ini\", () => pm.expect(pm.response.json().data.entries.map(e => e.id)).to.not.include(Number(pm.collectionVariables.get(\"entryId\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal"
+            }
+          }
+        },
+        {
+          "name": "02.12 PATCH beri catatan lagi -> 200",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"catatan ada\", () => pm.expect(pm.response.json().data.entry.note).to.eql(\"RAHASIA-M078-LAGI\"));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"note\": \"RAHASIA-M078-LAGI\"}"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Hapus (API-M022)",
+      "item": [
+        {
+          "name": "03.1 B menghapus entri A -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenB}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            }
+          }
+        },
+        {
+          "name": "03.2 C (belum terverifikasi) menghapus -> 403",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 403\", () => pm.response.to.have.status(403));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenC}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            }
+          }
+        },
+        {
+          "name": "03.3 A menghapus entrinya -> 204",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 204\", () => pm.response.to.have.status(204));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            }
+          }
+        },
+        {
+          "name": "03.4 Hapus lagi -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            }
+          }
+        },
+        {
+          "name": "03.5 Id bukan angka -> 404",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/abc"
+            }
+          }
+        },
+        {
+          "name": "03.6 Tanpa token -> 401",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-entries/{{entryId}}"
+            }
+          }
+        },
+        {
+          "name": "03.7 Setelah hapus, entri tidak ada lagi di buku harian",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"entri terhapus tidak ada\", () => pm.expect(pm.response.json().data.entries.map(e => e.id)).to.not.include(Number(pm.collectionVariables.get(\"entryId\"))));"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tokenA}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mood-journal?before=999999999"
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

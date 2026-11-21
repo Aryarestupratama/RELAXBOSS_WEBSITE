@@ -1,5 +1,5 @@
 # RelaxBoss - PRD
-Version: 1.9 | Status: Draft | Last updated: 2026-11-06
+Version: 1.10 | Status: Draft | Last updated: 2026-11-21
 Owner: Founder (solo developer)
 
 Label klaim: `[Verified]` = ada sumber yang dicek, `[Inference]` = kesimpulan dari konteks, `[Assumption]` = asumsi yang bisa diubah. Kedalaman: **Lite**.
@@ -101,7 +101,7 @@ Jurusan dipakai sebagai konteks percakapan RelaxMate (FR-015); kampus hanya prof
 | FR-008 | Hasil MUST menampilkan skor dan interpretasi per subskala, penjelasan awam, disclaimer "bukan diagnosis", dan arahan konsultasi profesional. Subskala yang memicu PFA MUST menawarkan pertanyaan konteks (jawaban opsional). | Must | US-003 |
 | FR-009 | Hasil MUST tersimpan dan riwayat dapat dilihat per tanggal. | Must | US-004 |
 | FR-010 | Sistem SHOULD menampilkan Rekomendasi AI berdasarkan hasil dan konteks PFA, hanya bila pengguna sudah memberi consent AI; bila AI gagal, tanpa consent, atau jawaban PFA terindikasi krisis MUST menampilkan rekomendasi statis dari aturan skoring. Rekomendasi AI memakai prompt tersendiri (bukan prompt RelaxMate). | Should | US-003 |
-| FR-011 | Pengguna MUST dapat mencatat Mood Entry (skala 1-5, tenaga "bertenaga" atau "lelah" opsional, catatan opsional maks. 500 karakter). Lebih dari satu entri per hari diperbolehkan, maks. 5 per hari (WIB). | Must | US-005 |
+| FR-011 | Pengguna MUST dapat mencatat Mood Entry (skala 1-5, tenaga "bertenaga" atau "lelah" opsional, catatan opsional maks. 1.500 karakter; di aplikasi mobile catatan dipakai sebagai buku harian, lihat PRD-Mobile FR-M032). Lebih dari satu entri per hari diperbolehkan, maks. 5 per hari (WIB). | Must | US-005 |
 | FR-012 | Sistem MUST menampilkan grafik mood 7 dan 30 hari (satu titik per hari berupa rata-rata; hari tanpa entri berupa celah) dan, untuk 7 hari terakhir, wajah mood per hari. Rincian semua entri satu hari berjam tidak ditampilkan (`TODO-LATER.md`). | Must | US-005 |
 | FR-013 | Sebelum memakai fitur AI pertama kali, pengguna MUST menyetujui consent AI (pesan dan jurusan diproses penyedia AI pihak ketiga, RelaxMate bukan layanan medis, pesan dapat ditinjau pengelola tanpa identitas) dan MUST memilih ya atau tidak untuk persetujuan pelatihan (tanpa nilai awal, penolakan tidak mengurangi akses). Pilihan dapat diubah di pengaturan akun. | Must | US-006, US-012 |
 | FR-014 | Pengguna MUST dapat berbicara dengan RelaxMate; riwayat Percakapan tersimpan per pengguna. | Must | US-006 |
@@ -327,6 +327,7 @@ Tanggal `[Assumption]`. Status per 2026-11-06: M0 sampai M5 selesai; M6 berjalan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.10 | 2026-11-21 | FR-011: batas catatan Mood Entry naik dari 500 ke 1.500 karakter (`mood_note_max_chars`), mengikuti buku harian di aplikasi mobile (TASK-M078). Tampilan baca catatan di web belum ada. |
 | 1.9 | 2026-11-06 | Doc Sync dengan kode (HEAD `9afd27c`): FR-012 disesuaikan (tanpa rincian harian), FR-033 s.d. FR-035 (profil dan foto, ganti sandi, tambah admin), FR-036/037 (nudge), FR-038 (pengumuman), FR-039 (API mobile); admin tidak lagi "tunggal"; status hosting dan OQ-2/OQ-3. |
 | 1.8 | 2026-10-28 | FR-036–037: notifikasi dalam aplikasi, opt-in, jam mood 06–23 WIB, dan jumlah lonceng. |
 | 1.7 | 2026-10-28 | FR-021: pencarian judul/kategori `?q=`, paginasi bernomor, `noindex` hasil pencarian; FR-022: tim/pembimbing dan jejak acara Tentang dari konfigurasi dengan izin. |

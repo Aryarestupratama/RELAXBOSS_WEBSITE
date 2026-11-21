@@ -1,5 +1,5 @@
 # RelaxBoss - Design System dan Spesifikasi Layar
-Version: 1.75 | Status: Draft | Last updated: 2026-10-29
+Version: 1.76 | Status: Draft | Last updated: 2026-11-21
 Depends on: PRD v1.8, Architecture v1.74 | Owner: Founder (solo developer)
 
 Label: `[Assumption]` bisa diubah. Rasio kontras dihitung dengan rumus WCAG 2.x dari nilai heksadesimal. Kedalaman: **Lite**.
@@ -365,7 +365,7 @@ Catatan terbaru: empat kartu aksi dalam grid 2×2 dan kartu Artikel selebar penu
 
 ### SCR-016 Mood Tracker
 - Lima pilihan: 1 Sangat sedih, 2 Sedih, 3 Biasa, 4 Senang, 5 Luar biasa. Pilihan tenaga opsional: "Bertenaga" atau "Lelah".
-- Catatan opsional dengan penghitung 0/500. Tombol "Catat mood". Daftar entri hari ini dengan jam; batas 5 per hari.
+- Catatan opsional dengan penghitung 0/1500. Tombol "Catat mood". Daftar entri hari ini dengan jam; batas 5 per hari.
 - Grafik: tab 7 hari dan 30 hari (satu titik per hari); memilih satu hari menampilkan semua titik hari itu berjam. Hari tanpa entri = celah, bukan nol.
 
 - **Desain final (TASK-028J, v1.32).** Tata letak mengikuti referensi dashboard mood (warna lewat token). Halaman memakai `AppShell` lebar (`wide`, `staggered`) dan dua baris grid 12 kolom (5/7) yang bertumpuk di < 1024px dengan urutan: Catat mood, Polamu, Hari ini, Lihat catatan satu hari. **Baris A:** kartu "Catat mood" (kiri: teks sisa catatan, `CMP-005`, catatan, tombol selebar kartu) dan kartu "Polamu" (kanan: judul, tombol 7 hari dan 30 hari, baris wajah per hari khusus mode 7 hari, lalu grafik). **Baris B:** "Hari ini" (kiri) dan "Lihat catatan satu hari" (kanan, hanya bila ada hari yang punya catatan; berisi pilihan hari, lalu rincian hari terpilih). Sapaan, kartu, dan alert masuk bergantian lewat `data-load` (gerak bersama `lib/motion.ts`). **`CMP-005` (revisi):** lima pilihan memakai gambar blob `images/mood/mood-{1..5}.webp` (48px) dengan label teks, jadi pilihan tidak bergantung pada warna; terpilih = garis 2px `--primary` dengan latar `--surface-alt`; galat = garis `--destructive` dan pesan berikon `CircleAlert`; ikon tenaga tetap Lucide `Zap` dan `BatteryLow`. Tetap radio group (panah keyboard). **Baris wajah per hari (baru, `WeekFaces`):** tujuh kolom untuk 7 hari terakhir; hari berentri menampilkan blob sesuai rata-rata yang dibulatkan (tombol yang memilih hari itu, `aria-pressed`, nama aksesibel berisi tanggal, mood, dan jumlah catatan); hari kosong berupa lingkaran putus-putus (celah, bukan nol) dengan teks khusus pembaca layar "Tidak ada catatan"; nama hari singkat (Sen sampai Min, zona WIB), hari ini dicetak tebal. Mode 30 hari menyembunyikan baris ini (terlalu padat) dan hanya menampilkan grafik. **`CMP-006` (revisi):** sumbu y berisi lima ikon blob (bukan angka), titik berwarna sesuai tingkat mood (biru, `--primary`, kuning, hijau, merah) dengan cincin `--card`, titik membesar saat disorot dan menampilkan keterangan singkat ("7 Okt · Sedih", `--primary`) hanya sebagai tambahan visual; tabel khusus pembaca layar dan keterangan skala tetap. Kondisi kosong "Polamu" memakai `images/mood/mood-row.webp` dengan teks yang sama; `EmptyState` tidak lagi dipakai di halaman ini. Alert batas harian kini berikon `Info`. Tanpa skor, persentase, perbandingan minggu, atau saran.
@@ -565,6 +565,7 @@ Tidak ada yang spesifik untuk dokumen ini. Pertanyaan proyek ada di PRD.
 
 | Versi | Tanggal | Ringkasan |
 |---|---|---|
+| 1.76 | 2026-11-21 | SCR-016: penghitung catatan mengikuti `note_max_chars` (kini 1.500, TASK-M078); tanpa perubahan tampilan. |
 | 1.75 | 2026-10-29 | Doc Sync TASK-049: ikon tab dan web app (bagian 2 catatan `theme-color`, bagian 10); OQ-18 selisih tabel token dan `app.css`. |
 | 1.74 | 2026-10-29 | Doc Sync TASK-048: CMP-047 (komponen tabel admin bersama), CMP-012 dan CMP-040 diperbarui, `MonitoringFilter` dan `MonitoringPager` dihapus. |
 | 1.73 | 2026-10-28 | Doc Sync TASK-047: `Logo` prop `compact` (CMP-011), `LogoutButton` `className` (CMP-018), jarak label `MoodRangeChart` (CMP-006), pola tata letak responsif (bagian 5 dan 9). |
