@@ -57,6 +57,8 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
         ->name('attempts.recommendation');
     // Mood Tracker (SCR-016, API-011). Entri selalu lewat relasi pemilik (RULE-033).
     Route::get('/mood', [MoodController::class, 'index'])->name('mood.index');
+    // Ruang tulis (SCR-029, TASK-052): halaman menulis catatan; menyimpan lewat POST /mood yang sama.
+    Route::get('/mood/tulis', [MoodController::class, 'write'])->name('mood.write');
     Route::post('/mood', [MoodController::class, 'store'])
         ->middleware('throttle:mood')
         ->name('mood.store');

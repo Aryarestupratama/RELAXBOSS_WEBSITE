@@ -10,7 +10,9 @@
 @import "@fontsource/plus-jakarta-sans/latin-600.css";
 @import "@fontsource/plus-jakarta-sans/latin-700.css";
 @import "@fontsource/plus-jakarta-sans/latin-800.css";
+@import "@fontsource/patrick-hand/latin-400.css";
 @import "./motion.css";
+@import "./writing.css";
 
 /* Mode terang saja untuk rilis pertama (Design bagian 2). Varian dark: dari
    shadcn dibiarkan terdefinisi, tetapi kelas .dark tidak pernah dipasang. */

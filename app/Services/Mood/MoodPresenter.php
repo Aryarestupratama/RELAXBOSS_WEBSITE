@@ -73,6 +73,27 @@ final class MoodPresenter
     }
 
     /**
+     * Batas dan sisa catatan hari ini (WIB) untuk Ruang tulis; tanpa memuat grafik.
+     *
+     * @return array{limit: int, remaining: int}
+     */
+    public function quota(User $user): array
+    {
+        $now = Wib::now();
+        $today = $now->format('Y-m-d');
+        $tomorrow = $now->addDay()->format('Y-m-d');
+
+        // Rentang, bukan `=`: di SQLite `entry_date` tersimpan sebagai "Y-m-d 00:00:00" (cast `date`).
+        $count = $user->moodEntries()
+            ->where('entry_date', '>=', $today)
+            ->where('entry_date', '<', $tomorrow)
+            ->count();
+        $limit = (int) config('relaxboss.limits.mood_per_day');
+
+        return ['limit' => $limit, 'remaining' => max(0, $limit - $count)];
+    }
+
+    /**
      * @return array{id: int, time: string, minutes: int, mood: int, mood_label: string, arousal: string|null, arousal_label: string|null, note: string|null}
      */
     private function entry(MoodEntry $entry): array

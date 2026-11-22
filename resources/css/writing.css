@@ -1,0 +1,197 @@
+/* Ruang tulis (TASK-052, SCR-029): kertas bergaris, lampu meja pada baris aktif, kotak kecil
+   bercahaya yang mengikuti huruf terakhir, dan sorotan ke atas. Hanya token dari app.css
+   (RULE-050); tidak ada warna atau ukuran lepas selain proporsi terhadap tinggi baris.
+   Tinggi baris = tinggi garis (--writing-line), jadi tulisan selalu duduk di atas garis.
+   Posisi kotak dan lampu datang dari JS lewat dua properti kustom (--writing-caret-x/y) yang
+   didaftarkan sebagai <length> agar dapat bertransisi mulus. */
+
+@property --writing-caret-x {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 0px;
+}
+
+@property --writing-caret-y {
+    syntax: '<length>';
+    inherits: true;
+    initial-value: 0px;
+}
+
+.writing-sheet {
+    --writing-line: 2rem;
+    --writing-dim: 7%;
+    position: relative;
+    transition:
+        --writing-caret-x 110ms ease-out,
+        --writing-caret-y 160ms ease-out;
+    /* Garis buku: satu garis tipis di 78% tinggi tiap baris, di seluruh kertas (juga di bawah tulisan). */
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--writing-line) * 0.78 - 1px),
+        var(--border) calc(var(--writing-line) * 0.78 - 1px),
+        var(--border) calc(var(--writing-line) * 0.78),
+        transparent calc(var(--writing-line) * 0.78),
+        transparent var(--writing-line)
+    );
+}
+
+.writing-sheet[data-quiet='true'] {
+    --writing-dim: 12%;
+}
+
+/* Meredupkan kertas di luar lingkaran cahaya lampu: terang di sekitar baris aktif. */
+.writing-sheet::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(
+        ellipse 26rem 11rem at var(--writing-caret-x) calc(var(--writing-caret-y) + var(--writing-line) / 2),
+        transparent 0,
+        transparent 45%,
+        color-mix(in srgb, var(--primary) var(--writing-dim), transparent) 100%
+    );
+    opacity: 0;
+    transition: opacity 240ms ease-out;
+}
+
+.writing-sheet[data-focused='true']::after {
+    opacity: 1;
+}
+
+/* Textarea asli (keyboard, IME, undo, salin-tempel, pembaca layar tetap bekerja). Kursor bawaan
+   disembunyikan; gantinya kotak .writing-caret. */
+.writing-text,
+.writing-mirror {
+    display: block;
+    box-sizing: border-box;
+    width: 100%;
+    margin: 0;
+    padding: 0 1.5rem;
+    border: 0;
+    font-family: 'Patrick Hand', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 1.25rem;
+    line-height: var(--writing-line);
+    letter-spacing: normal;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    word-break: normal;
+    tab-size: 4;
+}
+
+.writing-text {
+    position: relative;
+    z-index: 1;
+    min-height: calc(var(--writing-line) * 8);
+    resize: none;
+    overflow: hidden;
+    outline: none;
+    color: var(--text);
+    caret-color: transparent;
+    background: transparent;
+}
+
+.writing-text::placeholder {
+    color: var(--text-muted);
+}
+
+/* Salinan tak terlihat dari teks sampai kursor; penanda di ujungnya memberi posisi huruf terakhir. */
+.writing-mirror {
+    position: absolute;
+    top: 0;
+    left: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Cahaya lampu pada baris aktif (di bawah teks, supaya teks tetap gelap di atas latar hangat). */
+.writing-lamp,
+.writing-beam {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 240ms ease-out;
+}
+
+.writing-lamp {
+    right: 0;
+    height: var(--writing-line);
+    transform: translateY(var(--writing-caret-y));
+    background: radial-gradient(
+        ellipse 16rem 100% at var(--writing-caret-x) 50%,
+        color-mix(in srgb, var(--mood-yellow) 38%, transparent),
+        transparent 75%
+    );
+}
+
+/* Sorotan ke atas dari kotak: lebar di ujung atas, sempit di bawah, memudar ke atas. */
+.writing-beam {
+    width: 3.2rem;
+    height: calc(var(--writing-line) * 2.6);
+    margin-top: calc(var(--writing-line) * -2.6 + var(--writing-line) * 0.1);
+    margin-left: -1.25rem;
+    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
+    background: linear-gradient(to top, color-mix(in srgb, var(--mood-yellow) 55%, transparent), transparent);
+    clip-path: polygon(34% 100%, 66% 100%, 100% 0, 0 0);
+}
+
+.writing-caret {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 3;
+    width: 0.7rem;
+    height: calc(var(--writing-line) * 0.64);
+    margin-top: calc(var(--writing-line) * 0.1);
+    border-radius: 0.2rem;
+    pointer-events: none;
+    background: var(--primary);
+    box-shadow: 0 0 0.9rem 0.15rem color-mix(in srgb, var(--mood-yellow) 85%, transparent);
+    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
+    opacity: 0;
+    transition: opacity 240ms ease-out;
+}
+
+.writing-sheet[data-focused='true'] .writing-lamp,
+.writing-sheet[data-focused='true'] .writing-beam {
+    opacity: 1;
+}
+
+.writing-sheet[data-focused='true'] .writing-caret {
+    opacity: 0.9;
+}
+
+/* Diam sebentar: kotak "bernapas" pelan. */
+.writing-sheet[data-focused='true'] .writing-caret[data-idle='true'] {
+    animation: writing-breathe 2.4s ease-in-out infinite;
+}
+
+@keyframes writing-breathe {
+    0%,
+    100% {
+        opacity: 0.9;
+    }
+    50% {
+        opacity: 0.35;
+    }
+}
+
+/* Pengurangan gerak: posisi tetap mengikuti huruf, tetapi tanpa transisi dan tanpa napas. */
+@media (prefers-reduced-motion: reduce) {
+    .writing-sheet,
+    .writing-sheet::after,
+    .writing-lamp,
+    .writing-beam,
+    .writing-caret {
+        transition: none;
+    }
+
+    .writing-sheet[data-focused='true'] .writing-caret[data-idle='true'] {
+        animation: none;
+    }
+}

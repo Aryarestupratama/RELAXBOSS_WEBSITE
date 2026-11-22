@@ -1,16 +1,14 @@
-import { useEffect, type FormEvent, type ReactNode } from 'react';
-import { useForm } from '@inertiajs/react';
-import { CircleAlert, Info } from 'lucide-react';
+import { type FormEvent, type ReactNode } from 'react';
+import { router, useForm } from '@inertiajs/react';
+import { CircleAlert, Info, PenLine } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import PageHeader from '@/Components/shared/PageHeader';
-import FormField from '@/Components/shared/FormField';
 import MoodPicker from '@/Components/shared/MoodPicker';
 import { MoodRangeChart } from '@/Components/shared/MoodChart';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/Components/ui/card';
 import { Separator } from '@/Components/ui/separator';
-import { Textarea } from '@/Components/ui/textarea';
 import { moodImage, moodLevel, MOOD_LABELS, weekdayShort } from '@/lib/mood';
 import type { ArousalValue, MoodDay, MoodEntryItem, MoodValue } from '@/lib/mood';
 
@@ -19,13 +17,11 @@ type IndexProps = {
   limit: number;
   remaining: number;
   days: MoodDay[];
-  note_max_chars: number;
 };
 
 type FormData = {
   mood: MoodValue | null;
   arousal_input: ArousalValue | null;
-  note: string;
 };
 
 const cardPadding = 'gap-4 p-5';
@@ -69,21 +65,23 @@ function RangeSection({ id, title, children }: { id: string; title: string; chil
 }
 
 /** SCR-016 */
-export default function Index({ limit, remaining, days, note_max_chars }: IndexProps) {
-  const form = useForm<FormData>({ mood: null, arousal_input: null, note: '' });
+export default function Index({ limit, remaining, days }: IndexProps) {
+  const form = useForm<FormData>({ mood: null, arousal_input: null });
   const errors = form.errors as Partial<Record<string, string>>;
-
-  useEffect(() => {
-    if (errors.note) {
-      document.querySelector<HTMLElement>('[aria-invalid="true"]')?.focus();
-    }
-  }, [errors.note]);
 
   const submit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     form.post('/app/mood', {
       preserveScroll: true,
       onSuccess: () => form.reset(),
+    });
+  };
+
+  /** Membawa pilihan mood dan tenaga ke Ruang tulis supaya tidak perlu memilih lagi. */
+  const openWritingRoom = () => {
+    router.get('/app/mood/tulis', {
+      mood: form.data.mood ?? undefined,
+      arousal_input: form.data.arousal_input ?? undefined,
     });
   };
 
@@ -106,7 +104,7 @@ export default function Index({ limit, remaining, days, note_max_chars }: IndexP
               </CardTitle>
               {limitReached ? null : (
                 <CardDescription className="text-[0.8125rem]">
-                  Kamu bisa mencatat {remaining} kali lagi hari ini. Boleh lebih dari sekali, kalau perasaanmu berubah.
+                  Kamu bisa mencatat {remaining} kali lagi hari ini. Boleh lebih dari sekali, kalau perasaanmu berubah. Mau menuliskannya? Buka Ruang tulis.
                 </CardDescription>
               )}
             </CardHeader>
@@ -145,30 +143,13 @@ export default function Index({ limit, remaining, days, note_max_chars }: IndexP
                   ) : null}
                 </CardContent>
 
-                <CardContent>
-                  <FormField
-                    id="mood-note"
-                    label="Catatan (boleh dikosongkan)"
-                    error={errors.note}
-                    hint={`${form.data.note.length}/${note_max_chars}`}
-                    compact
-                  >
-                    {(control) => (
-                      <Textarea
-                        {...control}
-                        name="note"
-                        maxLength={note_max_chars}
-                        value={form.data.note}
-                        className="min-h-20! rounded-xl! text-sm"
-                        onChange={(event) => form.setData('note', event.target.value)}
-                      />
-                    )}
-                  </FormField>
-                </CardContent>
-
-                <CardFooter>
+                <CardFooter className="flex-col gap-2">
                   <Button type="submit" className="w-full rounded-full! text-sm" disabled={form.processing}>
                     {form.processing ? 'Memproses...' : 'Catat mood'}
+                  </Button>
+                  <Button type="button" variant="outline" className="w-full rounded-full! text-sm" onClick={openWritingRoom} disabled={form.processing}>
+                    <PenLine aria-hidden="true" />
+                    Tulis di Ruang tulis
                   </Button>
                 </CardFooter>
               </form>
