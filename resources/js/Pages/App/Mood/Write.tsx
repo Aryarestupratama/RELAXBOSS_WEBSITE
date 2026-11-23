@@ -44,6 +44,7 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
   const [pending, setPending] = useState<PendingVisit | null>(null);
   const allowLeave = useRef(false);
   const counterId = useId();
+  const quietCounterId = `${counterId}-quiet`;
   const stamp = useMemo(() => writingStamp(new Date()), []);
 
   const hasNote = form.data.note.trim().length > 0;
@@ -111,15 +112,15 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
       disabled={form.processing}
       autoFocus={inQuietRoom}
       invalid={Boolean(errors.note)}
-      describedBy={counterId}
+      describedBy={inQuietRoom ? quietCounterId : counterId}
       quiet={inQuietRoom}
       onSubmitShortcut={submit}
       className={inQuietRoom ? 'min-h-0 flex-1' : 'h-[min(34rem,60dvh)]'}
     />
   );
 
-  const counter = (
-    <p id={counterId} className="text-[0.8125rem] text-text-secondary">
+  const counter = (inQuietRoom: boolean) => (
+    <p id={inQuietRoom ? quietCounterId : counterId} className={inQuietRoom ? 'text-[0.8125rem] text-(--room-ink-soft)' : 'text-[0.8125rem] text-text-secondary'}>
       {form.data.note.length}/{note_max_chars}
     </p>
   );
@@ -210,7 +211,7 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
               ) : null}
 
               <div className="flex flex-wrap items-center justify-between gap-3">
-                {counter}
+                {counter(false)}
                 <p className="text-[0.8125rem] text-text-secondary">Ctrl + Enter untuk menyimpan</p>
               </div>
             </CardContent>
@@ -240,8 +241,8 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
         }
         footer={
           <div className="flex items-center justify-between gap-3">
-            {counter}
-            <Button type="button" className="rounded-full! text-sm" disabled={!canSubmit} onClick={() => submit()}>
+            {counter(true)}
+            <Button type="button" className="quiet-button rounded-full! text-sm" disabled={!canSubmit} onClick={() => submit()}>
               {saveLabel}
             </Button>
           </div>

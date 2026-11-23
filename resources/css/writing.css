@@ -1,9 +1,11 @@
-/* Ruang tulis (TASK-052, SCR-029): kertas bergaris, lampu meja pada baris aktif, kotak kecil
-   bercahaya yang mengikuti huruf terakhir, dan sorotan ke atas. Hanya token dari app.css
-   (RULE-050); tidak ada warna atau ukuran lepas selain proporsi terhadap tinggi baris.
-   Tinggi baris = tinggi garis (--writing-line), jadi tulisan selalu duduk di atas garis.
-   Posisi kotak dan lampu datang dari JS lewat dua properti kustom (--writing-caret-x/y) yang
-   didaftarkan sebagai <length> agar dapat bertransisi mulus. */
+/* Ruang tulis (TASK-052, revisi TASK-054, SCR-029): kertas bergaris bergaya mesin tik.
+   Kertas tidak punya batang gulir; lembarnya (.writing-sheet) naik lewat transform yang diatur JS.
+   Pencetak huruf (.writing-caret) ada DI BAWAH baris aktif, di tempat huruf berikutnya dicetak, dan lampunya
+   (.writing-beam) menyorot ke atas berbentuk segitiga terbalik. Ruang sunyi (.quiet-room) gelap dengan lampu baca
+   di pojok kanan atas. Hanya token dari app.css (RULE-050); satu-satunya warna lepas adalah `#000` untuk menggelapkan
+   navy menjadi warna ruangan. Tinggi baris = tinggi garis (--writing-line), jadi tulisan selalu duduk di atas garis.
+   Posisi pencetak dan lampu datang dari JS lewat dua properti kustom (--writing-caret-x/y, dalam piksel pada lembar
+   yang sama dengan teks, jadi ikut naik bersama kertas) yang didaftarkan sebagai <length> agar dapat bertransisi. */
 
 @property --writing-caret-x {
     syntax: '<length>';
@@ -17,14 +19,58 @@
     initial-value: 0px;
 }
 
+/* Jendela kertas: memotong lembar yang naik. `overflow: clip` melarang gulir sama sekali, termasuk gulir otomatis
+   browser demi kursor; `hidden` hanya cadangan (JS mengembalikan scrollTop ke 0). */
+.writing-viewport {
+    --writing-paper: color-mix(in srgb, var(--mood-yellow) 10%, var(--card));
+    position: relative;
+    overflow: hidden;
+    overflow: clip;
+    cursor: text;
+    background: var(--writing-paper);
+}
+
+/* Bayangan rol mesin tik di tepi atas: tulisan yang naik "masuk" ke bawahnya. */
+.writing-viewport::before {
+    content: '';
+    position: absolute;
+    inset: 0 0 auto;
+    z-index: 3;
+    height: calc(var(--writing-line, 2rem) * 1.1);
+    pointer-events: none;
+    background: linear-gradient(to bottom, color-mix(in srgb, var(--primary) 8%, transparent), transparent);
+}
+
+.writing-viewport[data-quiet='true'] {
+    /* Kertas diterangi kerucut lampu pojok kanan atas (titik jatuhnya di kanan tengah kertas) dan makin redup menjauh, tapi tetap terbaca (kontras >= 4,5:1). */
+    background:
+        radial-gradient(
+            ellipse 95% 90% at 74% 44%,
+            transparent 0,
+            transparent 26%,
+            color-mix(in srgb, var(--room) 40%, transparent) 100%
+        ),
+        var(--writing-paper);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--mood-yellow) 14%, transparent),
+        0 1.5rem 3.5rem color-mix(in srgb, #000 55%, transparent);
+}
+
+.writing-viewport[data-quiet='true']::before {
+    background: linear-gradient(to bottom, color-mix(in srgb, #000 38%, transparent), transparent);
+}
+
+/* Lembar yang naik. Kecepatan transform sama dengan perpindahan pencetak (--writing-caret-y), jadi pencetak
+   tampak diam di jangkar sementara kertas bergeser, persis mesin tik. */
 .writing-sheet {
     --writing-line: 2rem;
-    --writing-dim: 7%;
     position: relative;
     transition:
+        transform 280ms ease-out,
         --writing-caret-x 110ms ease-out,
-        --writing-caret-y 160ms ease-out;
-    /* Garis buku: satu garis tipis di 78% tinggi tiap baris, di seluruh kertas (juga di bawah tulisan). */
+        --writing-caret-y 280ms ease-out;
+    will-change: transform;
+    /* Garis buku: satu garis tipis di 78% tinggi tiap baris, di seluruh lembar (juga di bawah tulisan). */
     background-image: repeating-linear-gradient(
         to bottom,
         transparent 0,
@@ -36,40 +82,15 @@
     );
 }
 
-.writing-sheet[data-quiet='true'] {
-    --writing-dim: 12%;
-}
-
-/* Meredupkan kertas di luar lingkaran cahaya lampu: terang di sekitar baris aktif. */
-.writing-sheet::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    z-index: 2;
-    pointer-events: none;
-    background: radial-gradient(
-        ellipse 26rem 11rem at var(--writing-caret-x) calc(var(--writing-caret-y) + var(--writing-line) / 2),
-        transparent 0,
-        transparent 45%,
-        color-mix(in srgb, var(--primary) var(--writing-dim), transparent) 100%
-    );
-    opacity: 0;
-    transition: opacity 240ms ease-out;
-}
-
-.writing-sheet[data-focused='true']::after {
-    opacity: 1;
-}
-
 /* Textarea asli (keyboard, IME, undo, salin-tempel, pembaca layar tetap bekerja). Kursor bawaan
-   disembunyikan; gantinya kotak .writing-caret. */
+   disembunyikan; gantinya pencetak huruf .writing-caret. Padding atas satu baris memberi napas di awal kertas. */
 .writing-text,
 .writing-mirror {
     display: block;
     box-sizing: border-box;
     width: 100%;
     margin: 0;
-    padding: 0 1.5rem;
+    padding: var(--writing-line) 1.5rem 0;
     border: 0;
     font-family: 'Patrick Hand', 'Plus Jakarta Sans', system-ui, sans-serif;
     font-size: 1.25rem;
@@ -84,7 +105,7 @@
 .writing-text {
     position: relative;
     z-index: 1;
-    min-height: calc(var(--writing-line) * 8);
+    min-height: calc(var(--writing-line) * 4);
     resize: none;
     overflow: hidden;
     outline: none;
@@ -94,10 +115,15 @@
 }
 
 .writing-text::placeholder {
-    color: var(--text-muted);
+    color: var(--text-secondary);
 }
 
-/* Salinan tak terlihat dari teks sampai kursor; penanda di ujungnya memberi posisi huruf terakhir. */
+/* Di kertas yang diredupkan lampu, teks bantu memakai warna tinta penuh supaya kontrasnya tetap >= 4,5:1. */
+.writing-viewport[data-quiet='true'] .writing-text::placeholder {
+    color: var(--text);
+}
+
+/* Salinan tak terlihat dari teks sampai kursor; penanda di ujungnya memberi posisi tempat huruf berikutnya. */
 .writing-mirror {
     position: absolute;
     top: 0;
@@ -106,92 +132,222 @@
     pointer-events: none;
 }
 
-/* Cahaya lampu pada baris aktif (di bawah teks, supaya teks tetap gelap di atas latar hangat). */
 .writing-lamp,
-.writing-beam {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 0;
-    pointer-events: none;
-    opacity: 0;
-    transition: opacity 240ms ease-out;
-}
-
-.writing-lamp {
-    right: 0;
-    height: var(--writing-line);
-    transform: translateY(var(--writing-caret-y));
-    background: radial-gradient(
-        ellipse 16rem 100% at var(--writing-caret-x) 50%,
-        color-mix(in srgb, var(--mood-yellow) 38%, transparent),
-        transparent 75%
-    );
-}
-
-/* Sorotan ke atas dari kotak: lebar di ujung atas, sempit di bawah, memudar ke atas. */
-.writing-beam {
-    width: 3.2rem;
-    height: calc(var(--writing-line) * 2.6);
-    margin-top: calc(var(--writing-line) * -2.6 + var(--writing-line) * 0.1);
-    margin-left: -1.25rem;
-    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
-    background: linear-gradient(to top, color-mix(in srgb, var(--mood-yellow) 55%, transparent), transparent);
-    clip-path: polygon(34% 100%, 66% 100%, 100% 0, 0 0);
-}
-
+.writing-beam,
 .writing-caret {
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 3;
-    width: 0.7rem;
-    height: calc(var(--writing-line) * 0.64);
-    margin-top: calc(var(--writing-line) * 0.1);
-    border-radius: 0.2rem;
     pointer-events: none;
-    background: var(--primary);
-    box-shadow: 0 0 0.9rem 0.15rem color-mix(in srgb, var(--mood-yellow) 85%, transparent);
-    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
     opacity: 0;
     transition: opacity 240ms ease-out;
 }
 
-.writing-sheet[data-focused='true'] .writing-lamp,
-.writing-sheet[data-focused='true'] .writing-beam {
+/* Cahaya lembut selebar baris aktif (di bawah teks, supaya teks tetap gelap di atas latar hangat). */
+.writing-lamp {
+    z-index: 0;
+    right: 0;
+    height: var(--writing-line);
+    transform: translateY(var(--writing-caret-y));
+    background: radial-gradient(
+        ellipse 14rem 100% at var(--writing-caret-x) 50%,
+        color-mix(in srgb, var(--mood-yellow) 34%, transparent),
+        transparent 75%
+    );
+}
+
+/* Sorotan pencetak: cahaya hangat yang mengembang ke atas dari celah pencetak, sangat lembut (diburamkan, memudar ke
+   atas dan ke tepi) sehingga tidak tampak sebagai segitiga bergaris; hanya terasa sebagai terang yang menyapu baris aktif. */
+.writing-beam {
+    --writing-beam-w: 10rem;
+    --writing-beam-h: calc(var(--writing-line) * 3.4);
+    z-index: 0;
+    width: var(--writing-beam-w);
+    height: var(--writing-beam-h);
+    /* Pangkal = tengah tempat huruf berikutnya dicetak, tepat di bawah garis baris aktif. */
+    margin-left: calc(var(--writing-beam-w) / -2 + 0.3rem);
+    margin-top: calc(var(--writing-line) * 0.9 - var(--writing-beam-h));
+    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
+    filter: blur(9px);
+}
+
+.writing-beam::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(46% 100%, 54% 100%, 100% 0, 0 0);
+    background: linear-gradient(
+        to top,
+        color-mix(in srgb, var(--mood-yellow) 88%, transparent),
+        color-mix(in srgb, var(--mood-yellow) 34%, transparent) 50%,
+        transparent 100%
+    );
+}
+
+/* Pencetak huruf, berbentuk penunjuk titik cetak mesin tik: penahan logam kecil berbentuk baji (sisi atas lebih sempit)
+   dengan kilau baja dan celah terang di sisi atasnya, di bawah baris aktif tepat di tempat huruf berikutnya dicetak
+   (tengahnya setengah lebar huruf di depan huruf terakhir). Cahaya keluar dari celah itu ke atas. Bentuk baji ada di
+   ::after (clip-path), bayangan dan pendar lewat `filter` di elemen induknya supaya ikut bentuk baji. */
+.writing-caret {
+    z-index: 2;
+    width: 1.3rem;
+    height: calc(var(--writing-line) * 0.5);
+    margin-left: calc(1.3rem / -2 + 0.3rem);
+    margin-top: calc(var(--writing-line) * 0.9);
+    transform: translate(var(--writing-caret-x), var(--writing-caret-y));
+    filter: drop-shadow(0 0.18rem 0.2rem color-mix(in srgb, #000 35%, transparent))
+        drop-shadow(0 -0.12rem 0.5rem color-mix(in srgb, var(--mood-yellow) 80%, transparent));
+}
+
+.writing-caret::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    clip-path: polygon(22% 0, 78% 0, 100% 100%, 0 100%);
+    border-radius: 0.1rem;
+    background:
+        linear-gradient(
+            90deg,
+            color-mix(in srgb, #000 30%, transparent),
+            transparent 22%,
+            color-mix(in srgb, var(--on-primary) 55%, transparent) 38%,
+            transparent 56%,
+            color-mix(in srgb, #000 35%, transparent)
+        ),
+        linear-gradient(
+            to bottom,
+            color-mix(in srgb, var(--on-primary) 78%, var(--primary)),
+            color-mix(in srgb, var(--on-primary) 30%, var(--primary)) 45%,
+            var(--primary)
+        );
+}
+
+/* Celah terang di sisi atas: sumber cahaya. */
+.writing-caret::before {
+    content: '';
+    position: absolute;
+    z-index: 1;
+    top: -1px;
+    left: 30%;
+    right: 30%;
+    height: 3px;
+    border-radius: 2px;
+    background: var(--mood-yellow);
+    box-shadow: 0 -1px 0.5rem 0.12rem color-mix(in srgb, var(--mood-yellow) 75%, transparent);
+}
+
+.writing-viewport[data-focused='true'] .writing-lamp,
+.writing-viewport[data-focused='true'] .writing-beam {
     opacity: 1;
 }
 
-.writing-sheet[data-focused='true'] .writing-caret {
-    opacity: 0.9;
+.writing-viewport[data-focused='true'] .writing-caret {
+    opacity: 0.95;
 }
 
-/* Diam sebentar: kotak "bernapas" pelan. */
-.writing-sheet[data-focused='true'] .writing-caret[data-idle='true'] {
+/* Diam sebentar: lampu pencetak "bernapas" pelan. */
+.writing-viewport[data-focused='true'] .writing-caret[data-idle='true'],
+.writing-viewport[data-focused='true']:has(.writing-caret[data-idle='true']) .writing-beam {
     animation: writing-breathe 2.4s ease-in-out infinite;
 }
 
 @keyframes writing-breathe {
     0%,
     100% {
-        opacity: 0.9;
+        opacity: 0.95;
     }
     50% {
-        opacity: 0.35;
+        opacity: 0.5;
     }
 }
 
-/* Pengurangan gerak: posisi tetap mengikuti huruf, tetapi tanpa transisi dan tanpa napas. */
+/* ---------- Ruang sunyi (CMP-049): gelap, lampu baca di pojok ---------- */
+
+.quiet-room {
+    /* Navy yang digelapkan: warna ruangan. */
+    --room: color-mix(in srgb, var(--primary) 42%, #000);
+    --room-ink: color-mix(in srgb, var(--on-primary) 88%, var(--room));
+    --room-ink-soft: color-mix(in srgb, var(--on-primary) 72%, var(--room));
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    color: var(--room-ink);
+    background:
+        radial-gradient(
+            ellipse 80% 70% at 100% 0%,
+            color-mix(in srgb, var(--mood-yellow) 9%, var(--room)),
+            var(--room) 70%
+        );
+}
+
+/* Lampu baca: kepala lampu menggantung dari pojok kanan atas, cahayanya jatuh ke kertas di kiri bawah. Hiasan murni. */
+.quiet-lamp {
+    position: absolute;
+    top: -1.5rem;
+    right: -2rem;
+    width: clamp(15rem, 36vw, 28rem);
+    pointer-events: none;
+}
+
+/* HP: kepala lampu lebih kecil dan lebih ke pojok supaya tidak menutupi tanggal dan baris pertama. */
+@media (max-width: 639px) {
+    .quiet-lamp {
+        top: -2.25rem;
+        right: -1.25rem;
+        width: 10.5rem;
+    }
+}
+
+.quiet-lamp-cone {
+    z-index: 5;
+}
+
+.quiet-lamp-head {
+    z-index: 20;
+}
+
+.quiet-lamp svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    overflow: visible;
+}
+
+/* Tombol di atas latar gelap: tanpa ini tombol navy bawaan hilang. */
+.quiet-room .quiet-button {
+    border-color: var(--mood-yellow);
+    background: var(--mood-yellow);
+    color: var(--primary);
+}
+
+.quiet-room .quiet-button:hover:not(:disabled) {
+    border-color: var(--mood-yellow);
+    background: color-mix(in srgb, var(--mood-yellow) 82%, var(--on-primary));
+}
+
+.quiet-room .quiet-ghost {
+    color: var(--room-ink);
+}
+
+.quiet-room .quiet-ghost:hover {
+    background: color-mix(in srgb, var(--on-primary) 12%, transparent);
+}
+
+.quiet-room :focus-visible {
+    outline-color: var(--mood-yellow);
+}
+
+/* Pengurangan gerak: posisi tetap mengikuti, tetapi tanpa transisi dan tanpa napas. */
 @media (prefers-reduced-motion: reduce) {
     .writing-sheet,
-    .writing-sheet::after,
     .writing-lamp,
     .writing-beam,
     .writing-caret {
         transition: none;
     }
 
-    .writing-sheet[data-focused='true'] .writing-caret[data-idle='true'] {
+    .writing-viewport[data-focused='true'] .writing-caret[data-idle='true'],
+    .writing-viewport[data-focused='true']:has(.writing-caret[data-idle='true']) .writing-beam {
         animation: none;
     }
 }
