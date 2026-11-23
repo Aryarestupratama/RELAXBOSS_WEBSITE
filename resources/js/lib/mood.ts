@@ -29,6 +29,22 @@ export type MoodEntryItem = {
   note: string | null;
 };
 
+/** Satu catatan buku harian (bentuk sama dengan API-M020; `MoodJournal::entry` di server). */
+export type JournalEntryData = {
+  id: number;
+  mood: MoodValue;
+  mood_label: string;
+  arousal_input: ArousalValue | null;
+  arousal_label: string | null;
+  note: string;
+  /** Tanggal WIB `Y-m-d`. */
+  entry_date: string;
+  /** ISO UTC. */
+  logged_at: string;
+  /** Disimpan ulang lebih dari 2 detik setelah dibuat. */
+  edited: boolean;
+};
+
 export type MoodDay = {
   /** Tanggal WIB, "Y-m-d". */
   date: string;

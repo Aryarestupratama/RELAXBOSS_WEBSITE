@@ -73,3 +73,10 @@ const timeFormat = new Intl.DateTimeFormat('id-ID', {
 export function writingStamp(date: Date): { date: string; time: string } {
   return { date: dateFormat.format(date), time: timeFormat.format(date).replace(':', '.') };
 }
+
+const monthFormat = new Intl.DateTimeFormat('id-ID', { month: 'long', year: 'numeric', timeZone: 'UTC' });
+
+/** "November 2026" dari tanggal WIB `Y-m-d` (diurai sebagai UTC supaya tidak bergeser hari). */
+export function monthLabel(date: string): string {
+  return monthFormat.format(new Date(`${date}T00:00:00Z`));
+}

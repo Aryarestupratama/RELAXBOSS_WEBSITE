@@ -37,6 +37,7 @@ final class MoodController extends Controller
             ...$presenter->quota($request->user()),
             'note_max_chars' => (int) config('relaxboss.limits.mood_note_max_chars'),
             // Query berupa larik (mis. `mood[]=1`) atau nilai asing diabaikan.
+            'editing' => null,
             'initial_mood' => is_string($mood) ? MoodLevel::tryFrom((int) $mood)?->value : null,
             'initial_arousal' => is_string($arousal) ? ArousalInput::tryFrom($arousal)?->value : null,
         ]);

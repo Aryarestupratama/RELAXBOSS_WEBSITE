@@ -11,7 +11,7 @@ import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Button } from '@/Components/ui/button';
 import { Card, CardContent } from '@/Components/ui/card';
 import { AROUSAL_LABELS, MOOD_LABELS, moodImage } from '@/lib/mood';
-import type { ArousalValue, MoodValue } from '@/lib/mood';
+import type { ArousalValue, JournalEntryData, MoodValue } from '@/lib/mood';
 import { writingStamp } from '@/lib/writing';
 
 type WriteProps = {
@@ -20,6 +20,8 @@ type WriteProps = {
   note_max_chars: number;
   initial_mood: MoodValue | null;
   initial_arousal: ArousalValue | null;
+  /** Catatan yang diubah (mode ubah, TASK-053); `null` berarti menulis catatan baru. */
+  editing: JournalEntryData | null;
 };
 
 type FormData = {
@@ -36,8 +38,12 @@ type PendingVisit = {
 const PLACEHOLDER = 'Tulis apa saja yang ingin kamu ingat dari hari ini...';
 
 /** SCR-029. Ruang tulis: kertas bergaris yang menulis seperti mesin tik, dengan mode Ruang sunyi. */
-export default function Write({ limit, remaining, note_max_chars, initial_mood, initial_arousal }: WriteProps) {
-  const form = useForm<FormData>({ mood: initial_mood, arousal_input: initial_arousal, note: '' });
+export default function Write({ limit, remaining, note_max_chars, initial_mood, initial_arousal, editing }: WriteProps) {
+  const form = useForm<FormData>({
+    mood: editing?.mood ?? initial_mood,
+    arousal_input: editing ? editing.arousal_input : initial_arousal,
+    note: editing?.note ?? '',
+  });
   const errors = form.errors as Partial<Record<string, string>>;
 
   const [quiet, setQuiet] = useState(false);
@@ -45,24 +51,27 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
   const allowLeave = useRef(false);
   const counterId = useId();
   const quietCounterId = `${counterId}-quiet`;
-  const stamp = useMemo(() => writingStamp(new Date()), []);
+  const stamp = useMemo(() => writingStamp(editing ? new Date(editing.logged_at) : new Date()), [editing]);
+  const backHref = editing ? '/app/mood/buku' : '/app/mood';
 
   const hasNote = form.data.note.trim().length > 0;
   const limitReached = remaining <= 0;
   const canSubmit = form.data.mood !== null && !form.processing;
-  const hasProgress = hasNote && !allowLeave.current;
+  // Ada yang belum tersimpan: catatan baru yang sudah ditulis, atau catatan lama yang berubah.
+  const dirty = editing ? form.data.note !== editing.note : hasNote;
+  const hasProgress = dirty && !allowLeave.current;
 
   // Peringatan sebelum keluar lewat navigasi di dalam aplikasi.
   useEffect(() => {
     return router.on('before', (event) => {
-      if (allowLeave.current || form.data.note.trim().length === 0) {
+      if (allowLeave.current || !dirty) {
         return;
       }
       const visit = event.detail.visit;
       setPending({ url: visit.url.href, method: visit.method });
       return false;
     });
-  }, [form.data.note]);
+  }, [dirty]);
 
   // Peringatan bawaan browser saat tab ditutup atau dimuat ulang.
   useEffect(() => {
@@ -82,12 +91,17 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
       return;
     }
     allowLeave.current = true;
-    form.post('/app/mood', {
+    const options = {
       onError: () => {
         allowLeave.current = false;
         setQuiet(false);
       },
-    });
+    };
+    if (editing) {
+      form.patch(`/app/mood/${editing.id}`, options);
+    } else {
+      form.post('/app/mood', options);
+    }
   };
 
   const leave = () => {
@@ -125,14 +139,26 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
     </p>
   );
 
-  const saveLabel = form.processing ? 'Memproses...' : hasNote ? 'Simpan catatan' : 'Simpan tanpa catatan';
+  const saveLabel = form.processing
+    ? 'Memproses...'
+    : editing
+      ? 'Simpan perubahan'
+      : hasNote
+        ? 'Simpan catatan'
+        : 'Simpan tanpa catatan';
+  // Mengubah selalu butuh catatan terisi (mengosongkannya = menghapus, lewat Buku harian).
+  const submitReady = canSubmit && (!editing || hasNote);
 
   return (
-    <AppShell title="Ruang tulis" staggered>
+    <AppShell title={editing ? 'Ubah catatan' : 'Ruang tulis'} staggered>
       <PageHeader
-        title="Ruang tulis"
-        description="Tulis apa saja yang ingin kamu ingat dari hari ini. Tidak ada yang salah dengan apa pun yang kamu tulis."
-        back={{ href: '/app/mood', label: 'Mood Tracker' }}
+        title={editing ? 'Ubah catatan' : 'Ruang tulis'}
+        description={
+          editing
+            ? 'Ubah catatanmu, perasaan, atau tenaganya. Waktu dan tanggal catatan tetap.'
+            : 'Tulis apa saja yang ingin kamu ingat dari hari ini. Tidak ada yang salah dengan apa pun yang kamu tulis.'
+        }
+        back={editing ? { href: backHref, label: 'Buku harian' } : { href: backHref, label: 'Mood Tracker' }}
       />
 
       {limitReached ? (
@@ -217,7 +243,7 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
             </CardContent>
           </Card>
 
-          <Button type="submit" className="w-full rounded-full! text-sm sm:w-auto sm:self-end" disabled={!canSubmit}>
+          <Button type="submit" className="w-full rounded-full! text-sm sm:w-auto sm:self-end" disabled={!submitReady}>
             {saveLabel}
           </Button>
           {form.data.mood === null ? (
@@ -242,7 +268,7 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
         footer={
           <div className="flex items-center justify-between gap-3">
             {counter(true)}
-            <Button type="button" className="quiet-button rounded-full! text-sm" disabled={!canSubmit} onClick={() => submit()}>
+            <Button type="button" className="quiet-button rounded-full! text-sm" disabled={!submitReady} onClick={() => submit()}>
               {saveLabel}
             </Button>
           </div>
@@ -253,8 +279,8 @@ export default function Write({ limit, remaining, note_max_chars, initial_mood, 
 
       <ConfirmLeaveDialog
         open={pending !== null}
-        title="Keluar dari Ruang tulis?"
-        description="Catatanmu belum tersimpan. Yakin ingin keluar?"
+        title={editing ? 'Keluar tanpa menyimpan?' : 'Keluar dari Ruang tulis?'}
+        description={editing ? 'Perubahanmu belum tersimpan. Yakin ingin keluar?' : 'Catatanmu belum tersimpan. Yakin ingin keluar?'}
         stayLabel="Lanjut menulis"
         leaveLabel="Keluar"
         onStay={() => setPending(null)}

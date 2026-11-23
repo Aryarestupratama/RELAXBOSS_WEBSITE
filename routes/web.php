@@ -17,6 +17,7 @@ use App\Http\Controllers\App\ChatMessageController;
 use App\Http\Controllers\App\AttemptController;
 use App\Http\Controllers\App\DashboardController;
 use App\Http\Controllers\App\MoodController;
+use App\Http\Controllers\App\MoodJournalController;
 use App\Http\Controllers\App\NotificationController;
 use App\Http\Controllers\App\NotificationPreferenceController;
 use App\Http\Controllers\App\ProfileController;
@@ -59,6 +60,14 @@ Route::middleware(['auth', 'verified', 'active'])->prefix('app')->name('app.')->
     Route::get('/mood', [MoodController::class, 'index'])->name('mood.index');
     // Ruang tulis (SCR-029, TASK-052): halaman menulis catatan; menyimpan lewat POST /mood yang sama.
     Route::get('/mood/tulis', [MoodController::class, 'write'])->name('mood.write');
+    // Buku harian (SCR-030, TASK-053): baca, ubah (Ruang tulis mode ubah), dan hapus catatan. Entri dicari lewat relasi pemilik.
+    Route::get('/mood/buku', [MoodJournalController::class, 'index'])->name('mood.journal');
+    Route::get('/mood/{entry}/ubah', [MoodJournalController::class, 'edit'])->whereNumber('entry')->name('mood.entries.edit');
+    Route::patch('/mood/{entry}', [MoodJournalController::class, 'update'])
+        ->whereNumber('entry')
+        ->middleware('throttle:mood')
+        ->name('mood.entries.update');
+    Route::delete('/mood/{entry}', [MoodJournalController::class, 'destroy'])->whereNumber('entry')->name('mood.entries.destroy');
     Route::post('/mood', [MoodController::class, 'store'])
         ->middleware('throttle:mood')
         ->name('mood.store');

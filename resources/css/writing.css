@@ -28,6 +28,8 @@
     overflow: clip;
     cursor: text;
     background: var(--writing-paper);
+    /* Geseran jari ditangani JS (kertas tidak punya batang gulir); tanpa ini browser menggulir halaman. */
+    touch-action: none;
 }
 
 /* Bayangan rol mesin tik di tepi atas: tulisan yang naik "masuk" ke bawahnya. */
@@ -80,6 +82,11 @@
         transparent calc(var(--writing-line) * 0.78),
         transparent var(--writing-line)
     );
+}
+
+/* Selagi digeser pengguna (roda atau jari) kertas mengikuti tanpa tertinggal oleh transisi. */
+.writing-sheet[data-panning='true'] {
+    transition: none;
 }
 
 /* Textarea asli (keyboard, IME, undo, salin-tempel, pembaca layar tetap bekerja). Kursor bawaan
@@ -294,6 +301,64 @@
     }
 
     .writing-viewport[data-focused='true'] .writing-caret[data-idle='true'] {
+        animation: none;
+    }
+}
+
+/* Halaman baca buku harian (SCR-030, TASK-053): kertas yang sama dengan Ruang tulis, tanpa mesin tik. Isi catatan
+   digulir di dalam halaman bila panjang; garisnya ikut bergulir (background-attachment: local). */
+.reading-paper {
+    --writing-line: 2rem;
+    background: color-mix(in srgb, var(--mood-yellow) 10%, var(--card));
+}
+
+.reading-text {
+    margin: 0;
+    min-height: calc(var(--writing-line) * 8);
+    padding: 0 0.25rem 0.5rem;
+    font-family: 'Patrick Hand', 'Plus Jakarta Sans', system-ui, sans-serif;
+    font-size: 1.25rem;
+    line-height: var(--writing-line);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    color: var(--text);
+    background-attachment: local;
+    background-image: repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(var(--writing-line) * 0.78 - 1px),
+        var(--border) calc(var(--writing-line) * 0.78 - 1px),
+        var(--border) calc(var(--writing-line) * 0.78),
+        transparent calc(var(--writing-line) * 0.78),
+        transparent var(--writing-line)
+    );
+}
+
+/* Berpindah halaman: halaman baru masuk dari sisi arah bacanya (lebih lama dari kanan, lebih baru dari kiri). */
+.reading-paper[data-direction='older'] {
+    animation: reading-in-older 260ms ease-out both;
+}
+
+.reading-paper[data-direction='newer'] {
+    animation: reading-in-newer 260ms ease-out both;
+}
+
+@keyframes reading-in-older {
+    from {
+        opacity: 0;
+        transform: translateX(1.25rem);
+    }
+}
+
+@keyframes reading-in-newer {
+    from {
+        opacity: 0;
+        transform: translateX(-1.25rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .reading-paper[data-direction] {
         animation: none;
     }
 }

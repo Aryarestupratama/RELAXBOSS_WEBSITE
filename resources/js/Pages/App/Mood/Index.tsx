@@ -1,6 +1,6 @@
 import { type FormEvent, type ReactNode } from 'react';
-import { router, useForm } from '@inertiajs/react';
-import { CircleAlert, Info, PenLine } from 'lucide-react';
+import { Link, router, useForm } from '@inertiajs/react';
+import { BookOpen, CircleAlert, Info, PenLine } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import PageHeader from '@/Components/shared/PageHeader';
 import MoodPicker from '@/Components/shared/MoodPicker';
@@ -93,7 +93,18 @@ export default function Index({ limit, remaining, days }: IndexProps) {
 
   return (
     <AppShell title="Mood Tracker" wide staggered>
-      <PageHeader title="Mood Tracker" description="Catat perasaanmu dan lihat polanya dalam seminggu dan sebulan." />
+      <PageHeader
+        title="Mood Tracker"
+        description="Catat perasaanmu dan lihat polanya dalam seminggu dan sebulan."
+        actions={
+          <Button asChild variant="outline" className="rounded-full! text-[0.8125rem]">
+            <Link href="/app/mood/buku">
+              <BookOpen aria-hidden="true" />
+              Buku harian
+            </Link>
+          </Button>
+        }
+      />
 
       <div className="grid grid-cols-1 gap-4 lg:grid-cols-12 lg:items-start">
         <div className="flex flex-col lg:col-span-5">

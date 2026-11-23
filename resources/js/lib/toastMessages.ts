@@ -15,6 +15,8 @@ type FlashMessage = { tone: ToastTone; text: string };
  */
 export const FLASH_MESSAGES: Record<string, FlashMessage> = {
   'mood-saved': { tone: 'success', text: 'Catatanmu tersimpan.' },
+  'mood-updated': { tone: 'success', text: 'Perubahan tersimpan.' },
+  'mood-deleted': { tone: 'success', text: 'Catatan dihapus.' },
   'profile-updated': { tone: 'success', text: 'Profilmu tersimpan.' },
   'password-updated': { tone: 'success', text: 'Kata sandi diganti. Perangkat lain otomatis keluar.' },
   'notifications-updated': { tone: 'success', text: 'Pengaturan notifikasi tersimpan.' },
