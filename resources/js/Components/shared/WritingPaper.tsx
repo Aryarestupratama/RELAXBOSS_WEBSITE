@@ -27,8 +27,7 @@ const IDLE_MS = 1400;
  * CMP-048. Kertas bergaris untuk menulis catatan, bergaya mesin tik. Textarea asli dipertahankan (keyboard HP, IME, undo,
  * salin-tempel, pembaca layar) dengan kursor bawaan disembunyikan. Kertas tidak punya batang gulir: baris aktif berhenti di
  * jangkar dan kertas yang naik sendiri (transform) setiap tulisan turun satu baris. Pencetak huruf (`.writing-caret`) ada
- * di bawah baris aktif, tepat di tempat huruf berikutnya dicetak (di depan huruf terakhir, bukan di atasnya), dan lampunya
- * menyorot ke atas ke baris itu berbentuk segitiga terbalik. Panah keyboard atau ketukan yang memindahkan kursor ke baris
+ * di bawah baris aktif, tepat di tempat huruf berikutnya dicetak (di depan huruf terakhir, bukan di atasnya), tanpa cahaya. Panah keyboard atau ketukan yang memindahkan kursor ke baris
  * lain membawa kertas turun atau naik mengikutinya. `quiet` menggelapkan latar kertas di luar cahaya lampu pojok
  * (dipasang oleh `QuietRoom`). Pengguna dengan `prefers-reduced-motion` mendapat posisi yang sama tanpa transisi.
  * Gaya di `resources/css/writing.css`; isi tidak pernah disimpan di luar state induk.
@@ -168,8 +167,6 @@ export default function WritingPaper({
     >
       <div ref={sheetRef} className="writing-sheet">
         <div ref={mirrorRef} aria-hidden="true" className="writing-mirror" />
-        <span aria-hidden="true" className="writing-lamp" />
-        <span aria-hidden="true" className="writing-beam" />
         <textarea
           ref={textRef}
           value={value}

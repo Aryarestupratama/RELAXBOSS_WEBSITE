@@ -15,12 +15,12 @@ type QuietRoomProps = {
 
 /**
  * Lampu baca: hanya kepala lampu (tanpa tiang), besar, terlihat dari meja tempat orang menulis. Kap kubah menggantung di
- * pojok kanan atas dan sedikit terpotong tepi layar; mulutnya menghadap kertas di kiri bawah (sumbu cahaya 56 derajat dari
+ * pojok kanan atas dan sedikit terpotong tepi layar; mulutnya menghadap kertas di kiri bawah (sumbu cahaya 70 derajat dari
  * tegak lurus). Dua lapisan dengan geometri sama: `cone` di BAWAH kertas (cahaya di udara, tidak menutupi tulisan) dan
  * `head` di ATAS kertas. Kertas sendiri diterangi di titik jatuh kerucut lewat `.writing-viewport[data-quiet]`.
  * Hiasan murni (`aria-hidden`); semua warna dari token. Sumbu kap = sumbu +y pada grup yang diputar.
  */
-const LAMP_TRANSFORM = 'translate(235 185) rotate(56)';
+const LAMP_TRANSFORM = 'translate(235 185) rotate(70)';
 
 function LampCone() {
   return (
@@ -30,18 +30,18 @@ function LampCone() {
           <filter id="quiet-soft" x="-60%" y="-30%" width="220%" height="180%">
             <feGaussianBlur stdDeviation="16" />
           </filter>
-          <linearGradient id="quiet-cone" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="820">
-            <stop offset="0" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.5 }} />
-            <stop offset="0.5" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.16 }} />
+          <linearGradient id="quiet-cone" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="0" y2="640">
+            <stop offset="0" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.26 }} />
+            <stop offset="0.5" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.08 }} />
             <stop offset="1" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0 }} />
           </linearGradient>
           <radialGradient id="quiet-halo" cx="0.5" cy="0.5" r="0.5">
-            <stop offset="0" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.55 }} />
+            <stop offset="0" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.3 }} />
             <stop offset="1" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0 }} />
           </radialGradient>
         </defs>
         <g transform={LAMP_TRANSFORM}>
-          <polygon points="-96,6 96,6 270,820 -270,820" fill="url(#quiet-cone)" filter="url(#quiet-soft)" />
+          <polygon points="-96,6 96,6 250,640 -250,640" fill="url(#quiet-cone)" filter="url(#quiet-soft)" />
           <ellipse cx="0" cy="14" rx="150" ry="70" fill="url(#quiet-halo)" />
         </g>
       </svg>
@@ -60,9 +60,8 @@ function LampHead() {
             <stop offset="1" style={{ stopColor: 'var(--primary)' }} />
           </linearGradient>
           <radialGradient id="quiet-mouth" cx="0.5" cy="0.45" r="0.6">
-            <stop offset="0" style={{ stopColor: 'var(--on-primary)' }} />
-            <stop offset="0.35" style={{ stopColor: 'var(--mood-yellow)' }} />
-            <stop offset="1" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.55 }} />
+            <stop offset="0" style={{ stopColor: 'var(--mood-yellow)' }} />
+            <stop offset="1" style={{ stopColor: 'var(--mood-yellow)', stopOpacity: 0.5 }} />
           </radialGradient>
         </defs>
         <g transform={LAMP_TRANSFORM}>
@@ -77,7 +76,7 @@ function LampHead() {
             fill="none"
             strokeWidth="2.5"
             strokeLinecap="round"
-            style={{ stroke: 'var(--mood-yellow)', strokeOpacity: 0.4 }}
+            style={{ stroke: 'var(--mood-yellow)', strokeOpacity: 0.18 }}
           />
           {/* Mulut kap yang menyala. */}
           <ellipse cx="0" cy="0" rx="100" ry="22" fill="url(#quiet-mouth)" />
