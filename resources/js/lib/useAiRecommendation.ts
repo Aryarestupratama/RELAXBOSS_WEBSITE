@@ -7,7 +7,8 @@ export type SavedRecommendation = { recommendation: string; summary: string | nu
 export type AiRecommendationState =
   | { status: 'idle' }
   | { status: 'loading' }
-  | { status: 'ready'; recommendation: string; summary: string | null }
+  /** `fresh`: hasil baru tiba di halaman ini (boleh diketik); `false` untuk hasil tersimpan dari riwayat. */
+  | { status: 'ready'; recommendation: string; summary: string | null; fresh: boolean }
   | { status: 'error'; message: string; retryable: boolean };
 
 /** Galat yang tidak berguna bila diulang langsung. */
@@ -19,7 +20,7 @@ const FINAL_ERRORS = new Set(['daily_limit', 'ai_skipped', 'consent_required', '
  */
 export function useAiRecommendation(attemptId: number, saved: SavedRecommendation | null, enabled: boolean) {
   const [state, setState] = useState<AiRecommendationState>(
-    saved ? { status: 'ready', recommendation: saved.recommendation, summary: saved.summary } : { status: 'idle' },
+    saved ? { status: 'ready', recommendation: saved.recommendation, summary: saved.summary, fresh: false } : { status: 'idle' },
   );
   const requested = useRef(false);
   const mounted = useRef(false);
@@ -46,6 +47,7 @@ export function useAiRecommendation(attemptId: number, saved: SavedRecommendatio
         status: 'ready',
         recommendation: result.data.recommendation,
         summary: result.data.summary ?? null,
+        fresh: true,
       });
 
       return;

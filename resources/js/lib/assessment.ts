@@ -29,5 +29,7 @@ export const AI_REC_ENABLE = 'Aktifkan rekomendasi AI';
 export const AI_REC_WAITING_CONTEXT =
   'Rekomendasi AI akan disusun setelah kamu menjawab atau melewati pertanyaan konteks. Sementara itu, ini rekomendasi umum untuk hasilmu.';
 export const AI_REC_RETRY = 'Coba lagi';
+export const AI_REC_SKIP_TYPING = 'Tampilkan semua';
+export const AI_REC_LOADING_HINT = 'Biasanya hanya butuh beberapa detik.';
 export const AI_REC_FALLBACK_ERROR =
   'Rekomendasi AI sedang tidak tersedia. Sementara itu, ini rekomendasi umum untuk hasilmu.';

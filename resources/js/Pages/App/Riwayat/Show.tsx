@@ -1,6 +1,6 @@
 import { useEffect, useState, type FormEvent } from 'react';
 import { Link, router, useForm, usePage } from '@inertiajs/react';
-import { History, Loader2 } from 'lucide-react';
+import { History } from 'lucide-react';
 import AppShell from '@/Layouts/AppShell';
 import AiRecommendationCard from '@/Components/shared/AiRecommendationCard';
 import PageHeader from '@/Components/shared/PageHeader';
@@ -17,11 +17,6 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Separator } from '@/Components/ui/separator';
 import { Textarea } from '@/Components/ui/textarea';
 import {
-  AI_REC_ENABLE,
-  AI_REC_LOADING,
-  AI_REC_NEEDS_CONSENT,
-  AI_REC_RETRY,
-  AI_REC_WAITING_CONTEXT,
   ASSESSMENT_DISCLAIMER,
   SEVERITY_EXPLANATION,
   severityOf,
@@ -122,10 +117,23 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
     !attempt.crisis && consentDone && !pfaPending,
   );
 
-  const showAiStatus = !attempt.crisis;
-  const hasRecContent =
-    recommendations.length > 0 ||
-    (showAiStatus && ((!consentDone && consent !== null) || (consentDone && pfaPending) || ai.status === 'loading' || ai.status === 'error'));
+  // Kotak Rekomendasi AI selalu di tempat yang sama selama AI relevan; hanya isinya yang berganti (TASK-056).
+  const aiPhase = attempt.crisis
+    ? null
+    : ai.status === 'ready'
+      ? 'ready'
+      : !consentDone
+        ? consent !== null
+          ? 'consent'
+          : null
+        : pfaPending
+          ? 'context'
+          : ai.status === 'error'
+            ? 'error'
+            : 'loading';
+  // Rekomendasi statis tetap muncul sebagai cadangan bila AI tidak tampil, tapi tidak selagi AI menyusun atau sudah siap
+  // (kartu AI sudah menjadi tempat rekomendasi), dan selalu di bawah kotak AI sehingga kotak itu tidak bergeser.
+  const showStatic = recommendations.length > 0 && aiPhase !== 'loading' && aiPhase !== 'ready';
 
   return (
     <AppShell title="Hasil asesmen" staggered>
@@ -256,11 +264,34 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
             </Card>
           ) : null}
 
-          {ai.status === 'ready' && !attempt.crisis ? (
+          {aiPhase === 'ready' && ai.status === 'ready' ? (
             <div data-load>
-              <AiRecommendationCard recommendation={ai.recommendation} summary={ai.summary} />
+              <AiRecommendationCard
+                phase="ready"
+                recommendation={ai.recommendation}
+                summary={ai.summary}
+                animate={ai.fresh}
+              />
             </div>
-          ) : hasRecContent ? (
+          ) : aiPhase === 'error' && ai.status === 'error' ? (
+            <div data-load>
+              <AiRecommendationCard phase="error" message={ai.message} retryable={ai.retryable} onRetry={() => void retry()} />
+            </div>
+          ) : aiPhase === 'consent' ? (
+            <div data-load>
+              <AiRecommendationCard phase="consent" onEnable={() => setConsentOpen(true)} />
+            </div>
+          ) : aiPhase === 'context' ? (
+            <div data-load>
+              <AiRecommendationCard phase="context" />
+            </div>
+          ) : aiPhase === 'loading' ? (
+            <div data-load>
+              <AiRecommendationCard phase="loading" />
+            </div>
+          ) : null}
+
+          {showStatic ? (
             <Card data-load role="region" aria-labelledby="rec-title" className="gap-5 p-5">
               <CardHeader>
                 <CardTitle id="rec-title" role="heading" aria-level={2} className="text-base">
@@ -268,50 +299,14 @@ function ShowContent({ attempt, max_answer_chars }: ShowProps) {
                 </CardTitle>
               </CardHeader>
               <Separator />
-
-              {showAiStatus && !consentDone && consent !== null ? (
-                <p className="text-sm text-text-secondary">
-                  {AI_REC_NEEDS_CONSENT}{' '}
-                  <button type="button" onClick={() => setConsentOpen(true)} className={`${linkClass} min-h-11`}>
-                    {AI_REC_ENABLE}
-                  </button>
-                </p>
-              ) : null}
-
-              {showAiStatus && consentDone && pfaPending ? (
-                <p className="text-sm text-text-secondary">{AI_REC_WAITING_CONTEXT}</p>
-              ) : null}
-
-              {showAiStatus && ai.status === 'loading' ? (
-                <p role="status" className="flex items-center gap-2 text-sm text-text-secondary">
-                  <Loader2 className="size-4 animate-spin motion-reduce:animate-none" aria-hidden="true" />
-                  {AI_REC_LOADING}
-                </p>
-              ) : null}
-
-              {showAiStatus && ai.status === 'error' ? (
-                <Alert>
-                  <AlertDescription>
-                    <p>{ai.message}</p>
-                    {ai.retryable ? (
-                      <Button type="button" variant="outline" className={`mt-2 ${pillButton}`} onClick={() => void retry()}>
-                        {AI_REC_RETRY}
-                      </Button>
-                    ) : null}
-                  </AlertDescription>
-                </Alert>
-              ) : null}
-
-              {recommendations.length > 0 ? (
-                <ul className="grid gap-3">
-                  {recommendations.map((item) => (
-                    <li key={item.name} className="rounded-2xl border border-border/60 px-4 py-3">
-                      <p className="text-xs font-medium text-text-secondary">{item.name}</p>
-                      <p className="mt-1 text-sm leading-relaxed">{item.recommendation}</p>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
+              <ul className="grid gap-3">
+                {recommendations.map((item) => (
+                  <li key={item.name} className="rounded-2xl border border-border/60 px-4 py-3">
+                    <p className="text-xs font-medium text-text-secondary">{item.name}</p>
+                    <p className="mt-1 text-sm leading-relaxed">{item.recommendation}</p>
+                  </li>
+                ))}
+              </ul>
             </Card>
           ) : null}
 

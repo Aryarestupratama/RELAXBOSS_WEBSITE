@@ -1,5 +1,5 @@
 # RelaxBoss - PRD
-Version: 1.12 | Status: Draft | Last updated: 2026-11-23
+Version: 1.13 | Status: Draft | Last updated: 2026-11-24
 Owner: Founder (solo developer)
 
 Label klaim: `[Verified]` = ada sumber yang dicek, `[Inference]` = kesimpulan dari konteks, `[Assumption]` = asumsi yang bisa diubah. Kedalaman: **Lite**.
@@ -100,7 +100,7 @@ Jurusan dipakai sebagai konteks percakapan RelaxMate (FR-015); kampus hanya prof
 | FR-007 | Skor dihitung di server per subskala: nilai jawaban, pembalikan skor untuk butir terbalik, pengali skor Instrumen, lalu dicocokkan dengan aturan skoring. | Must | US-003 |
 | FR-008 | Hasil MUST menampilkan skor dan interpretasi per subskala, penjelasan awam, disclaimer "bukan diagnosis", dan arahan konsultasi profesional. Subskala yang memicu PFA MUST menawarkan pertanyaan konteks (jawaban opsional). | Must | US-003 |
 | FR-009 | Hasil MUST tersimpan dan riwayat dapat dilihat per tanggal. | Must | US-004 |
-| FR-010 | Sistem SHOULD menampilkan Rekomendasi AI berdasarkan hasil dan konteks PFA, hanya bila pengguna sudah memberi consent AI; bila AI gagal, tanpa consent, atau jawaban PFA terindikasi krisis MUST menampilkan rekomendasi statis dari aturan skoring. Rekomendasi AI memakai prompt tersendiri (bukan prompt RelaxMate). | Should | US-003 |
+| FR-010 | Sistem SHOULD menampilkan Rekomendasi AI berdasarkan hasil dan konteks PFA, hanya bila pengguna sudah memberi consent AI; bila AI gagal, tanpa consent, atau jawaban PFA terindikasi krisis MUST menampilkan rekomendasi statis dari aturan skoring. Rekomendasi AI memakai prompt tersendiri (bukan prompt RelaxMate). Kotak Rekomendasi AI di hasil Asesmen tampil tetap di tempat yang sama selama AI relevan (butuh consent, menunggu konteks, menyusun, siap, gagal): selagi menyusun ada animasi menunggu, begitu hasil tiba ringkasan dan rekomendasi diketik huruf demi huruf (hasil tersimpan dari riwayat langsung tampil; ada tombol "Tampilkan semua"); rekomendasi statis tampil di bawahnya sebagai cadangan bila AI tidak tampil, tidak selagi AI menyusun atau sudah siap (TASK-056). | Should | US-003 |
 | FR-011 | Pengguna MUST dapat mencatat Mood Entry (skala 1-5, tenaga "bertenaga" atau "lelah" opsional, catatan opsional maks. 1.500 karakter, ditulis di Ruang tulis (FR-040); di aplikasi mobile catatan dipakai sebagai buku harian, lihat PRD-Mobile FR-M032). Lebih dari satu entri per hari diperbolehkan, maks. 5 per hari (WIB). | Must | US-005 |
 | FR-012 | Sistem MUST menampilkan grafik mood 7 dan 30 hari (satu titik per hari berupa rata-rata; hari tanpa entri berupa celah) dan, untuk 7 hari terakhir, wajah mood per hari. Rincian semua entri satu hari berjam tidak ditampilkan (`TODO-LATER.md`). | Must | US-005 |
 | FR-013 | Sebelum memakai fitur AI pertama kali, pengguna MUST menyetujui consent AI (pesan dan jurusan diproses penyedia AI pihak ketiga, RelaxMate bukan layanan medis, pesan dapat ditinjau pengelola tanpa identitas) dan MUST memilih ya atau tidak untuk persetujuan pelatihan (tanpa nilai awal, penolakan tidak mengurangi akses). Pilihan dapat diubah di pengaturan akun. | Must | US-006, US-012 |
@@ -329,6 +329,7 @@ Tanggal `[Assumption]`. Status per 2026-11-06: M0 sampai M5 selesai; M6 berjalan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.13 | 2026-11-24 | FR-010: kotak Rekomendasi AI tetap dengan animasi menunggu dan efek mengetik; kartu rekomendasi statis tidak lagi diganti kartu AI di tengah jalan (TASK-056, keputusan founder 2026-11-24). |
 | 1.12 | 2026-11-23 | FR-041 (Buku harian, TASK-053): membaca, mengubah, dan menghapus catatan di web; FR-040: kertas dapat digeser kembali dengan roda mouse dan jari. Keputusan founder 2026-11-23 (bentuk: kertas per halaman, satu keluarga dengan Ruang tulis). |
 | 1.11 | 2026-11-23 | FR-040 (Ruang tulis, TASK-052): kertas bergaris dengan kotak bercahaya yang mengikuti huruf, lampu pada baris aktif, kertas naik seperti mesin tik, dan mode Ruang sunyi; FR-011 menunjuk ke FR-040. Keputusan founder 2026-11-23. |
 | 1.10 | 2026-11-21 | FR-011: batas catatan Mood Entry naik dari 500 ke 1.500 karakter (`mood_note_max_chars`), mengikuti buku harian di aplikasi mobile (TASK-M078). Tampilan baca catatan di web belum ada. |
