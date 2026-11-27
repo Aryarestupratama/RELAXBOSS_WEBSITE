@@ -1,5 +1,5 @@
 # RelaxBoss - PRD
-Version: 1.13 | Status: Draft | Last updated: 2026-11-24
+Version: 1.14 | Status: Draft | Last updated: 2026-11-27
 Owner: Founder (solo developer)
 
 Label klaim: `[Verified]` = ada sumber yang dicek, `[Inference]` = kesimpulan dari konteks, `[Assumption]` = asumsi yang bisa diubah. Kedalaman: **Lite**.
@@ -30,7 +30,7 @@ Label klaim: `[Verified]` = ada sumber yang dicek, `[Inference]` = kesimpulan da
 **Non-goals (rilis ini)**
 - Tidak melatih atau fine-tune model dalam rilis ini. Data hanya dapat **diekspor** (FR-030) dari pengguna yang menyetujui, untuk keperluan pelatihan di masa depan.
 - Tidak memberi diagnosis atau menggantikan psikolog. Bukan perangkat medis.
-- Tidak ada: segmen siswa dan pekerja, To-Do/Pomodoro, Program Komunitas, realtime/WebSocket, ekspor PDF/Excel, pembayaran, login Google. Klien mobile bukan bagian dokumen ini; web hanya menyediakan API-nya (FR-039).
+- Tidak ada: segmen siswa dan pekerja, To-Do/Pomodoro, Program Komunitas, realtime/WebSocket, ekspor PDF, pembayaran, login Google. Klien mobile bukan bagian dokumen ini; web hanya menyediakan API-nya (FR-039).
 
 **Metrik keberhasilan** (target `[Assumption]`, sesuaikan setelah ada baseline)
 
@@ -63,7 +63,7 @@ Jurusan dipakai sebagai konteks percakapan RelaxMate (FR-015); kampus hanya prof
 | **Must** | Registrasi, verifikasi email, login, reset sandi; Asesmen (kerjakan, skor per subskala, hasil, PFA, riwayat); Mood Tracker; RelaxMate dengan consent dan Crisis Response; profil, ganti sandi, dan hapus akun; Halaman Publik + SEO dasar; keterkaitan UMB dan jalur konsultasi (sesuai yang terkonfirmasi); admin (kelola Asesmen, pengguna, statistik, monitoring tanpa identitas) |
 | **Should** | Rekomendasi AI di hasil Asesmen; hitungan KPI; ekspor data AI dengan persetujuan; artikel edukasi Publik untuk SEO (FR-021); notifikasi dalam aplikasi dan pengumuman (FR-036 s.d. FR-038); API untuk klien mobile (FR-039) |
 | **Could** | Mode gelap, ekspor data pribadi oleh pengguna, autentikasi dua langkah admin |
-| **Won't (rilis ini)** | Antarmuka mobile di repo web (hanya API-nya, FR-039), login Google, To-Do/Pomodoro, Program Komunitas, realtime, ekspor PDF/Excel, pelatihan model, segmen siswa dan pekerja |
+| **Won't (rilis ini)** | Antarmuka mobile di repo web (hanya API-nya, FR-039), login Google, To-Do/Pomodoro, Program Komunitas, realtime, ekspor PDF, pelatihan model, segmen siswa dan pekerja |
 
 ---
 
@@ -130,7 +130,7 @@ Jurusan dipakai sebagai konteks percakapan RelaxMate (FR-015); kampus hanya prof
 | FR-027 | Bila model utama terkena batas pemakaian, sistem SHOULD beralih ke model cadangan sebelum menampilkan pesan error FR-017. | Should | US-006 |
 | FR-028 | Panggilan AI memakai pool API key per fitur (`chat`, `assessment`) dengan rotasi, cooldown saat 429, penanganan key yang ditolak (401 atau 403), dan jatuh ke model cadangan lalu respons statis bila semua key terbatas. | Must | US-006 |
 | FR-029 | Balasan RelaxMate disertai intent terdeteksi; sistem menampilkan saran tindakan berdasarkan prioritas intent (hotline untuk krisis, ajakan ke profesional, ajakan memakai fitur pendukung) dan mencatat tipe saran. | Must | US-006, US-007 |
-| FR-030 | Sistem SHOULD menyediakan perintah ekspor data fitur AI (`chat`, `assessment`) yang dijalankan founder, hanya untuk pengguna yang menyetujui, tanpa identitas, dengan kerangka umum agar fitur AI baru mudah ditambahkan. | Should | US-012 |
+| FR-030 | Sistem SHOULD menyediakan ekspor data fitur AI (`chat`, `assessment`), hanya untuk pengguna yang menyetujui, tanpa identitas, dengan kerangka umum agar fitur AI baru mudah ditambahkan. Dua jalur: perintah Artisan yang dijalankan founder (JSONL) dan unduhan Excel (.xlsx) dari Admin dengan pilihan semua data atau rentang tanggal (TASK-057). | Should | US-012 |
 | FR-031 | Admin MUST dapat meninjau (hanya baca) isi percakapan dan rekomendasi AI Asesmen tanpa identitas; setiap pembukaan MUST tercatat. | Must | US-011 |
 
 Catatan: FR-021 dipakai untuk artikel edukasi. Nomor FR-033 sampai FR-039 mengikuti penanda di kode (FR-033 profil dan foto, FR-034 ganti sandi, FR-035 tambah admin, FR-036 s.d. FR-038 notifikasi dan pengumuman, FR-039 API mobile).
@@ -329,6 +329,7 @@ Tanggal `[Assumption]`. Status per 2026-11-06: M0 sampai M5 selesai; M6 berjalan
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.14 | 2026-11-27 | FR-030: ekspor Excel dari Admin (TASK-057) dengan pilihan semua data atau rentang tanggal; "ekspor Excel" dikeluarkan dari daftar tidak dikerjakan (ekspor PDF tetap tidak). |
 | 1.13 | 2026-11-24 | FR-010: kotak Rekomendasi AI tetap dengan animasi menunggu dan efek mengetik; kartu rekomendasi statis tidak lagi diganti kartu AI di tengah jalan (TASK-056, keputusan founder 2026-11-24). |
 | 1.12 | 2026-11-23 | FR-041 (Buku harian, TASK-053): membaca, mengubah, dan menghapus catatan di web; FR-040: kertas dapat digeser kembali dengan roda mouse dan jari. Keputusan founder 2026-11-23 (bentuk: kertas per halaman, satu keluarga dengan Ruang tulis). |
 | 1.11 | 2026-11-23 | FR-040 (Ruang tulis, TASK-052): kertas bergaris dengan kotak bercahaya yang mengikuti huruf, lampu pada baris aktif, kertas naik seperti mesin tik, dan mode Ruang sunyi; FR-011 menunjuk ke FR-040. Keputusan founder 2026-11-23. |

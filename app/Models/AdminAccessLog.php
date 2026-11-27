@@ -16,6 +16,9 @@ class AdminAccessLog extends Model
 
     public const RESOURCE_ATTEMPT = 'assessment_attempt';
 
+    /** Unduhan ekspor Excel data AI (TASK-057); `resource_id` berisi nama fitur, mis. `chat+assessment`. */
+    public const RESOURCE_EXPORT = 'ai_export';
+
     /** Tabel hanya punya created_at. */
     public const UPDATED_AT = null;
 

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Services\Export;
 
 use App\Contracts\AiDataExporter;
+use App\Contracts\SpreadsheetAiDataExporter;
 use Illuminate\Contracts\Container\Container;
 use InvalidArgumentException;
 
@@ -25,6 +26,19 @@ final class AiDataExporterRegistry
     public function find(string $feature): ?AiDataExporter
     {
         return $this->all()[$feature] ?? null;
+    }
+
+    /** @return list<string> Nama fitur yang bisa diekspor ke Excel (mengimplementasikan `SpreadsheetAiDataExporter`). */
+    public function spreadsheetFeatures(): array
+    {
+        return array_keys(array_filter($this->all(), static fn (AiDataExporter $exporter): bool => $exporter instanceof SpreadsheetAiDataExporter));
+    }
+
+    public function findSpreadsheet(string $feature): ?SpreadsheetAiDataExporter
+    {
+        $exporter = $this->find($feature);
+
+        return $exporter instanceof SpreadsheetAiDataExporter ? $exporter : null;
     }
 
     /** @return array<string, AiDataExporter> */

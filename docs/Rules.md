@@ -1,5 +1,5 @@
 # RelaxBoss - Rules (Aturan Proyek)
-Version: 1.6 | Status: Draft | Last updated: 2026-11-06
+Version: 1.7 | Status: Draft | Last updated: 2026-11-27
 Depends on: PRD v1.9, Architecture v1.75, Schema v1.15, Design v1.76 | Owner: Founder (solo developer)
 
 Dokumen ini adalah panduan kerja founder sebagai pengembang tunggal; bantuan AI boleh dipakai dengan tetap mengikuti seluruh aturan, melakukan verifikasi manual, dan tidak menganggap keluaran otomatis sebagai bukti kebenaran. Bila ada kontributor lain, aturan ini berlaku sama. Kata MUST, MUST NOT, SHOULD dipakai secara tegas. Kedalaman: **Lite**. Prinsip: sederhana, fungsi dulu.
@@ -104,7 +104,7 @@ Dokumen ini adalah panduan kerja founder sebagai pengembang tunggal; bantuan AI 
 
 | ID | Aturan |
 |---|---|
-| RULE-070 | Ekspor data AI hanya lewat perintah Artisan `relaxboss:export-ai-data` (tanpa route web, tanpa jadwal), hanya pengguna dengan `ai_training_consent_choice = granted`, tanpa nama, email, ID, jurusan, kampus; ID record acak per ekspor; kontak krisis diganti penanda. Berkas ekspor non-publik, tidak masuk repo, dihapus setelah dipakai. |
+| RULE-070 | Ekspor data AI hanya lewat perintah Artisan `relaxboss:export-ai-data` (tanpa jadwal) dan unduhan Excel di Admin (`POST /admin/monitoring/ekspor`, satu-satunya route web ekspor; TASK-057), hanya pengguna dengan `ai_training_consent_choice = granted`, tanpa nama, email, ID, jurusan, kampus; ID record acak per ekspor; kontak krisis diganti penanda. Berkas ekspor non-publik, tidak masuk repo, dihapus setelah dipakai. Unduhan Excel dibuat saat itu juga di `storage/app/private/exports`, dihapus setelah dikirim, dan setiap unduhan dicatat di `admin_access_logs` (`ai_export`). Unduhan Excel adalah pengecualian terbatas atas RULE-042 (admin tidak melihat jawaban per butir dan jawaban PFA): isinya hanya dari pengguna `granted` dan tanpa identitas, tetapi **semua akun admin** dapat mengunduhnya. |
 | RULE-071 | Persetujuan pelatihan terpisah dari consent AI: tanpa nilai awal (pengguna wajib memilih), penolakan tidak mengurangi akses ke fitur, dapat diubah kapan saja, dan teks menyebut bahwa percakapan krisis ikut diekspor dan data yang sudah diekspor tidak bisa ditarik. |
 | RULE-072 | Fitur AI baru MUST mendaftarkan eksportirnya lewat kontrak `AiDataExporter` dan `config/relaxboss.php`, bukan perintah ekspor baru. |
 | RULE-073 | Data hasil ekspor tidak dipakai melatih model sebelum ditinjau manual dan sebelum OQ-5 (telaah hukum) dijawab. |
@@ -146,6 +146,7 @@ Jangan: menambah fitur di luar PRD, menggandakan teks consent atau kontak bantua
 
 | Versi | Tanggal | Perubahan |
 |---|---|---|
+| 1.7 | 2026-11-27 | RULE-070: ekspor Excel dari Admin (TASK-057) menjadi route web ekspor satu-satunya; pengecualian terbatas atas RULE-042 dicatat. |
 | 1.6 | 2026-11-06 | Doc Sync: RULE-014 (contoh `.env`), RULE-033 (tanpa Policy), RULE-040/044 (token dan rute API), RULE-060 (Sanctum dipasang), bagian 9 API Mobile (RULE-080, RULE-081). |
 | 1.5 | 2026-10-27 | RULE-052 diringkas: teks navy `--text` di atas pastel; pembaruan status dokumen dan alur Doc Sync. |
 | 1.4 | 2026-10-26 | Audit kontras dan larangan warna langsung diperluas. |

@@ -16,7 +16,7 @@ use Inertia\Response;
 /**
  * SCR-022 (FR-031): tinjauan percakapan dan hasil Asesmen tanpa identitas, hanya baca.
  * Daftar hanya metadata. Halaman detail mencatat `admin_access_logs` sebelum isi dikirim.
- * Sengaja tanpa route ubah, balas, hapus, atau ekspor.
+ * Sengaja tanpa route ubah, balas, atau hapus. Ekspor Excel ada di `ExportController` (TASK-057).
  */
 final class MonitoringController extends Controller
 {

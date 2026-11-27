@@ -9,7 +9,7 @@ Dibangun dan dikelola oleh satu orang (founder). Dokumen proyek (PRD, Architectu
 - **Asesmen**: kuesioner dengan skor per subskala, langkah PFA, riwayat, dan Rekomendasi AI (butuh persetujuan).
 - **Mood Tracker**: catatan mood dan tenaga, grafik 7 dan 30 hari.
 - **RelaxMate**: percakapan dengan AI, pemeriksaan krisis berbasis aturan sebelum AI dipanggil, dan kontak bantuan.
-- **Admin**: statistik agregat, kelola Instrumen, kelola akun, dan tinjauan percakapan tanpa identitas (tercatat, hanya baca).
+- **Admin**: statistik agregat, kelola Instrumen, kelola akun, tinjauan percakapan tanpa identitas (tercatat, hanya baca), dan ekspor dataset chatbot dan Asesmen ke Excel (hanya pengguna yang menyetujui pelatihan, tanpa identitas, tercatat).
 - **Halaman Publik**: Beranda, Tentang, Asesmen, Konsultasi, Privasi, Ketentuan, dengan sitemap dan robots dinamis.
 
 ## Stack
@@ -42,7 +42,7 @@ Untuk menguji AI sungguhan, isi `GROQ_KEYS_CHAT` dan `GROQ_KEYS_ASSESSMENT` di `
 | `php artisan relaxboss:preflight` | Periksa kesiapan produksi; gagal berarti jangan go-live |
 | `php artisan relaxboss:backup-db` | Cadangkan database ke `storage/app/private/backups` (dijadwalkan harian) |
 | `php artisan relaxboss:purge-content` | Hapus Instrumen, hasil Asesmen, artikel, chat, mood, dan log sebelum go-live (akun tetap); jalankan `relaxboss:backup-db` dulu |
-| `php artisan relaxboss:export-ai-data {chat\|assessment}` | Ekspor data AI dari pengguna yang menyetujui, tanpa identitas |
+| `php artisan relaxboss:export-ai-data {chat\|assessment}` | Ekspor data AI (JSONL) dari pengguna yang menyetujui, tanpa identitas. Versi Excel ada di Admin, tab Monitoring > Ekspor (butuh ekstensi PHP `zip`) |
 
 Cron produksi: `* * * * * php artisan schedule:run`. Contoh konfigurasi produksi ada di `.env.production.example`.
 

@@ -1,5 +1,5 @@
 # RelaxBoss - Database Schema
-Version: 1.15 | Status: Draft | Last updated: 2026-11-21
+Version: 1.16 | Status: Draft | Last updated: 2026-11-27
 Depends on: PRD v1.5, Architecture v1.44 | Owner: Founder (solo developer)
 
 Label: `[Assumption]` bisa diubah. Kedalaman: **Lite**. Segmen pengguna: mahasiswa saja.
@@ -217,8 +217,8 @@ Indeks: unik `(usage_date, model, feature)`. Dipakai memantau kuota (NFR-011).
 |---|---|---|---|---|
 | id | bigint unsigned PK | tidak | | |
 | admin_id | FK `users` | ya | null | `ON DELETE SET NULL` |
-| resource_type | varchar(30) | tidak | | `conversation` / `assessment_attempt` |
-| resource_id | varchar(40) | tidak | | ID internal sumber daya |
+| resource_type | varchar(30) | tidak | | `conversation` / `assessment_attempt` / `ai_export` |
+| resource_id | varchar(40) | tidak | | ID internal sumber daya; untuk `ai_export` berisi nama fitur (mis. `chat+assessment`) |
 | created_at | timestamp | tidak | | |
 
 Mencatat setiap pembukaan isi oleh admin (FR-031). Tidak berisi isi pesan atau identitas pemilik.
@@ -366,6 +366,7 @@ OQ-1 (sumber dan izin Instrumen asli, termasuk memeriksa perilaku pembalikan sko
 
 | Versi | Tanggal | Ringkasan |
 |---|---|---|
+| 1.16 | 2026-11-27 | ENT-011: `resource_type` bertambah `ai_export` (unduhan ekspor Excel, TASK-057). Tanpa migration (kolom string). |
 | 1.15 | 2026-11-21 | ENT-006: batas `note` 500 menjadi 1.500 karakter (config saja, tanpa migration; kolom `text` cukup untuk nilai terenkripsi). Entri boleh diubah dan dihapus pemiliknya lewat API mobile (TASK-M078); `updated_at` dipakai sebagai penanda "diedit". |
 | 1.14 | 2026-10-28 | ENT-013 preferensi notifikasi dan ENT-014 pengumuman; migration dan model dicatat. |
 | 1.13 | 2026-10-28 | ENT-014 `announcements` tanpa slug, status draf/terbit, indeks status dan waktu terbit. |
