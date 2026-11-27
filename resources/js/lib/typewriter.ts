@@ -75,10 +75,14 @@ export type Typewriter = {
 
 /**
  * Menampilkan [texts] berurutan seperti diketik. Bila [enabled] false atau pengguna meminta pengurangan gerak, semuanya langsung
- * tampil. `texts` harus stabil selama animasi berjalan (hasil AI tidak berubah setelah tiba).
+ * tampil. Isi `texts` harus tetap sama selama animasi berjalan (hasil AI tidak berubah setelah tiba); identitas array boleh berganti.
  */
 export function useTypewriter(texts: string[], enabled: boolean): Typewriter {
-  const chars = useMemo(() => texts.map((text) => Array.from(text)), [texts]);
+  // Kunci berdasarkan ISI, bukan identitas array. Pemanggil yang membuat array baru di tiap render tidak boleh mengulang
+  // animasi dari awal: setiap `setCount` merender ulang, dan array baru akan membuat jadwal baru yang mereset efek
+  // sehingga teks tertahan di satu huruf dan berkedip (bug TASK-057).
+  const key = JSON.stringify(texts);
+  const chars = useMemo(() => (JSON.parse(key) as string[]).map((text) => Array.from(text)), [key]);
   const lengths = useMemo(() => chars.map((list) => list.length), [chars]);
   const total = useMemo(() => lengths.reduce((sum, length) => sum + length, 0), [lengths]);
   const schedule = useMemo(() => typingSchedule(chars.flat()), [chars]);

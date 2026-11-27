@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import { Sparkles } from 'lucide-react';
 import { Alert, AlertDescription } from '@/Components/ui/alert';
 import { Badge } from '@/Components/ui/badge';
@@ -124,7 +125,7 @@ type ResultProps = { recommendation: string; summary: string | null; animate: bo
 
 /** Hasil AI: ringkasan lalu rekomendasi, diketik bila baru tiba. Tinggi kotak sudah final sejak awal, jadi tidak melompat. */
 function Result({ recommendation, summary, animate }: ResultProps) {
-  const texts = summary ? [summary, recommendation] : [recommendation];
+  const texts = useMemo(() => (summary ? [summary, recommendation] : [recommendation]), [summary, recommendation]);
   const { shown, done, skip } = useTypewriter(texts, animate);
   const typing = animate && !done;
   const caretIn = shown.findIndex((count, index) => count < Array.from(texts[index]).length);
